@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useMemo, useCallback } from "react";
 import {
   View,
   StyleSheet,
@@ -8,6 +8,7 @@ import {
   Animated,
   Dimensions,
   PanResponder,
+  Pressable,
 } from "react-native";
 import * as Speech from "expo-speech";
 import Markdown from "react-native-markdown-display";
@@ -25,28 +26,26 @@ export default function DetailsScreen() {
   const [isModalVisible, setModalVisible] = useState(false);
 
   // Animación para el modal
-  const slideAnim = useRef(new Animated.Value(height)).current;
+  const slideAnim = useRef(new Animated.Value(0)).current;
 
   // PanResponder para manejar el gesto de arrastre
   const panResponder = useRef(
     PanResponder.create({
       onMoveShouldSetPanResponder: (_, gestureState) => {
-        // Solo permitir el gesto si es un movimiento hacia abajo
-        return gestureState.dy > 0;
+        return gestureState.dy > 10;
       },
       onPanResponderMove: (_, gestureState) => {
-        // Animar el modal según el desplazamiento
-        slideAnim.setValue(height * 0.12 + gestureState.dy);
+        // Limitar el valor máximo y mínimo de desplazamiento
+        const newValue = Math.max(0, gestureState.dy);
+        slideAnim.setValue(newValue);
       },
       onPanResponderRelease: (_, gestureState) => {
-        // Si se arrastra más de 150px hacia abajo, cierra el modal
         if (gestureState.dy > 150) {
           closeModal();
         } else {
-          // Si no, vuelve a la posición inicial
           Animated.spring(slideAnim, {
-            toValue: height * 0.12,
-            useNativeDriver: false,
+            toValue: 0,
+            useNativeDriver: true,
           }).start();
         }
       },
@@ -54,73 +53,77 @@ export default function DetailsScreen() {
   ).current;
 
   // Función para abrir el modal
-  const openModal = () => {
+  const openModal = useCallback(() => {
     setModalVisible(true);
     Animated.timing(slideAnim, {
-      toValue: height * 0.12, // Ubicación desde la parte superior
+      toValue: 0,
       duration: 300,
-      useNativeDriver: false,
+      useNativeDriver: true,
     }).start();
-  };
+  }, [slideAnim]);
 
   // Función para cerrar el modal
-  const closeModal = () => {
+  const closeModal = useCallback(() => {
     Animated.timing(slideAnim, {
-      toValue: height, // Fuera de la pantalla
+      toValue: height,
       duration: 300,
-      useNativeDriver: false,
+      useNativeDriver: true,
     }).start(() => setModalVisible(false));
-  };
+  }, [slideAnim]);
 
   // Función para manejar el clic de cada palabra
-  const speakWord = (word: string) => {
-    Speech.speak(word, {
-      language: "en-US",
-    });
-  };
+  const speakWord = useCallback((word: string) => {
+    if (word) {
+      Speech.speak(word, {
+        language: "en-US",
+      });
+    }
+  }, []);
 
   // Función para renderizar palabras con interactividad
-  const renderWords = (content: string, textStyles: any) => {
-    const words = content.split(/\s+/);
+  const renderWords = useCallback(
+    (content: string, textStyles: any) => {
 
-    return (
-      <Text style={textStyles}>
-        {words.map((word, index) => (
-          <Text
-            key={`word_${index}`}
-            onPress={() => {
-              const wordClean = words[index].replace(/[.,-]+$/g, "");
-              setWordSelected(wordClean);
-
-              const now = Date.now();
-              if (now - lastTap.current < DOUBLE_PRESS_DELAY) {
-                speakWord(word);
-              }
-              lastTap.current = now;
-            }}
-          >
-            {word}{" "}
-          </Text>
-        ))}
-      </Text>
-    );
-  };
+      return (
+        <Text >
+          {content.split(/\s+/).map((word, index) => {
+            const wordClean = word.replace(/[.,-]+$/g, "");
+            return (
+              <Pressable
+                key={`word_${index}`}
+                onPress={() => {
+                  setWordSelected(wordClean);
+                }}
+                onLongPress={() => speakWord(wordClean)}
+              >
+                <Text style={textStyles}>{word} </Text>
+              </Pressable>
+            );
+          })}
+        </Text>
+      );
+    },
+    [speakWord]
+  );
 
   // Reglas personalizadas para renderizar Markdown
-  const rules = {
-    text: (node: any, children: any, parent: any, styles: any) => {
-      const content = node.content || "";
-      return renderWords(content, styles.text);
-    },
-    heading1: (node: any, children: any, parent: any, styles: any) => {
-      const content = node.children[0].children[0].content || "";
-      return renderWords(content, styles.heading1);
-    },
-    heading2: (node: any, children: any, parent: any, styles: any) => {
-      const content = node.children[0].children[0].content || "";
-      return renderWords(content, styles.heading2);
-    },
-  };
+  const rules = useMemo(
+    () => ({
+      text: (node: any, children: any, parent: any, styles: any) => {
+        const content = node.content || "";
+        return renderWords(content, styles.text);
+      },
+      heading1: (node: any, children: any, parent: any, styles: any) => {
+        const content = node.children[0].children[0].content || "";
+        return renderWords(content, styles.heading1);
+      },
+      heading2: (node: any, children: any, parent: any, styles: any) => {
+        const content = node.children[0].children[0].content || "";
+        return renderWords(content, styles.heading2);
+      },
+    }),
+    [renderWords]
+  );
 
   return (
     <View style={styles.container}>
@@ -141,7 +144,14 @@ export default function DetailsScreen() {
 
       {/* Modal deslizante */}
       {isModalVisible && (
-        <Animated.View style={[styles.modal, { top: slideAnim }]}>
+        <Animated.View
+          style={[
+            styles.modal,
+            {
+              transform: [{ translateY: slideAnim }],
+            },
+          ]}
+        >
           <View {...panResponder.panHandlers} style={{ width: "100%" }}>
             <View style={styles.modalHandle} />
           </View>
@@ -162,7 +172,6 @@ export default function DetailsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
     backgroundColor: "#1c1c1e",
     paddingHorizontal: 8,
     paddingTop: 20,
@@ -182,6 +191,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#333",
     borderRadius: 8,
     marginVertical: 20,
+    alignSelf: "center",
   },
   wordSelected: {
     textTransform: "capitalize",
@@ -212,6 +222,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     padding: 20,
+    bottom: 0,
   },
   modalHandle: {
     width: 60,
@@ -242,5 +253,8 @@ const styles = StyleSheet.create({
   closeButtonText: {
     color: "white",
     fontSize: 16,
+  },
+  word: {
+    color: "#fff",
   },
 });
