@@ -7,8 +7,16 @@ import {
   FlatList,
   TouchableOpacity,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons"; // Importar íconos de Expo
+import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native"; // Added useNavigation import
 import { ThemedView } from "@/components/shared/ThemedView";
+import { NativeStackNavigationProp } from "react-native-screens/lib/typescript/native-stack/types";
+
+// Define RootStackParamList if not imported from elsewhere
+type RootStackParamList = {
+  Home: undefined;
+  Details: { id: string };
+};
 
 // Simulamos datos para la lista de tarjetas
 const data = Array.from({ length: 12 }).map((_, index) => ({
@@ -16,16 +24,23 @@ const data = Array.from({ length: 12 }).map((_, index) => ({
   title: "The best practice with zustand and more",
   time: "3 min",
   level: "A1",
-  languageIcon: "🇺🇸", // Aquí podrías reemplazar por imágenes según el idioma
+  languageIcon: "🇺🇸",
 }));
 
 export default function HomeScreen() {
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
   return (
     <ThemedView style={styles.container}>
-      {/* Campo de búsqueda y botón de filtro */}
       <View style={styles.searchFilterContainer}>
         <View style={styles.searchContainer}>
-          <Ionicons name="search-outline" size={20} color="#aaa" style={styles.searchIcon} />
+          <Ionicons
+            name="search-outline"
+            size={20}
+            color="#aaa"
+            style={styles.searchIcon}
+          />
           <TextInput
             placeholder="Search"
             placeholderTextColor="#aaa"
@@ -37,7 +52,6 @@ export default function HomeScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* Lista de tarjetas en dos columnas */}
       <FlatList
         data={data}
         keyExtractor={(item) => item.id}
@@ -45,7 +59,10 @@ export default function HomeScreen() {
         columnWrapperStyle={styles.columnWrapper}
         contentContainerStyle={styles.cardList}
         renderItem={({ item }) => (
-          <TouchableOpacity style={styles.card} onPress={() => console.log("Card clickeada", item.id)}>
+          <TouchableOpacity
+            style={styles.card}
+            onPress={() => navigation.navigate("Details", { id: item.id })} // Ensure navigation.navigate is available
+          >
             <View style={styles.imageContainer}>
               <Text style={styles.languageIcon}>{item.languageIcon}</Text>
             </View>
@@ -65,6 +82,8 @@ export default function HomeScreen() {
     </ThemedView>
   );
 }
+
+// Style definitions...
 
 const styles = StyleSheet.create({
   container: {

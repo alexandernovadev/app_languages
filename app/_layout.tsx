@@ -7,8 +7,10 @@ import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
+import { StatusBar } from "expo-status-bar";
+import { Platform } from "react-native";
 import "react-native-reanimated";
-
+import * as NavigationBar from "expo-navigation-bar";
 import { useColorScheme } from "@/hooks/useColorScheme";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -24,6 +26,11 @@ export default function RootLayout() {
     if (loaded) {
       SplashScreen.hideAsync();
     }
+
+    // Configura el modo de pantalla completa en Android
+    if (Platform.OS === "android") {
+      NavigationBar.setVisibilityAsync("hidden");
+    }
   }, [loaded]);
 
   if (!loaded) {
@@ -32,8 +39,12 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+      {/* Oculta la barra de estado en ambas plataformas */}
+      <StatusBar hidden style={colorScheme === "dark" ? "light" : "dark"} />
+      
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="Details" options={{ title: "Details" }} />
         <Stack.Screen name="NoTabsScreen" options={{ headerShown: false }} />
       </Stack>
     </ThemeProvider>

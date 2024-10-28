@@ -1,4 +1,4 @@
-import { type ViewProps } from "react-native";
+import { View, type ViewProps } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { ScrollView } from "react-native";
@@ -21,6 +21,7 @@ export function ThemedView({
     "background"
   );
 
+
   return (
     <SafeAreaView
       style={[
@@ -31,16 +32,17 @@ export function ThemedView({
       edges={["top", "bottom"]}
       {...otherProps}
     >
-      <ScrollView
-        contentContainerStyle={{
+      <View
+        style={{
+          width: "100%",
           flexGrow: 1,
           justifyContent: "center",
           alignItems: "center",
+          marginBottom: 16,
         }}
-        style={{ width: "100%" }}
       >
         {children}
-      </ScrollView>
+      </View>
     </SafeAreaView>
   );
 }
