@@ -3,7 +3,7 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { useNavigation } from "@react-navigation/native";
 
-export default function MippageScreen() {
+export default function WordsScreen() {
 
   const navigation = useNavigation();
   
