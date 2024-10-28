@@ -44,7 +44,7 @@ export default function RootLayout() {
       
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="Details" options={{ title: "Details" }} />
+        <Stack.Screen name="Details" options={{  headerShown: false }}  />
         <Stack.Screen name="NoTabsScreen" options={{ headerShown: false }} />
       </Stack>
     </ThemeProvider>
