@@ -1,6 +1,6 @@
 import { Button, Image, StyleSheet } from "react-native";
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
+import { ThemedText } from "@/components/shared/ThemedText";
+import { ThemedView } from "@/components/shared/ThemedView";
 import { useNavigation } from "@react-navigation/native";
 
 export default function WordsScreen() {

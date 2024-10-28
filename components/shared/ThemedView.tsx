@@ -23,7 +23,11 @@ export function ThemedView({
 
   return (
     <SafeAreaView
-      style={[{ backgroundColor }, { padding: 16 }, style]}
+      style={[
+        { backgroundColor },
+        { paddingLeft: 16, paddingRight: 16 },
+        style,
+      ]}
       edges={["top", "bottom"]}
       {...otherProps}
     >
