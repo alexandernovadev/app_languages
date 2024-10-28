@@ -83,9 +83,8 @@ export default function DetailsScreen() {
   // Función para renderizar palabras con interactividad
   const renderWords = useCallback(
     (content: string, textStyles: any) => {
-
       return (
-        <Text >
+        <Text>
           {content.split(/\s+/).map((word, index) => {
             const wordClean = word.replace(/[.,-]+$/g, "");
             return (
@@ -134,15 +133,15 @@ export default function DetailsScreen() {
       </ScrollView>
 
       {wordSelected.length > 0 && (
-      <View style={styles.wordActionContainer}>
-        <TouchableOpacity onPress={() => speakWord(wordSelected)}>
-          <Ionicons name="volume-high-outline" size={24} color="white" />
-        </TouchableOpacity>
-        <Text style={styles.wordSelected}>{wordSelected}</Text>
-        <TouchableOpacity onPress={openModal}>
-          <Ionicons name="book-outline" size={24} color="white" />
-        </TouchableOpacity>
-      </View>
+        <View style={styles.wordActionContainer}>
+          <TouchableOpacity onPress={() => speakWord(wordSelected)}>
+            <Ionicons name="volume-high-outline" size={24} color="white" />
+          </TouchableOpacity>
+          <Text style={styles.wordSelected}>{wordSelected}</Text>
+          <TouchableOpacity onPress={openModal}>
+            <Ionicons name="book-outline" size={24} color="white" />
+          </TouchableOpacity>
+        </View>
       )}
 
       {/* Modal deslizante */}
