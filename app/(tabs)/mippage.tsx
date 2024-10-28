@@ -1,11 +1,20 @@
-import { Image, StyleSheet } from "react-native";
+import { Button, Image, StyleSheet } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
+import { useNavigation } from "@react-navigation/native";
 
 export default function MippageScreen() {
+
+  const navigation = useNavigation();
+  
   return (
     <ThemedView>
       <ThemedText>Test</ThemedText>
+      <Button
+      title="Ir a Pantalla Sin Tabs"
+      // @ts-ignore
+      onPress={() => navigation.navigate("NoTabsScreen")}
+    />
     </ThemedView>
   );
 }
