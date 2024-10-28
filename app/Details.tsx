@@ -132,6 +132,8 @@ export default function DetailsScreen() {
           {markdownText}
         </Markdown>
       </ScrollView>
+
+      {wordSelected.length > 0 && (
       <View style={styles.wordActionContainer}>
         <TouchableOpacity onPress={() => speakWord(wordSelected)}>
           <Ionicons name="volume-high-outline" size={24} color="white" />
@@ -141,6 +143,7 @@ export default function DetailsScreen() {
           <Ionicons name="book-outline" size={24} color="white" />
         </TouchableOpacity>
       </View>
+      )}
 
       {/* Modal deslizante */}
       {isModalVisible && (
