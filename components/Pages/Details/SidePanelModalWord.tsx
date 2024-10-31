@@ -29,7 +29,7 @@ export const SidePanelModalWord: React.FC<SidePanelProps> = ({
 
   const getWord = async (word: string) => {
     try {
-      const response = await fetch(`${BACKURL}/api/words/word/${word}`);
+      const response = await fetch(`${BACKURL}/api/words/word/${word.toLocaleLowerCase()}`);
       const { data } = await response.json();
       setWordDb(data);
     } catch (error) {
@@ -174,7 +174,7 @@ const styles = StyleSheet.create({
   },
   wordText: {
     fontSize: 32,
-    color: "#32cd32",
+    color: "#2eb12e",
     fontWeight: "bold",
     textTransform: "capitalize",
   },
@@ -186,11 +186,11 @@ const styles = StyleSheet.create({
   },
   levelText: {
     fontSize: 16,
-    color: "#32cd32",
+    color: "#2eb12e",
   },
   typeText: {
     fontSize: 16,
-    color: "#32cd32",
+    color: "#2eb12e",
     marginTop: 4,
   },
   definition: {
@@ -200,7 +200,7 @@ const styles = StyleSheet.create({
   },
   ipaText: {
     fontSize: 16,
-    color: "#32cd32",
+    color: "#2eb12e",
     marginTop: 10,
   },
   image: {
@@ -216,7 +216,7 @@ const styles = StyleSheet.create({
   },
   examplesTitle: {
     fontSize: 16,
-    color: "#32cd32",
+    color: "#2eb12e",
     marginBottom: 6,
   },
   exampleText: {
@@ -226,7 +226,7 @@ const styles = StyleSheet.create({
   },
   boldText: {
     fontWeight: "bold",
-    color: "#32cd32",
+    color: "#2eb12e",
   },
   noWordContainer: {
     flex: 1,
@@ -234,13 +234,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   noWordText: {
-    color: "#32cd32",
+    color: "#2eb12e",
     marginBottom: 10,
+    marginTop: 32,
+    paddingTop: 32,
   },
   generateButton: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#32cd32",
+    backgroundColor: "#2eb12e",
     padding: 10,
     borderRadius: 8,
   },
