@@ -34,17 +34,16 @@ export default function HomeScreen() {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
-  // get las 4 pokemon from api
   const [lectures, setLectures] = useState<Lecture[]>([]);
 
-  const getPokemon = async () => {
+  const getLectures = async () => {
     const response = await fetch(`${BACKURL}/api/lectures`);
     const { data } = await response.json();
     setLectures(data);
   };
 
   useEffect(() => {
-    getPokemon();
+    getLectures();
   }, []);
 
   return (
@@ -104,7 +103,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#1c1c1e", 
+    backgroundColor: "#1c1c1e",
   },
   searchFilterContainer: {
     flexDirection: "row",
