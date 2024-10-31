@@ -1,4 +1,10 @@
-import React, { useRef, useState, useMemo, useCallback } from "react";
+import React, {
+  useRef,
+  useState,
+  useMemo,
+  useCallback,
+  useEffect,
+} from "react";
 import {
   View,
   StyleSheet,
@@ -15,18 +21,34 @@ import Markdown from "react-native-markdown-display";
 import { useLocalSearchParams } from "expo-router";
 import { markdownText } from "@/data/markdown";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { Lecture } from "@/interfaces/models/Lectures";
+import { BACKURL } from "@/api/backurl";
 
-const DOUBLE_PRESS_DELAY = 300;
 const { height } = Dimensions.get("window");
 
 export default function DetailsScreen() {
   const { id } = useLocalSearchParams();
-  const lastTap = useRef<number>(0);
+  const [lecture, setLecture] = useState<Lecture>();
+
   const [wordSelected, setWordSelected] = useState("");
   const [isModalVisible, setModalVisible] = useState(false);
 
   // Animación para el modal
   const slideAnim = useRef(new Animated.Value(0)).current;
+
+  const getLecture = async () => {
+    try {
+      const response = await fetch(`${BACKURL}/api/lectures/${id}`);
+      const data: Lecture = await response.json();
+      setLecture(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    getLecture();
+  }, []);
 
   // PanResponder para manejar el gesto de arrastre
   const panResponder = useRef(
@@ -128,7 +150,7 @@ export default function DetailsScreen() {
     <View style={styles.container}>
       <ScrollView style={styles.markdownContainer}>
         <Markdown style={styles} rules={rules}>
-          {markdownText}
+          {lecture?.content || `# No lecture found with id ${id}`}
         </Markdown>
       </ScrollView>
 
