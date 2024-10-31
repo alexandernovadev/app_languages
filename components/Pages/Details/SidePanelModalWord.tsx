@@ -164,17 +164,13 @@ const styles = StyleSheet.create({
   container: {
     height: "100%",
     paddingRight: 10,
-  },
-  closeButton: {
-    position: "absolute",
-    top: 20,
-    right: 20,
+    marginBottom: 24,
   },
   wordRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginTop: 40,
+    marginTop: 8,
   },
   wordText: {
     fontSize: 32,

@@ -107,7 +107,9 @@ export default function DetailsScreen() {
   const renderWords = useCallback(
     (content: string, textStyles: any) => {
       return (
-        <Text>
+        <Text
+          key={content}
+        >
           {content.split(/\s+/).map((word, index) => {
             const wordClean = word.replace(/[.,-]+$/g, "");
             return (
@@ -232,11 +234,14 @@ const styles = StyleSheet.create({
     fontSize: 28,
     color: "white",
     fontWeight: "bold",
+    
   },
   heading2: {
     fontSize: 22,
     color: "white",
     fontWeight: "bold",
+    marginBottom: 24,
+    marginTop: 24,
   },
   modal: {
     position: "absolute",
@@ -246,7 +251,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#333",
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    padding: 8,
+    paddingHorizontal: 16,
+    paddingBottom: 20,
     bottom: 0,
   },
   modalHandle: {
