@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   View,
@@ -11,6 +11,9 @@ import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native"; // Added useNavigation import
 import { ThemedView } from "@/components/shared/ThemedView";
 import { NativeStackNavigationProp } from "react-native-screens/lib/typescript/native-stack/types";
+import { BACKURL } from "@/api/backurl";
+import { Lecture } from "@/interfaces/models/Lectures";
+import { getTitle } from "@/utils/getTitleFromMD";
 
 // Define RootStackParamList if not imported from elsewhere
 type RootStackParamList = {
@@ -30,6 +33,19 @@ const data = Array.from({ length: 12 }).map((_, index) => ({
 export default function HomeScreen() {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
+  // get las 4 pokemon from api
+  const [lectures, setLectures] = useState<Lecture[]>([]);
+
+  const getPokemon = async () => {
+    const response = await fetch(`${BACKURL}/api/lectures`);
+    const { data } = await response.json();
+    setLectures(data);
+  };
+
+  useEffect(() => {
+    getPokemon();
+  }, []);
 
   return (
     <ThemedView style={styles.container}>
@@ -53,21 +69,23 @@ export default function HomeScreen() {
       </View>
 
       <FlatList
-        data={data}
-        keyExtractor={(item) => item.id}
+        data={lectures}
+        keyExtractor={(item) => item._id}
         numColumns={2}
         columnWrapperStyle={styles.columnWrapper}
         contentContainerStyle={styles.cardList}
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.card}
-            onPress={() => navigation.navigate("Details", { id: item.id })} // Ensure navigation.navigate is available
+            onPress={() => navigation.navigate("Details", { id: item._id })} // Ensure navigation.navigate is available
           >
             <View style={styles.imageContainer}>
-              <Text style={styles.languageIcon}>{item.languageIcon}</Text>
+              <Text style={styles.languageIcon}>
+                {item.language == "en" ? "🇺🇸" : "🇺🇸"}
+              </Text>
             </View>
             <View style={styles.cardContent}>
-              <Text style={styles.cardTitle}>{item.title}</Text>
+              <Text style={styles.cardTitle}>{getTitle(item.content)}</Text>
               <View style={styles.infoContainer}>
                 <View style={styles.iconContainer}>
                   <Ionicons name="time-outline" size={16} color="#aaa" />
@@ -83,12 +101,10 @@ export default function HomeScreen() {
   );
 }
 
-// Style definitions...
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#1c1c1e", // Fondo oscuro
+    backgroundColor: "#1c1c1e", 
   },
   searchFilterContainer: {
     flexDirection: "row",
