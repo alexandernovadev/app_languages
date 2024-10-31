@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   StyleSheet,
   View,
@@ -6,35 +6,27 @@ import {
   TextInput,
   FlatList,
   TouchableOpacity,
+  RefreshControl, // Importa RefreshControl
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native"; // Added useNavigation import
+import { useNavigation } from "@react-navigation/native";
 import { ThemedView } from "@/components/shared/ThemedView";
 import { NativeStackNavigationProp } from "react-native-screens/lib/typescript/native-stack/types";
 import { BACKURL } from "@/api/backurl";
 import { Lecture } from "@/interfaces/models/Lectures";
 import { getTitle } from "@/utils/getTitleFromMD";
 
-// Define RootStackParamList if not imported from elsewhere
 type RootStackParamList = {
   Home: undefined;
   Details: { id: string };
 };
-
-// Simulamos datos para la lista de tarjetas
-const data = Array.from({ length: 12 }).map((_, index) => ({
-  id: index.toString(),
-  title: "The best practice with zustand and more",
-  time: "3 min",
-  level: "A1",
-  languageIcon: "🇺🇸",
-}));
 
 export default function HomeScreen() {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const [lectures, setLectures] = useState<Lecture[]>([]);
+  const [refreshing, setRefreshing] = useState(false); // Estado para controlar el "refresh"
 
   const getLectures = async () => {
     const response = await fetch(`${BACKURL}/api/lectures`);
@@ -44,6 +36,11 @@ export default function HomeScreen() {
 
   useEffect(() => {
     getLectures();
+  }, []);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    getLectures().then(() => setRefreshing(false)); // Recargar datos y terminar el "refresh"
   }, []);
 
   return (
@@ -73,10 +70,13 @@ export default function HomeScreen() {
         numColumns={2}
         columnWrapperStyle={styles.columnWrapper}
         contentContainerStyle={styles.cardList}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        } // Añade el RefreshControl aquí
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.card}
-            onPress={() => navigation.navigate("Details", { id: item._id })} // Ensure navigation.navigate is available
+            onPress={() => navigation.navigate("Details", { id: item._id })}
           >
             <View style={styles.imageContainer}>
               <Text style={styles.languageIcon}>
@@ -88,7 +88,7 @@ export default function HomeScreen() {
               <View style={styles.infoContainer}>
                 <View style={styles.iconContainer}>
                   <Ionicons name="time-outline" size={16} color="#aaa" />
-                  <Text style={styles.infoText}>{item.time}</Text>
+                  <Text style={styles.infoText}>{item.time} min</Text>
                 </View>
                 <Text style={styles.levelBadge}>{item.level}</Text>
               </View>
@@ -133,17 +133,17 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   cardList: {
-    paddingBottom: 16, // Espacio al final del scroll
+    paddingBottom: 16,
   },
   columnWrapper: {
-    justifyContent: "space-between", // Espaciado entre columnas
+    justifyContent: "space-between",
   },
   card: {
     backgroundColor: "#2c2c2e",
     borderRadius: 12,
     overflow: "hidden",
     marginBottom: 16,
-    width: "48%", // Cada tarjeta ocupará el 48% del ancho, con un margen entre ellas
+    width: "48%",
   },
   imageContainer: {
     height: 80,
