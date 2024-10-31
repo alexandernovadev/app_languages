@@ -23,6 +23,7 @@ import { markdownText } from "@/data/markdown";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Lecture } from "@/interfaces/models/Lectures";
 import { BACKURL } from "@/api/backurl";
+import { SidePanelModalWord } from "@/components/Pages/Details/SidePanelModalWord";
 
 const { height } = Dimensions.get("window");
 
@@ -179,14 +180,14 @@ export default function DetailsScreen() {
           <View {...panResponder.panHandlers} style={{ width: "100%" }}>
             <View style={styles.modalHandle} />
           </View>
-          <Text style={styles.modalTitle}>Definición de "{wordSelected}"</Text>
-          <Text style={styles.modalText}>
-            Aquí puedes mostrar la definición o información adicional sobre la
-            palabra seleccionada.
-          </Text>
-          <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
+          <SidePanelModalWord
+            isVisible={isModalVisible}
+            wordSelected={wordSelected}
+            onClose={() => {}}
+          />
+          {/* <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
             <Text style={styles.closeButtonText}>Cerrar</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </Animated.View>
       )}
     </View>
@@ -245,7 +246,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#333",
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    padding: 20,
+    padding: 8,
     bottom: 0,
   },
   modalHandle: {
