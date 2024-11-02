@@ -110,12 +110,17 @@ export default function DetailsScreen() {
       return (
         <Text key={content}>
           {content.split(/\s+/).map((word, index) => {
-            const wordClean = word.replace(/[.,-]+$/g, "");
+            const wordClean = word.replace(
+              /^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/gu,
+              ""
+            );
+
             return (
               <Pressable
                 key={`word_${index}`}
                 onPress={() => {
                   setWordSelected(wordClean);
+                  speakWord(wordClean);
                 }}
                 onLongPress={() => speakWord(wordClean)}
               >
@@ -173,33 +178,30 @@ export default function DetailsScreen() {
 
       {/* Modal deslizante */}
       {isModalVisible && (
-        <TouchableOpacity
-          style={styles.overlay}
-          onPress={closeModal}
-          activeOpacity={1}
-        >
-          <TouchableWithoutFeedback>
-            <Animated.View
-              style={[
-                styles.modal,
-                {
-                  transform: [{ translateY: slideAnim }],
-                },
-              ]}
-            >
-              <View
-                {...panResponder.panHandlers}
-                style={{ width: "100%", backgroundColor: "#2a2233" }}
-              >
-                <View style={styles.modalHandle} />
-              </View>
-              <SidePanelModalWord
-                isVisible={isModalVisible}
-                wordSelected={wordSelected}
-              />
-            </Animated.View>
+        <View style={styles.overlay}>
+          <TouchableWithoutFeedback onPress={closeModal}>
+            <View style={styles.overlayBackground} />
           </TouchableWithoutFeedback>
-        </TouchableOpacity>
+          <Animated.View
+            style={[
+              styles.modal,
+              {
+                transform: [{ translateY: slideAnim }],
+              },
+            ]}
+          >
+            <View
+              {...panResponder.panHandlers}
+              style={{ width: "100%", paddingVertical: 4 }}
+            >
+              <View style={styles.modalHandle} />
+            </View>
+            <SidePanelModalWord
+              isVisible={isModalVisible}
+              wordSelected={wordSelected}
+            />
+          </Animated.View>
+        </View>
       )}
     </View>
   );
@@ -268,8 +270,11 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: "rgba(0, 0, 0, 0.3)", // Fondo semitransparente
     justifyContent: "flex-end",
+  },
+  overlayBackground: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.3)",
   },
   modalHandle: {
     width: 60,

@@ -27,7 +27,9 @@ export const SidePanelModalWord: React.FC<SidePanelProps> = ({
 
   const getWord = async (word: string) => {
     try {
-      const response = await fetch(`${BACKURL}/api/words/word/${word.toLocaleLowerCase()}`);
+      const response = await fetch(
+        `${BACKURL}/api/words/word/${word.toLocaleLowerCase()}`
+      );
       const { data } = await response.json();
       setWordDb(data);
     } catch (error) {
@@ -67,7 +69,7 @@ export const SidePanelModalWord: React.FC<SidePanelProps> = ({
   };
 
   if (!isVisible) return null;
-  
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.wordRow}>
@@ -78,6 +80,7 @@ export const SidePanelModalWord: React.FC<SidePanelProps> = ({
           </TouchableOpacity>
         )}
       </View>
+        {wordDb?.IPA && <Text style={styles.ipaText}>{wordDb.IPA}</Text>}
 
       {wordDb ? (
         <View style={styles.content}>
@@ -88,8 +91,6 @@ export const SidePanelModalWord: React.FC<SidePanelProps> = ({
             <Text style={styles.typeText}>Type: {wordDb.type.join(", ")}</Text>
           )}
           <Text style={styles.definition}>{wordDb.definition}</Text>
-
-          {wordDb.IPA && <Text style={styles.ipaText}>IPA: {wordDb.IPA}</Text>}
 
           {wordDb.img && (
             <Image
@@ -173,7 +174,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   wordText: {
-    fontSize: 32,
+    fontSize: 40,
     color: "#2eb12e",
     fontWeight: "bold",
     textTransform: "capitalize",
@@ -190,8 +191,8 @@ const styles = StyleSheet.create({
   },
   typeText: {
     fontSize: 16,
-    color: "#2eb12e",
-    marginTop: 4,
+    color: "#44ae44",
+    marginTop: 2,
   },
   definition: {
     fontSize: 18,
@@ -199,9 +200,10 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   ipaText: {
-    fontSize: 16,
+    fontSize: 20,
     color: "#2eb12e",
-    marginTop: 10,
+    marginTop: 4,
+    fontWeight: "bold",
   },
   image: {
     width: "100%",
