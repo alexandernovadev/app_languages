@@ -103,7 +103,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#000000",
+    backgroundColor: "#141414",
   },
   searchFilterContainer: {
     flexDirection: "row",
@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    color: "#fff",
+    color: "#eeeee",
   },
   filterButton: {
     backgroundColor: "#333",

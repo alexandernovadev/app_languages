@@ -228,12 +228,12 @@ export default function DetailsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#000000",
+    backgroundColor: "#141414",
     paddingHorizontal: 12,
     paddingTop: 20,
   },
   text: {
-    color: "#fff",
+    color: "#eeeeee",
     fontSize: 18,
     marginBottom: 20,
     lineHeight: 32,
@@ -251,7 +251,7 @@ const styles = StyleSheet.create({
   wordSelected: {
     textTransform: "capitalize",
     fontWeight: "bold",
-    color: "#fff",
+    color: "#eeeeee",
     fontSize: 24,
   },
   markdownContainer: {
@@ -348,6 +348,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   word: {
-    color: "#fff",
+    color: "#eeeee",
   },
 });
