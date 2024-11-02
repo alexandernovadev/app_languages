@@ -16,6 +16,8 @@ import {
   PanResponder,
   Pressable,
   TouchableWithoutFeedback,
+  StyleProp,
+  TextStyle,
 } from "react-native";
 import * as Speech from "expo-speech";
 import Markdown from "react-native-markdown-display";
@@ -153,7 +155,18 @@ export default function DetailsScreen() {
         const content = node.children[0].children[0].content || "";
         return renderWords(content, styles.heading2);
       },
+      list_item: (node: any, children: any, parent: any, styles:any) => {
+        const isOrdered = parent.type === "ordered_list";
+        const index = parent.indexOf(node);
+        const bullet = isOrdered ? `${index + 1}.` : "•";
 
+        return (
+          <View key={node.key} style={styles.listItem}>
+          <Text style={styles.bullet}>{bullet}</Text>
+          <Text style={styles.listItemText}>{children}</Text>
+        </View>
+        );
+      },
     }),
     [renderWords]
   );
@@ -229,7 +242,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    width: "95%",
+    width: "100%",
     backgroundColor: "#333",
     borderRadius: 8,
     marginVertical: 8,
@@ -262,6 +275,24 @@ const styles = StyleSheet.create({
     fontSize: 22,
     color: "#b6b6b6ff",
     fontWeight: "semibold",
+  },
+  listItem: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    paddingHorizontal: 8,
+    marginVertical: 6,
+  },
+  bullet: {
+    color: "white",
+    fontSize: 42,
+    paddingRight: 8,
+    position: "relative",
+    bottom: 12,
+  },
+  listItemText: {
+    flex: 1,
+    color: "white",
+    fontSize: 18,
   },
   modal: {
     position: "absolute",
