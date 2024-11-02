@@ -80,15 +80,15 @@ export const SidePanelModalWord: React.FC<SidePanelProps> = ({
           </TouchableOpacity>
         )}
       </View>
-        {wordDb?.IPA && <Text style={styles.ipaText}>{wordDb.IPA}</Text>}
+      {wordDb?.IPA && <Text style={styles.ipaText}>{wordDb.IPA}</Text>}
 
       {wordDb ? (
         <View style={styles.content}>
           {wordDb.level && (
-            <Text style={styles.levelText}>Level: {wordDb.level}</Text>
+            <Text style={styles.levelText}>Nivel: {wordDb.level}</Text>
           )}
           {wordDb.type && (
-            <Text style={styles.typeText}>Type: {wordDb.type.join(", ")}</Text>
+            <Text style={styles.typeText}>Type {wordDb.type.join(", ")}</Text>
           )}
           <Text style={styles.definition}>{wordDb.definition}</Text>
 
@@ -102,10 +102,10 @@ export const SidePanelModalWord: React.FC<SidePanelProps> = ({
 
           {wordDb.examples && (
             <View style={styles.examplesContainer}>
-              <Text style={styles.examplesTitle}>Examples:</Text>
+              <Text style={styles.examplesTitle}>Examples</Text>
               {wordDb.examples.map((example, index) => (
                 <Text key={index} style={styles.exampleText}>
-                  - {example}
+                  • {example}
                 </Text>
               ))}
             </View>
@@ -113,10 +113,10 @@ export const SidePanelModalWord: React.FC<SidePanelProps> = ({
 
           {wordDb.codeSwitching && (
             <View style={styles.examplesContainer}>
-              <Text style={styles.examplesTitle}>Code-Switching Examples:</Text>
+              <Text style={styles.examplesTitle}>Code-Switching Examples</Text>
               {wordDb.codeSwitching.map((example, index) => (
                 <Text key={index} style={styles.exampleText}>
-                  - {example}
+                  • {example}
                 </Text>
               ))}
             </View>
@@ -124,13 +124,15 @@ export const SidePanelModalWord: React.FC<SidePanelProps> = ({
 
           {wordDb.spanish && (
             <View style={styles.examplesContainer}>
-              <Text style={styles.examplesTitle}>Spanish:</Text>
-              <Text style={styles.exampleText}>
-                <Text style={styles.boldText}>Word: </Text>
+              <Text style={styles.examplesTitle}>Spanish</Text>
+              <Text
+                style={[styles.exampleText, { textTransform: "capitalize" }]}
+              >
+                <Text style={styles.boldText}>Word </Text>
                 {wordDb.spanish.word}
               </Text>
               <Text style={styles.exampleText}>
-                <Text style={styles.boldText}>Definición: </Text>
+                <Text style={styles.boldText}>Definición </Text>
                 {wordDb.spanish.definition}
               </Text>
             </View>
@@ -187,10 +189,10 @@ const styles = StyleSheet.create({
   },
   levelText: {
     fontSize: 16,
-    color: "#2eb12e",
+    color: "#d0de11",
   },
   typeText: {
-    fontSize: 16,
+    fontSize: 14,
     color: "#44ae44",
     marginTop: 2,
   },
@@ -217,14 +219,16 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   examplesTitle: {
-    fontSize: 16,
-    color: "#2eb12e",
+    fontSize: 22,
+    color: "#2b952b",
     marginBottom: 6,
+    fontWeight: "bold",
   },
   exampleText: {
     fontSize: 16,
     color: "white",
     marginTop: 4,
+    lineHeight: 26,
   },
   boldText: {
     fontWeight: "bold",
