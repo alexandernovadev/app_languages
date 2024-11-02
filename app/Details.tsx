@@ -107,9 +107,7 @@ export default function DetailsScreen() {
   const renderWords = useCallback(
     (content: string, textStyles: any) => {
       return (
-        <Text
-          key={content}
-        >
+        <Text key={content}>
           {content.split(/\s+/).map((word, index) => {
             const wordClean = word.replace(/[.,-]+$/g, "");
             return (
@@ -159,11 +157,14 @@ export default function DetailsScreen() {
 
       {wordSelected.length > 0 && (
         <View style={styles.wordActionContainer}>
-          <TouchableOpacity onPress={() => speakWord(wordSelected)}>
+          <TouchableOpacity
+            style={{ padding: 24 }}
+            onPress={() => speakWord(wordSelected)}
+          >
             <Ionicons name="volume-high-outline" size={24} color="white" />
           </TouchableOpacity>
           <Text style={styles.wordSelected}>{wordSelected}</Text>
-          <TouchableOpacity onPress={openModal}>
+          <TouchableOpacity style={{ padding: 24 }} onPress={openModal}>
             <Ionicons name="book-outline" size={24} color="white" />
           </TouchableOpacity>
         </View>
@@ -213,11 +214,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    width: "90%",
-    padding: 16,
+    width: "95%",
     backgroundColor: "#333",
     borderRadius: 8,
-    marginVertical: 20,
+    marginVertical: 8,
     alignSelf: "center",
   },
   wordSelected: {
@@ -234,7 +234,6 @@ const styles = StyleSheet.create({
     fontSize: 28,
     color: "white",
     fontWeight: "bold",
-    
   },
   heading2: {
     fontSize: 22,
