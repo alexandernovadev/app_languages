@@ -108,7 +108,7 @@ export default function DetailsScreen() {
   const renderWords = useCallback(
     (content: string, textStyles: any) => {
       return (
-        <Text key={content}>
+        <Text key={content} style={styles.espaciado}>
           {content.split(/\s+/).map((word, index) => {
             const wordClean = word.replace(
               /^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/gu,
@@ -149,6 +149,11 @@ export default function DetailsScreen() {
         const content = node.children[0].children[0].content || "";
         return renderWords(content, styles.heading2);
       },
+      heading3: (node: any, children: any, parent: any, styles: any) => {
+        const content = node.children[0].children[0].content || "";
+        return renderWords(content, styles.heading2);
+      },
+
     }),
     [renderWords]
   );
@@ -211,14 +216,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#000000",
-    paddingHorizontal: 8,
+    paddingHorizontal: 12,
     paddingTop: 20,
   },
   text: {
     color: "#fff",
     fontSize: 18,
     marginBottom: 20,
-    lineHeight: 42,
+    lineHeight: 32,
   },
   wordActionContainer: {
     flexDirection: "row",
@@ -240,17 +245,23 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
   },
+  espaciado: {
+    marginBottom: 24,
+  },
   heading1: {
     fontSize: 28,
     color: "white",
     fontWeight: "bold",
   },
   heading2: {
-    fontSize: 22,
+    fontSize: 24,
     color: "white",
     fontWeight: "bold",
-    marginBottom: 24,
-    marginTop: 24,
+  },
+  heading3: {
+    fontSize: 22,
+    color: "#b6b6b6ff",
+    fontWeight: "semibold",
   },
   modal: {
     position: "absolute",
