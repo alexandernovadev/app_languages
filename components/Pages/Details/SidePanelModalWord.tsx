@@ -123,7 +123,7 @@ export const SidePanelModalWord: React.FC<SidePanelProps> = ({
           )}
 
           {wordDb.spanish && (
-            <View style={styles.examplesContainer}>
+            <View style={[styles.examplesContainer, { paddingBottom: 12 }]}>
               <Text style={styles.examplesTitle}>Spanish</Text>
               <Text
                 style={[styles.exampleText, { textTransform: "capitalize" }]}
@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
   container: {
     height: "100%",
     paddingRight: 10,
-    marginBottom: 24,
+    paddingBottom: 24,
   },
   wordRow: {
     flexDirection: "row",

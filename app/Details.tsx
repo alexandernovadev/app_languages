@@ -303,7 +303,6 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     paddingHorizontal: 16,
-    paddingBottom: 20,
     bottom: 0,
   },
   overlay: {
