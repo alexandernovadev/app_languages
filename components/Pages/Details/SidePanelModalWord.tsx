@@ -16,13 +16,11 @@ import { BACKURL } from "@/api/backurl";
 interface SidePanelProps {
   isVisible: boolean;
   wordSelected: string | null;
-  onClose: () => void;
 }
 
 export const SidePanelModalWord: React.FC<SidePanelProps> = ({
   isVisible,
   wordSelected,
-  onClose,
 }) => {
   const [wordDb, setWordDb] = useState<Word | undefined>(undefined);
   const [loadingGetWord, setLoadingGetWord] = useState(false);
@@ -68,6 +66,8 @@ export const SidePanelModalWord: React.FC<SidePanelProps> = ({
     }
   };
 
+  if (!isVisible) return null;
+  
   return (
     <ScrollView style={styles.container}>
       <View style={styles.wordRow}>

@@ -15,6 +15,7 @@ import {
   Dimensions,
   PanResponder,
   Pressable,
+  TouchableWithoutFeedback,
 } from "react-native";
 import * as Speech from "expo-speech";
 import Markdown from "react-native-markdown-display";
@@ -172,26 +173,33 @@ export default function DetailsScreen() {
 
       {/* Modal deslizante */}
       {isModalVisible && (
-        <Animated.View
-          style={[
-            styles.modal,
-            {
-              transform: [{ translateY: slideAnim }],
-            },
-          ]}
+        <TouchableOpacity
+          style={styles.overlay}
+          onPress={closeModal}
+          activeOpacity={1}
         >
-          <View {...panResponder.panHandlers} style={{ width: "100%" }}>
-            <View style={styles.modalHandle} />
-          </View>
-          <SidePanelModalWord
-            isVisible={isModalVisible}
-            wordSelected={wordSelected}
-            onClose={() => {}}
-          />
-          {/* <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
-            <Text style={styles.closeButtonText}>Cerrar</Text>
-          </TouchableOpacity> */}
-        </Animated.View>
+          <TouchableWithoutFeedback>
+            <Animated.View
+              style={[
+                styles.modal,
+                {
+                  transform: [{ translateY: slideAnim }],
+                },
+              ]}
+            >
+              <View
+                {...panResponder.panHandlers}
+                style={{ width: "100%", backgroundColor: "#2a2233" }}
+              >
+                <View style={styles.modalHandle} />
+              </View>
+              <SidePanelModalWord
+                isVisible={isModalVisible}
+                wordSelected={wordSelected}
+              />
+            </Animated.View>
+          </TouchableWithoutFeedback>
+        </TouchableOpacity>
       )}
     </View>
   );
@@ -253,6 +261,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingBottom: 20,
     bottom: 0,
+  },
+  overlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.3)", // Fondo semitransparente
+    justifyContent: "flex-end",
   },
   modalHandle: {
     width: 60,
