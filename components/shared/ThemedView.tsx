@@ -21,11 +21,11 @@ export function ThemedView({
     "background"
   );
 
-
   return (
     <SafeAreaView
       style={[
         { backgroundColor },
+        { flex: 1 },
         { paddingLeft: 16, paddingRight: 16 },
         style,
       ]}

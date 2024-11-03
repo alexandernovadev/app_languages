@@ -1,13 +1,12 @@
-import { StyleSheet, Image, Platform } from "react-native";
+import { StyleSheet, Text } from "react-native";
 import { ThemedText } from "@/components/shared/ThemedText";
 import { ThemedView } from "@/components/shared/ThemedView";
+import { ScrollView } from "react-native-gesture-handler";
 
 export default function SettingsScreen() {
   return (
     <ThemedView>
-      <ThemedText>
-        Nada le gusta más a un programador que un buen café. Pero, ¿qué
-      </ThemedText>
+          <ThemedText>V. Sunday 3 November 2024 4:30 PM</ThemedText>
     </ThemedView>
   );
 }
