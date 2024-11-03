@@ -122,6 +122,22 @@ export const SidePanelModalWord: React.FC<SidePanelProps> = ({
             </View>
           )}
 
+          {wordDb.sinonyms && (
+            <View style={styles.examplesContainer}>
+              <Text style={styles.examplesTitle}>Sinonyms</Text>
+              {wordDb.sinonyms.map((sinonym, index) => (
+                <Text
+                  key={index}
+                  style={[styles.exampleText, { textTransform: "capitalize" }]}
+                >
+                  <Text
+                  style={styles.boldText}
+                  >{index + 1}) </Text> {sinonym}
+                </Text>
+              ))}
+            </View>
+          )}
+
           {wordDb.spanish && (
             <View style={[styles.examplesContainer, { paddingBottom: 12 }]}>
               <Text style={styles.examplesTitle}>Spanish</Text>
