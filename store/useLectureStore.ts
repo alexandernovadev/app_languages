@@ -16,6 +16,7 @@ interface LectureState {
   page: number;
   total: number;
   fetchLectures: (page?: number, limit?: number) => Promise<void>;
+  getLectureById: (id: string) => Lecture | undefined;
 }
 
 export const useLectureStore = create<LectureState>((set, get) => ({
@@ -44,5 +45,10 @@ export const useLectureStore = create<LectureState>((set, get) => ({
     } catch (error) {
       set({ error: "Failed to fetch lectures", loading: false });
     }
+  },
+  getLectureById: (id:string) => {
+    console.log("Hp esta entraando ??");
+    
+    return get().lectures.find((lecture) => lecture._id === id);
   },
 }));

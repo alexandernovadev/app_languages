@@ -14,25 +14,24 @@ import {
   Animated,
   Dimensions,
   PanResponder,
+  ActivityIndicator,
   Pressable,
   TouchableWithoutFeedback,
-  StyleProp,
-  TextStyle,
 } from "react-native";
 import * as Speech from "expo-speech";
 import Markdown from "react-native-markdown-display";
 import { useLocalSearchParams } from "expo-router";
-import { markdownText } from "@/data/markdown";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Lecture } from "@/interfaces/models/Lectures";
-import { BACKURL } from "@/api/backurl";
 import { SidePanelModalWord } from "@/components/Pages/Details/SidePanelModalWord";
+import { useLectureStore } from "@/store/useLectureStore";
 
 const { height } = Dimensions.get("window");
 
 export default function DetailsScreen() {
   const { id } = useLocalSearchParams();
   const [lecture, setLecture] = useState<Lecture>();
+  const [isLoading, setIsLoading] = useState(true); // Agrega el estado isLoading
 
   const [wordSelected, setWordSelected] = useState("");
   const [isModalVisible, setModalVisible] = useState(false);
@@ -40,19 +39,15 @@ export default function DetailsScreen() {
   // Animación para el modal
   const slideAnim = useRef(new Animated.Value(0)).current;
 
-  const getLecture = async () => {
-    try {
-      const response = await fetch(`${BACKURL}/api/lectures/${id}`);
-      const data: Lecture = await response.json();
-      setLecture(data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  // Cargar la lectura desde el store
+  const getLectureById = useLectureStore((state) => state.getLectureById);
 
   useEffect(() => {
-    getLecture();
-  }, []);
+    setIsLoading(true); // Activar indicador de carga
+    const fetchedLecture = getLectureById(String(id));
+    setLecture(fetchedLecture);
+    setIsLoading(false); // Desactivar indicador de carga
+  }, [id]);
 
   // PanResponder para manejar el gesto de arrastre
   const panResponder = useRef(
@@ -61,7 +56,6 @@ export default function DetailsScreen() {
         return gestureState.dy > 10;
       },
       onPanResponderMove: (_, gestureState) => {
-        // Limitar el valor máximo y mínimo de desplazamiento
         const newValue = Math.max(0, gestureState.dy);
         slideAnim.setValue(newValue);
       },
@@ -78,7 +72,6 @@ export default function DetailsScreen() {
     })
   ).current;
 
-  // Función para abrir el modal
   const openModal = useCallback(() => {
     setModalVisible(true);
     Animated.timing(slideAnim, {
@@ -88,7 +81,6 @@ export default function DetailsScreen() {
     }).start();
   }, [slideAnim]);
 
-  // Función para cerrar el modal
   const closeModal = useCallback(() => {
     Animated.timing(slideAnim, {
       toValue: height,
@@ -97,7 +89,6 @@ export default function DetailsScreen() {
     }).start(() => setModalVisible(false));
   }, [slideAnim]);
 
-  // Función para manejar el clic de cada palabra
   const speakWord = useCallback((word: string) => {
     if (word) {
       Speech.speak(word, {
@@ -106,7 +97,6 @@ export default function DetailsScreen() {
     }
   }, []);
 
-  // Función para renderizar palabras con interactividad
   const renderWords = useCallback(
     (content: string, textStyles: any) => {
       return (
@@ -136,7 +126,6 @@ export default function DetailsScreen() {
     [speakWord]
   );
 
-  // Reglas personalizadas para renderizar Markdown
   const rules = useMemo(
     () => ({
       text: (node: any, children: any, parent: any, styles: any) => {
@@ -155,16 +144,16 @@ export default function DetailsScreen() {
         const content = node.children[0].children[0].content || "";
         return renderWords(content, styles.heading2);
       },
-      list_item: (node: any, children: any, parent: any, styles:any) => {
+      list_item: (node: any, children: any, parent: any, styles: any) => {
         const isOrdered = parent.type === "ordered_list";
         const index = parent.indexOf(node);
         const bullet = isOrdered ? `${index + 1}.` : "•";
 
         return (
           <View key={node.key} style={styles.listItem}>
-          <Text style={styles.bullet}>{bullet}</Text>
-          <Text style={styles.listItemText}>{children}</Text>
-        </View>
+            <Text style={styles.bullet}>{bullet}</Text>
+            <Text style={styles.listItemText}>{children}</Text>
+          </View>
         );
       },
     }),
@@ -173,11 +162,19 @@ export default function DetailsScreen() {
 
   return (
     <View style={styles.container}>
-      <ScrollView style={styles.markdownContainer}>
-        <Markdown style={styles} rules={rules}>
-          {lecture?.content || `# No lecture found with id ${id}`}
-        </Markdown>
-      </ScrollView>
+      {isLoading ? (
+        <ActivityIndicator
+          size="large"
+          color="#0a84ff"
+          style={styles.loadingIndicator}
+        />
+      ) : (
+        <ScrollView style={styles.markdownContainer}>
+          <Markdown style={styles} rules={rules}>
+            {lecture?.content || `# No lecture found with id ${id}`}
+          </Markdown>
+        </ScrollView>
+      )}
 
       {wordSelected.length > 0 && (
         <View style={styles.wordActionContainer}>
@@ -194,7 +191,6 @@ export default function DetailsScreen() {
         </View>
       )}
 
-      {/* Modal deslizante */}
       {isModalVisible && (
         <View style={styles.overlay}>
           <TouchableWithoutFeedback onPress={closeModal}>
@@ -231,6 +227,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#141414",
     paddingHorizontal: 12,
     paddingTop: 20,
+  },
+  loadingIndicator: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   text: {
     color: "#eeeeee",
@@ -324,30 +325,5 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     borderRadius: 3,
     marginVertical: 10,
-  },
-  modalTitle: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "white",
-    marginBottom: 12,
-  },
-  modalText: {
-    fontSize: 18,
-    color: "white",
-  },
-  closeButton: {
-    marginTop: 20,
-    alignSelf: "center",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    backgroundColor: "#555",
-    borderRadius: 8,
-  },
-  closeButtonText: {
-    color: "white",
-    fontSize: 16,
-  },
-  word: {
-    color: "#eeeee",
   },
 });
