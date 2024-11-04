@@ -3,12 +3,13 @@ export interface Lecture {
   time: number;
   level: string;
   typeWrite: string;
-  language: language;
+  language: string;
   img: string;
   content: string;
+  __v?: number;
   createdAt?: Date;
   updatedAt?: Date;
 }
 
-type level = "A1" | "A2" | "B1" | "B2" | "C1" | "C2";
-type language = "es" | "en" | "pt";
+// type level = "A1" | "A2" | "B1" | "B2" | "C1" | "C2";
+// type language = "es" | "en" | "pt";

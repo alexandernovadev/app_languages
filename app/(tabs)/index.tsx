@@ -6,14 +6,15 @@ import {
   TextInput,
   FlatList,
   TouchableOpacity,
-  RefreshControl, // Importa RefreshControl
+  RefreshControl,
+  Button,
+  ImageBackground,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { ThemedView } from "@/components/shared/ThemedView";
 import { NativeStackNavigationProp } from "react-native-screens/lib/typescript/native-stack/types";
-import { BACKURL } from "@/api/backurl";
-import { Lecture } from "@/interfaces/models/Lectures";
+import { useLectureStore } from "@/store/useLectureStore";
 import { getTitle } from "@/utils/getTitleFromMD";
 
 type RootStackParamList = {
@@ -24,24 +25,23 @@ type RootStackParamList = {
 export default function HomeScreen() {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-
-  const [lectures, setLectures] = useState<Lecture[]>([]);
-  const [refreshing, setRefreshing] = useState(false); // Estado para controlar el "refresh"
-
-  const getLectures = async () => {
-    const response = await fetch(`${BACKURL}/api/lectures`);
-    const { data } = await response.json();
-    setLectures(data);
-  };
+  const { lectures, loading, fetchLectures, page, total } = useLectureStore();
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
-    getLectures();
-  }, []);
+    fetchLectures(); // Load the initial set of lectures
+  }, [fetchLectures]);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    getLectures().then(() => setRefreshing(false)); // Recargar datos y terminar el "refresh"
-  }, []);
+    fetchLectures(1).finally(() => setRefreshing(false));
+  }, [fetchLectures]);
+
+  const handleLoadMore = () => {
+    if (lectures.length < total) {
+      fetchLectures(page + 1); // Load next page
+    }
+  };
 
   return (
     <ThemedView style={styles.container}>
@@ -71,18 +71,25 @@ export default function HomeScreen() {
         columnWrapperStyle={styles.columnWrapper}
         contentContainerStyle={styles.cardList}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        } // Añade el RefreshControl aquí
+          <RefreshControl
+            refreshing={refreshing || loading}
+            onRefresh={onRefresh}
+          />
+        }
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.card}
             onPress={() => navigation.navigate("Details", { id: item._id })}
           >
-            <View style={styles.imageContainer}>
+            <ImageBackground
+              source={{ uri: item.img }}
+              style={styles.imageContainer}
+              resizeMode="cover"
+            >
               <Text style={styles.languageIcon}>
                 {item.language == "en" ? "🇺🇸" : "🇺🇸"}
               </Text>
-            </View>
+            </ImageBackground>
             <View style={styles.cardContent}>
               <Text style={styles.cardTitle}>{getTitle(item.content)}</Text>
               <View style={styles.infoContainer}>
@@ -95,6 +102,24 @@ export default function HomeScreen() {
             </View>
           </TouchableOpacity>
         )}
+        ListFooterComponent={
+          lectures.length < total ? (
+            <TouchableOpacity
+              onPress={handleLoadMore}
+              disabled={loading}
+              style={{
+                marginVertical: 16,
+                backgroundColor: "#2d8f3d",
+                padding: 8,
+                borderRadius: 8,
+              }}
+            >
+              <Text style={{ color: "#eaeaea", textAlign: "center" }}>
+                {loading ? "Loading..." : "Load more"}
+              </Text>
+            </TouchableOpacity>
+          ) : null
+        }
       />
     </ThemedView>
   );
@@ -148,8 +173,9 @@ const styles = StyleSheet.create({
   imageContainer: {
     height: 80,
     backgroundColor: "#444",
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: "flex-start",
+    alignItems: "flex-start",
+    paddingLeft: 8,
   },
   languageIcon: {
     fontSize: 24,
