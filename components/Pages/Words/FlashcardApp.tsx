@@ -208,7 +208,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#0D1117",
   },
   cardContainer: {
     width: 320,
