@@ -12,6 +12,7 @@ import {
   Image,
 } from "react-native";
 import * as Speech from "expo-speech";
+import { BACKURL } from "@/api/backurl";
 
 const FlashcardApp = () => {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
@@ -19,7 +20,8 @@ const FlashcardApp = () => {
   const flipAnimation = useState(new Animated.Value(0))[0];
 
   // Zustand store to fetch words
-  const { words, loading, error, fetchRecentHardOrMediumWords } = useWordCardStore();
+  const { words, loading, error, fetchRecentHardOrMediumWords } =
+    useWordCardStore();
 
   // Fetch words data on component mount
   useEffect(() => {
@@ -69,7 +71,7 @@ const FlashcardApp = () => {
 
   const handlePrevious = () => {
     setFlipped(false);
-    flipAnimation.setValue(0); 
+    flipAnimation.setValue(0);
     setCurrentCardIndex((prevIndex) =>
       prevIndex === 0 ? words.length - 1 : prevIndex - 1
     );
@@ -77,7 +79,31 @@ const FlashcardApp = () => {
 
   const listenWord = () => {
     if (currentCard?.word) {
-      Speech.speak(currentCard.word, { language: "en-US" });
+      Speech.speak(currentCard?.word, { language: "en-US" });
+    }
+  };
+
+  const updateLevel = async (level: string) => {
+    try {
+      const response = await fetch(
+        `${BACKURL}/api/words/${currentCard?._id}/level`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ level }),
+        }
+      );
+      const data = await response.json();
+      if (data.success) {
+        console.log("Word level updated successfully");
+        fetchRecentHardOrMediumWords();
+      } else {
+        console.error("Error updating word level:", data.message);
+      }
+    } catch (error) {
+      console.error("Error updating word level:", error);
     }
   };
 
@@ -92,12 +118,12 @@ const FlashcardApp = () => {
           ]}
         >
           <View style={styles.wordRow}>
-            <Text style={styles.word}>{currentCard.word}</Text>
+            <Text style={styles.word}>{currentCard?.word}</Text>
             <TouchableOpacity onPress={listenWord} style={styles.speakerIcon}>
               <Ionicons name="volume-high-outline" size={32} color="#2eb12e" />
             </TouchableOpacity>
           </View>
-          <Text style={styles.pronunciation}>{currentCard.IPA}</Text>
+          <Text style={styles.pronunciation}>{currentCard?.IPA}</Text>
         </Animated.View>
 
         <Animated.View
@@ -108,26 +134,51 @@ const FlashcardApp = () => {
           ]}
         >
           <ScrollView contentContainerStyle={styles.scrollContent}>
-            <Text style={styles.definition}>{currentCard.definition}</Text>
-            {currentCard.type && (
-              <Text style={styles.typeText}>Type: {currentCard.type.join(", ")}</Text>
+            {currentCard?.type && (
+              <Text style={styles.typeText}>
+                | {currentCard?.type.join(", ")} |
+              </Text>
             )}
-            {currentCard.level && (
-              <Text style={styles.levelText}>Level: {currentCard.level}</Text>
+            {currentCard?.level && (
+              <Text style={styles.levelText}>Level: {currentCard?.level}</Text>
             )}
 
-            {currentCard.img ? (
+
+            <View style={[styles.wordRow, { marginTop: 12 }]}>
+              <Text style={styles.word}>{currentCard?.word}</Text>
+              <TouchableOpacity onPress={listenWord} style={styles.speakerIcon}>
+                <Ionicons
+                  name="volume-high-outline"
+                  size={32}
+                  color="#ffffff"
+                />
+              </TouchableOpacity>
+            </View>
+            <Text style={styles.definition}>{currentCard?.definition}</Text>
+
+            {currentCard?.spanish && (
+              <View style={styles.examplesContainer}>
+                <Text style={styles.exampleTextTitle}>
+                  {currentCard?.spanish.word}
+                </Text>
+                <Text style={styles.exampleText}>
+                  {currentCard?.spanish.definition}
+                </Text>
+              </View>
+            )}
+
+            {currentCard?.img ? (
               <Image
-                source={{ uri: currentCard.img }}
+                source={{ uri: currentCard?.img }}
                 style={styles.image}
                 resizeMode="cover"
               />
             ) : null}
 
-            {currentCard.examples && (
+            {currentCard?.examples && (
               <View style={styles.examplesContainer}>
                 <Text style={styles.examplesTitle}>Examples</Text>
-                {currentCard.examples.map((example, index) => (
+                {currentCard?.examples.map((example, index) => (
                   <Text key={index} style={styles.exampleText}>
                     • {example}
                   </Text>
@@ -135,10 +186,12 @@ const FlashcardApp = () => {
               </View>
             )}
 
-            {currentCard.codeSwitching && (
+            {currentCard?.codeSwitching && (
               <View style={styles.examplesContainer}>
-                <Text style={styles.examplesTitle}>Code-Switching Examples</Text>
-                {currentCard.codeSwitching.map((example, index) => (
+                <Text style={styles.examplesTitle}>
+                  Code-Switching Examples
+                </Text>
+                {currentCard?.codeSwitching.map((example, index) => (
                   <Text key={index} style={styles.exampleText}>
                     • {example}
                   </Text>
@@ -146,31 +199,37 @@ const FlashcardApp = () => {
               </View>
             )}
 
-            {currentCard.sinonyms && (
+            {currentCard?.sinonyms && (
               <View style={styles.examplesContainer}>
                 <Text style={styles.examplesTitle}>Synonyms</Text>
-                {currentCard.sinonyms.map((synonym, index) => (
+                {currentCard?.sinonyms.map((synonym, index) => (
                   <Text key={index} style={styles.exampleText}>
                     • {synonym}
                   </Text>
                 ))}
               </View>
             )}
-
-            {currentCard.spanish && (
-              <View style={styles.examplesContainer}>
-                <Text style={styles.examplesTitle}>Spanish Translation</Text>
-                <Text style={styles.exampleText}>
-                  <Text style={styles.boldText}>Word: </Text>
-                  {currentCard.spanish.word}
-                </Text>
-                <Text style={styles.exampleText}>
-                  <Text style={styles.boldText}>Definition: </Text>
-                  {currentCard.spanish.definition}
-                </Text>
-              </View>
-            )}
           </ScrollView>
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity
+              style={[styles.levelButton, styles.easyButton]}
+              onPress={() => updateLevel("easy")}
+            >
+              <Text style={styles.buttonText}>Easy</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.levelButton, styles.mediumButton]}
+              onPress={() => updateLevel("medium")}
+            >
+              <Text style={styles.buttonText}>Medium</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.levelButton, styles.hardButton]}
+              onPress={() => updateLevel("hard")}
+            >
+              <Text style={styles.buttonText}>Hard</Text>
+            </TouchableOpacity>
+          </View>
         </Animated.View>
       </View>
 
@@ -245,6 +304,7 @@ const styles = StyleSheet.create({
   word: {
     fontSize: 24,
     fontWeight: "bold",
+    textTransform: "capitalize",
     color: "#2eb12e",
   },
   speakerIcon: {
@@ -258,7 +318,6 @@ const styles = StyleSheet.create({
   definition: {
     fontSize: 18,
     color: "#C9D1D9",
-    textAlign: "center",
     marginTop: 10,
   },
   typeText: {
@@ -293,6 +352,14 @@ const styles = StyleSheet.create({
     color: "#8B949E",
     marginTop: 4,
     lineHeight: 24,
+  },
+  exampleTextTitle: {
+    fontSize: 22,
+    textTransform: "capitalize",
+    marginTop: 4,
+    lineHeight: 24,
+    color: "#2eb12e",
+    fontWeight: "bold",
   },
   boldText: {
     fontWeight: "bold",
@@ -336,6 +403,32 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: "#ff4c4c",
     marginTop: 20,
+  },
+
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    gap: 10,
+    marginTop: 20,
+  },
+  levelButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+  },
+  easyButton: {
+    backgroundColor: "#248924",
+  },
+  mediumButton: {
+    backgroundColor: "#0664c8",
+  },
+  hardButton: {
+    backgroundColor: "#c73737",
+  },
+  buttonText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
 
