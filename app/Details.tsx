@@ -13,6 +13,7 @@ import { Lecture } from "@/interfaces/models/Lectures";
 import { useLectureStore } from "@/store/useLectureStore";
 import { ModalDragger } from "@/components/shared/ModalDragger";
 import { MarkDownRender } from "@/components/Pages/Details/MarkDownRender";
+import { Loading } from "@/components/shared/Loading";
 
 export default function DetailsScreen() {
   const [lecture, setLecture] = useState<Lecture>();
@@ -41,11 +42,7 @@ export default function DetailsScreen() {
   return (
     <View style={styles.container}>
       {isLoading ? (
-        <ActivityIndicator
-          size="large"
-          color="#1bcd2a"
-          style={styles.loadingIndicator}
-        />
+        <Loading text={"Loading Lecture"} />
       ) : (
         <MarkDownRender
           lecture={lecture}
@@ -89,11 +86,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#000000",
     paddingHorizontal: 12,
     paddingTop: 20,
-  },
-  loadingIndicator: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
   },
   wordActionContainer: {
     flexDirection: "row",

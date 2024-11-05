@@ -6,7 +6,8 @@ import { ScrollView } from "react-native-gesture-handler";
 export default function SettingsScreen() {
   return (
     <ThemedView>
-          <ThemedText>V. Sunday 3 November 2024 4:30 PM</ThemedText>
+      <ThemedText>Languages : EN (comming soon PT )</ThemedText>
+      <ThemedText>V. Tuesday 5 November 2024 6:10 PM</ThemedText>
     </ThemedView>
   );
 }

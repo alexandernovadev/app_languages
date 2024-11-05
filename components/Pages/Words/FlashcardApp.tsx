@@ -10,9 +10,11 @@ import {
   Easing,
   ScrollView,
   Image,
+  ActivityIndicator,
 } from "react-native";
 import * as Speech from "expo-speech";
 import { BACKURL } from "@/api/backurl";
+import { Loading } from "@/components/shared/Loading";
 
 const FlashcardApp = () => {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
@@ -28,8 +30,8 @@ const FlashcardApp = () => {
     fetchRecentHardOrMediumWords();
   }, []);
 
-  // Show loading or error messages
-  if (loading) return <Text style={styles.loadingText}>Loading...</Text>;
+  if (loading) return <Loading text={"Loading Cards"}/>;
+
   if (error) return <Text style={styles.errorText}>{error}</Text>;
 
   const currentCard = words[currentCardIndex];
@@ -157,7 +159,7 @@ const FlashcardApp = () => {
           <ScrollView contentContainerStyle={styles.scrollContent}>
             {currentCard?.type && (
               <Text style={styles.typeText}>
-                 {currentCard?.type.join(", ")}
+                {currentCard?.type.join(", ")}
               </Text>
             )}
             {currentCard?.level && (
@@ -165,12 +167,13 @@ const FlashcardApp = () => {
                 style={[
                   styles.levelText,
                   { textTransform: "capitalize", fontWeight: "bold" },
-                  { color: getLevelColor(currentCard.level),
+                  {
+                    color: getLevelColor(currentCard.level),
                     borderColor: getLevelColor(currentCard.level),
-                   },
+                  },
                 ]}
               >
-               {currentCard.level}
+                {currentCard.level}
               </Text>
             )}
 
@@ -435,11 +438,6 @@ const styles = StyleSheet.create({
   cardIndexText: {
     fontSize: 16,
     color: "#C9D1D9",
-  },
-  loadingText: {
-    fontSize: 18,
-    color: "#2eb12e",
-    marginTop: 20,
   },
   errorText: {
     fontSize: 18,
