@@ -107,6 +107,20 @@ const FlashcardApp = () => {
     }
   };
 
+  // Helper function to determine level color
+  const getLevelColor = (level: string) => {
+    switch (level) {
+      case "easy":
+        return "#248924"; // green for easy
+      case "medium":
+        return "#0664c8"; // blue for medium
+      case "hard":
+        return "#c73737"; // red for hard
+      default:
+        return "#d0de11"; // default color if level is undefined
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.cardContainer}>
@@ -124,6 +138,13 @@ const FlashcardApp = () => {
             </TouchableOpacity>
           </View>
           <Text style={styles.pronunciation}>{currentCard?.IPA}</Text>
+          {currentCard?.img ? (
+            <Image
+              source={{ uri: currentCard?.img }}
+              style={styles.image}
+              resizeMode="contain"
+            />
+          ) : null}
         </Animated.View>
 
         <Animated.View
@@ -136,13 +157,22 @@ const FlashcardApp = () => {
           <ScrollView contentContainerStyle={styles.scrollContent}>
             {currentCard?.type && (
               <Text style={styles.typeText}>
-                | {currentCard?.type.join(", ")} |
+                 {currentCard?.type.join(", ")}
               </Text>
             )}
             {currentCard?.level && (
-              <Text style={styles.levelText}>Level: {currentCard?.level}</Text>
+              <Text
+                style={[
+                  styles.levelText,
+                  { textTransform: "capitalize", fontWeight: "bold" },
+                  { color: getLevelColor(currentCard.level),
+                    borderColor: getLevelColor(currentCard.level),
+                   },
+                ]}
+              >
+               {currentCard.level}
+              </Text>
             )}
-
 
             <View style={[styles.wordRow, { marginTop: 12 }]}>
               <Text style={styles.word}>{currentCard?.word}</Text>
@@ -171,7 +201,7 @@ const FlashcardApp = () => {
               <Image
                 source={{ uri: currentCard?.img }}
                 style={styles.image}
-                resizeMode="cover"
+                resizeMode="contain"
               />
             ) : null}
 
@@ -302,7 +332,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   word: {
-    fontSize: 24,
+    fontSize: 32,
     fontWeight: "bold",
     textTransform: "capitalize",
     color: "#2eb12e",
@@ -322,13 +352,25 @@ const styles = StyleSheet.create({
   },
   typeText: {
     fontSize: 16,
-    color: "#44ae44",
+    color: "#5944ae",
     marginTop: 5,
+    borderRadius: 12,
+    borderWidth: 1,
+    paddingHorizontal: 10,
+    borderColor: "#5944ae",
+    maxWidth: 90,
+    textAlign: "center",
+    textTransform: "capitalize",
   },
   levelText: {
-    fontSize: 16,
+    fontSize: 18,
     color: "#d0de11",
-    marginTop: 5,
+    paddingHorizontal: 10, // Horizontal padding for pill shape
+    borderRadius: 12,
+    borderWidth: 1,
+    maxWidth: 90,
+    textAlign: "center",
+    marginVertical: 10,
   },
   image: {
     width: "100%",
@@ -336,7 +378,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginTop: 10,
     borderWidth: 1,
-    borderColor: "#2eb12e",
+    borderColor: "#f9f9f9",
   },
   examplesContainer: {
     marginTop: 10,
