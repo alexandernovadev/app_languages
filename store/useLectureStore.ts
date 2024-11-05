@@ -47,8 +47,6 @@ export const useLectureStore = create<LectureState>((set, get) => ({
     }
   },
   getLectureById: (id:string) => {
-    console.log("Hp esta entraando ??");
-    
     return get().lectures.find((lecture) => lecture._id === id);
   },
 }));

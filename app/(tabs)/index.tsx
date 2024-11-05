@@ -16,11 +16,8 @@ import { ThemedView } from "@/components/shared/ThemedView";
 import { NativeStackNavigationProp } from "react-native-screens/lib/typescript/native-stack/types";
 import { useLectureStore } from "@/store/useLectureStore";
 import { getTitle } from "@/utils/getTitleFromMD";
+import { RootStackParamList } from "../_layout";
 
-type RootStackParamList = {
-  Home: undefined;
-  Details: { id: string };
-};
 
 export default function HomeScreen() {
   const navigation =

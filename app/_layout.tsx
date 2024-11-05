@@ -16,6 +16,13 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
+export type RootStackParamList = {
+  Home: undefined;
+  Details: { id: string };
+  NoTabsScreen: undefined;
+};
+
+
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({

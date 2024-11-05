@@ -1,16 +1,16 @@
 {
   "expo": {
-    "name": "app_llm_languages",
-    "slug": "app_llm_languages",
-    "version": "1.0.0",
+    "name": "Languages AI",
+    "slug": "languages_ai",
+    "version": "1.4.1",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/loogo.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./assets/images/splash.png",
+      "image": "./assets/images/loogo.png",
       "resizeMode": "contain",
-      "backgroundColor": "#eeeeee"
+      "backgroundColor": "#0000"
     },
     "ios": {
       "supportsTablet": true,
@@ -21,7 +21,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#eeeeee"
+        "backgroundColor": "#0000"
       },
       "statusBar": {
         "hidden": true,
