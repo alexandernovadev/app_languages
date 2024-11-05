@@ -1,6 +1,13 @@
-import { useCallback, useMemo } from "react";
-import { Text, View, Pressable, ScrollView, StyleSheet, Image } from "react-native";
-import Markdown from "react-native-markdown-display";
+import { ReactNode, useCallback, useMemo } from "react";
+import {
+  Text,
+  View,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Image,
+} from "react-native";
+import Markdown, { ASTNode } from "react-native-markdown-display";
 import * as Speech from "expo-speech";
 import { Lecture } from "@/interfaces/models/Lectures";
 import { FontAwesome } from "@expo/vector-icons";
@@ -71,15 +78,34 @@ export const MarkDownRender = ({
         const content = node.children[0].children[0].content || "";
         return renderWords(content, styles.heading2);
       },
-      list_item: (node: any, children: any, parent: any, styles: any) => {
-        const isOrdered = parent.type === "ordered_list";
-        const index = parent.indexOf(node);
+      strong: (
+        node: ASTNode,
+        children: ReactNode[],
+        parentNodes: ASTNode[],
+        styles: any
+      ) => (
+        <Text key={node.key} style={styles.strong}>
+          {children}
+        </Text>
+      ),
+      list_item: (
+        node: ASTNode,
+        children: ReactNode[],
+        parentNodes: any[],
+        styles: any
+      ) => {
+        const isOrdered = parentNodes[0].type === "ordered_list";
+        const index = parentNodes[0].children.indexOf(node);
         const bullet = isOrdered ? `${index + 1}.` : "•";
 
         return (
           <View key={node.key} style={styles.listItem}>
             <Text style={styles.bullet}>{bullet}</Text>
-            <Text style={styles.listItemText}>{children}</Text>
+            <View style={[styles.listItemText]}>
+              {children.map((child, i) => (
+                <Text key={`${node.key}_${i}`}>{child}</Text>
+              ))}
+            </View>
           </View>
         );
       },
@@ -96,8 +122,9 @@ export const MarkDownRender = ({
         </View>
         <View style={[styles.badgeContainer, styles.levelBadge]}>
           <Text style={styles.badgeText}>
-            <Text style={{fontWeight:900}}>Level </Text>
-             {lecture?.level}</Text>
+            <Text style={{ fontWeight: 900 }}>Level </Text>
+            {lecture?.level}
+          </Text>
         </View>
         <View style={[styles.badgeContainer, styles.languageBadge]}>
           <Text style={styles.badgeText}>🇺🇸</Text>
@@ -126,6 +153,7 @@ const styles = StyleSheet.create({
   },
   espaciado: {
     marginBottom: 24,
+    marginTop: 24,
   },
   infoContainer: {
     flexDirection: "row",
