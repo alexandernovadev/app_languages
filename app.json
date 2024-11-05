@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Languages AI",
-    "slug": "languages_ai",
+    "slug": "app_llm_languages",
     "version": "1.4.1",
     "orientation": "portrait",
     "icon": "./assets/images/loogo.png",
@@ -20,7 +20,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/loogo.png",
         "backgroundColor": "#0000"
       },
       "statusBar": {

@@ -4,20 +4,13 @@ import { ThemedView } from "@/components/shared/ThemedView";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "react-native-screens/lib/typescript/native-stack/types";
 import { RootStackParamList } from "../_layout";
+import FlashcardApp from "@/components/Pages/Words/FlashcardApp";
 
 export default function WordsScreen() {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
-  return (
-    <ThemedView>
-      <ThemedText>Test</ThemedText>
-      <Button
-        title="Ir a Pantalla Sin Tabs"
-        onPress={() => navigation.navigate("NoTabsScreen")}
-      />
-    </ThemedView>
-  );
+  return <FlashcardApp />;
 }
 
 const styles = StyleSheet.create({
