@@ -67,7 +67,7 @@ const FlashcardApp = () => {
 
   const handlePrevious = () => {
     setFlipped(false);
-    flipAnimation.setValue(0); // Reset to front
+    flipAnimation.setValue(0); 
     setCurrentCardIndex((prevIndex) =>
       prevIndex === 0 ? words.length - 1 : prevIndex - 1
     );
