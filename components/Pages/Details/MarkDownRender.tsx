@@ -1,10 +1,12 @@
 import { useCallback, useMemo } from "react";
-import { Text, View, Pressable, ScrollView, StyleSheet } from "react-native";
+import { Text, View, Pressable, ScrollView, StyleSheet, Image } from "react-native";
 import Markdown from "react-native-markdown-display";
 import * as Speech from "expo-speech";
+import { Lecture } from "@/interfaces/models/Lectures";
+import { FontAwesome } from "@expo/vector-icons";
 
 interface PropsMarkDownRender {
-  lecture: any;
+  lecture: Lecture | undefined;
   id: string;
   setWordSelected: (word: string) => void;
 }
@@ -87,26 +89,83 @@ export const MarkDownRender = ({
 
   return (
     <ScrollView style={styles.markdownContainer}>
+      <View style={styles.infoContainer}>
+        <View style={styles.badgeContainer}>
+          <FontAwesome name="clock-o" size={16} color="#4CAF50" />
+          <Text style={styles.badgeText}>{lecture?.time} min</Text>
+        </View>
+        <View style={[styles.badgeContainer, styles.levelBadge]}>
+          <Text style={styles.badgeText}>
+            <Text style={{fontWeight:900}}>Level </Text>
+             {lecture?.level}</Text>
+        </View>
+        <View style={[styles.badgeContainer, styles.languageBadge]}>
+          <Text style={styles.badgeText}>🇺🇸</Text>
+        </View>
+      </View>
+
+      {lecture?.img && (
+        <Image
+          source={{ uri: lecture.img }}
+          style={styles.image}
+          resizeMode="cover"
+        />
+      )}
+
       <Markdown style={styles} rules={rules}>
         {lecture?.content || `# No lecture found with id ${id}`}
       </Markdown>
     </ScrollView>
   );
 };
-const styles = StyleSheet.create({
-  text: {
-    color: "#eeeeee",
-    fontSize: 18,
-    marginBottom: 20,
-    lineHeight: 32,
-  },
 
+const styles = StyleSheet.create({
   markdownContainer: {
     flex: 1,
     width: "100%",
   },
   espaciado: {
     marginBottom: 24,
+  },
+  infoContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 20,
+    paddingHorizontal: 8,
+  },
+  badgeContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#333",
+    borderRadius: 12,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    marginRight: 8,
+    borderColor: "#4CAF50",
+    borderWidth: 1,
+  },
+  badgeText: {
+    color: "#eeeeee",
+    fontSize: 16,
+    marginLeft: 4,
+  },
+  levelBadge: {
+    borderColor: "#2196F3",
+  },
+  languageBadge: {
+    borderColor: "#333",
+  },
+  image: {
+    width: "100%",
+    height: 200,
+    borderRadius: 8,
+    marginBottom: 16,
+  },
+  text: {
+    color: "#eeeeee",
+    fontSize: 18,
+    lineHeight: 32,
   },
   heading1: {
     fontSize: 28,
