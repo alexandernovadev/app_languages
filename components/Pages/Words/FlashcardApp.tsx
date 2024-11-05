@@ -9,7 +9,9 @@ import {
   Animated,
   Easing,
   ScrollView,
+  Image,
 } from "react-native";
+import * as Speech from "expo-speech";
 
 const FlashcardApp = () => {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
@@ -25,8 +27,8 @@ const FlashcardApp = () => {
   }, []);
 
   // Show loading or error messages
-  if (loading) return <Text>Loading...</Text>;
-  if (error) return <Text>{error}</Text>;
+  if (loading) return <Text style={styles.loadingText}>Loading...</Text>;
+  if (error) return <Text style={styles.errorText}>{error}</Text>;
 
   const currentCard = words[currentCardIndex];
 
@@ -73,6 +75,12 @@ const FlashcardApp = () => {
     );
   };
 
+  const listenWord = () => {
+    if (currentCard?.word) {
+      Speech.speak(currentCard.word, { language: "en-US" });
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.cardContainer}>
@@ -83,7 +91,12 @@ const FlashcardApp = () => {
             !flipped && styles.cardFront,
           ]}
         >
-          <Text style={styles.word}>{currentCard.word}</Text>
+          <View style={styles.wordRow}>
+            <Text style={styles.word}>{currentCard.word}</Text>
+            <TouchableOpacity onPress={listenWord} style={styles.speakerIcon}>
+              <Ionicons name="volume-high-outline" size={32} color="#2eb12e" />
+            </TouchableOpacity>
+          </View>
           <Text style={styles.pronunciation}>{currentCard.IPA}</Text>
         </Animated.View>
 
@@ -96,12 +109,67 @@ const FlashcardApp = () => {
         >
           <ScrollView contentContainerStyle={styles.scrollContent}>
             <Text style={styles.definition}>{currentCard.definition}</Text>
-            <Text style={styles.examplesTitle}>Examples:</Text>
-            {currentCard.examples.map((example, index) => (
-              <Text key={index} style={styles.example}>
-                • {example}
-              </Text>
-            ))}
+            {currentCard.type && (
+              <Text style={styles.typeText}>Type: {currentCard.type.join(", ")}</Text>
+            )}
+            {currentCard.level && (
+              <Text style={styles.levelText}>Level: {currentCard.level}</Text>
+            )}
+
+            {currentCard.img ? (
+              <Image
+                source={{ uri: currentCard.img }}
+                style={styles.image}
+                resizeMode="cover"
+              />
+            ) : null}
+
+            {currentCard.examples && (
+              <View style={styles.examplesContainer}>
+                <Text style={styles.examplesTitle}>Examples</Text>
+                {currentCard.examples.map((example, index) => (
+                  <Text key={index} style={styles.exampleText}>
+                    • {example}
+                  </Text>
+                ))}
+              </View>
+            )}
+
+            {currentCard.codeSwitching && (
+              <View style={styles.examplesContainer}>
+                <Text style={styles.examplesTitle}>Code-Switching Examples</Text>
+                {currentCard.codeSwitching.map((example, index) => (
+                  <Text key={index} style={styles.exampleText}>
+                    • {example}
+                  </Text>
+                ))}
+              </View>
+            )}
+
+            {currentCard.sinonyms && (
+              <View style={styles.examplesContainer}>
+                <Text style={styles.examplesTitle}>Synonyms</Text>
+                {currentCard.sinonyms.map((synonym, index) => (
+                  <Text key={index} style={styles.exampleText}>
+                    • {synonym}
+                  </Text>
+                ))}
+              </View>
+            )}
+
+            {currentCard.spanish && (
+              <View style={styles.examplesContainer}>
+                <Text style={styles.examplesTitle}>Spanish Translation</Text>
+                <Text style={styles.exampleText}>
+                  <Text style={styles.boldText}>Word: </Text>
+                  {currentCard.spanish.word}
+                </Text>
+                <Text style={styles.exampleText}>
+                  <Text style={styles.boldText}>Definition: </Text>
+                  {currentCard.spanish.definition}
+                </Text>
+              </View>
+            )}
           </ScrollView>
         </Animated.View>
       </View>
@@ -140,6 +208,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
+    backgroundColor: "#0D1117",
   },
   cardContainer: {
     width: 320,
@@ -157,7 +226,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#1f2023a8",
     borderWidth: 1,
-    borderColor: "#2b6412",
+    borderColor: "#2eb12e",
   },
   cardFront: {
     zIndex: 1,
@@ -169,10 +238,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingBottom: 20,
   },
+  wordRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
   word: {
     fontSize: 24,
     fontWeight: "bold",
-    color: "#C9D1D9",
+    color: "#2eb12e",
+  },
+  speakerIcon: {
+    marginLeft: 10,
   },
   pronunciation: {
     fontSize: 18,
@@ -180,21 +257,47 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   definition: {
-    fontSize: 16,
+    fontSize: 18,
     color: "#C9D1D9",
     textAlign: "center",
+    marginTop: 10,
+  },
+  typeText: {
+    fontSize: 16,
+    color: "#44ae44",
+    marginTop: 5,
+  },
+  levelText: {
+    fontSize: 16,
+    color: "#d0de11",
+    marginTop: 5,
+  },
+  image: {
+    width: "100%",
+    height: 150,
+    borderRadius: 10,
+    marginTop: 10,
+    borderWidth: 1,
+    borderColor: "#2eb12e",
+  },
+  examplesContainer: {
+    marginTop: 10,
   },
   examplesTitle: {
-    fontSize: 16,
+    fontSize: 20,
+    color: "#2eb12e",
     fontWeight: "bold",
-    color: "#C9D1D9",
-    marginTop: 20,
+    marginBottom: 6,
   },
-  example: {
-    fontSize: 14,
+  exampleText: {
+    fontSize: 16,
     color: "#8B949E",
-    marginTop: 5,
-    textAlign: "left",
+    marginTop: 4,
+    lineHeight: 24,
+  },
+  boldText: {
+    fontWeight: "bold",
+    color: "#2eb12e",
   },
   flipButton: {
     marginTop: 20,
@@ -216,23 +319,24 @@ const styles = StyleSheet.create({
   navigationContainer: {
     flexDirection: "row",
     alignItems: "center",
-    display: "flex",
     justifyContent: "space-between",
     alignSelf: "center",
     width: "76%",
     marginTop: 20,
   },
-  navButton: {
-    fontSize: 16,
-    color: "#238636",
-    marginHorizontal: 20,
-  },
-  disabledNav: {
-    color: "#8B949E",
-  },
   cardIndexText: {
     fontSize: 16,
     color: "#C9D1D9",
+  },
+  loadingText: {
+    fontSize: 18,
+    color: "#2eb12e",
+    marginTop: 20,
+  },
+  errorText: {
+    fontSize: 18,
+    color: "#ff4c4c",
+    marginTop: 20,
   },
 });
 
