@@ -1,5 +1,6 @@
+import { useWordCardStore } from "@/store/useWordCardStore";
 import { Ionicons } from "@expo/vector-icons";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -10,61 +11,24 @@ import {
   ScrollView,
 } from "react-native";
 
-const mockData = [
-  {
-    id: 1,
-    word: "Infrastructure",
-    pronunciation: "/ˈɪnfrəˌstrʌktʃər/",
-    definition:
-      "The basic physical and organizational structures and facilities needed for the operation of a society or enterprise.",
-    examples: [
-      "The government invested heavily in the country's infrastructure to support economic growth.",
-      "Infrastructure projects like roads and bridges are essential for a growing city.",
-      "The company expanded its infrastructure to improve its production capabilities.",
-      "Good digital infrastructure is key to the success of online businesses.",
-      "Good digital infrastructure is key to the success of online businesses.",
-      "Good digital infrastructure is key to the success of online businesses.",
-      "Good digital infrastructure is key to the success of online businesses.",
-      "Good digital infrastructure is key to the success of online businesses.",
-      "Good digital infrastructure is key to the success of online businesses.",
-      "Good digital infrastructure is key to the success of online businesses.",
-      "Good digital infrastructure is key to the success of online businesses.",
-      "Good digital infrastructure is key to the success of online businesses.",
-      "After the natural disaster, rebuilding infrastructure became the government's top priority.",
-    ],
-  },
-  {
-    id: 2,
-    word: "segunda",
-    pronunciation: "/ˈɪnfrəˌstrʌktʃər/",
-    definition:
-      "Another definition representing the second card content in the mock data.",
-    examples: [
-      "Example 1 for segunda.",
-      "Example 2 for segunda.",
-      "Example 3 for segunda.",
-    ],
-  },
-  {
-    id: 3,
-    word: "tercera",
-    pronunciation: "/ˈɪnfrəˌstrʌktʃər/",
-    definition:
-      "Additional definition text for the third card in the mock data set.",
-    examples: [
-      "Example 1 for tercera.",
-      "Example 2 for tercera.",
-      "Example 3 for tercera.",
-    ],
-  },
-];
-
 const FlashcardApp = () => {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
   const flipAnimation = useState(new Animated.Value(0))[0];
 
-  const currentCard = mockData[currentCardIndex];
+  // Zustand store to fetch words
+  const { words, loading, error, fetchRecentHardOrMediumWords } = useWordCardStore();
+
+  // Fetch words data on component mount
+  useEffect(() => {
+    fetchRecentHardOrMediumWords();
+  }, []);
+
+  // Show loading or error messages
+  if (loading) return <Text>Loading...</Text>;
+  if (error) return <Text>{error}</Text>;
+
+  const currentCard = words[currentCardIndex];
 
   const flipCard = () => {
     if (flipped) {
@@ -98,14 +62,14 @@ const FlashcardApp = () => {
   const handleNext = () => {
     setFlipped(false);
     flipAnimation.setValue(0); // Reset to front
-    setCurrentCardIndex((prevIndex) => (prevIndex + 1) % mockData.length);
+    setCurrentCardIndex((prevIndex) => (prevIndex + 1) % words.length);
   };
 
   const handlePrevious = () => {
     setFlipped(false);
     flipAnimation.setValue(0); // Reset to front
     setCurrentCardIndex((prevIndex) =>
-      prevIndex === 0 ? mockData.length - 1 : prevIndex - 1
+      prevIndex === 0 ? words.length - 1 : prevIndex - 1
     );
   };
 
@@ -120,7 +84,7 @@ const FlashcardApp = () => {
           ]}
         >
           <Text style={styles.word}>{currentCard.word}</Text>
-          <Text style={styles.pronunciation}>{currentCard.pronunciation}</Text>
+          <Text style={styles.pronunciation}>{currentCard.IPA}</Text>
         </Animated.View>
 
         <Animated.View
@@ -150,7 +114,7 @@ const FlashcardApp = () => {
           <Ionicons name="chevron-back" size={32} color="white" />
         </TouchableOpacity>
         <Text style={styles.cardIndexText}>
-          Card {currentCardIndex + 1} of {mockData.length}
+          Card {currentCardIndex + 1} of {words.length}
         </Text>
         <TouchableOpacity onPress={handleNext}>
           <Ionicons name="chevron-forward" size={32} color="white" />
