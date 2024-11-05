@@ -1,32 +1,18 @@
-import React, {
-  useRef,
-  useState,
-  useMemo,
-  useCallback,
-  useEffect,
-} from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import {
   View,
   StyleSheet,
-  ScrollView,
   Text,
   TouchableOpacity,
-  Animated,
-  Dimensions,
-  PanResponder,
   ActivityIndicator,
-  Pressable,
-  TouchableWithoutFeedback,
 } from "react-native";
 import * as Speech from "expo-speech";
-import Markdown from "react-native-markdown-display";
 import { useLocalSearchParams } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Lecture } from "@/interfaces/models/Lectures";
-import { SidePanelModalWord } from "@/components/Pages/Details/SidePanelModalWord";
 import { useLectureStore } from "@/store/useLectureStore";
-
-const { height } = Dimensions.get("window");
+import { ModalDragger } from "@/components/shared/ModalDragger";
+import { MarkDownRender } from "@/components/Pages/Details/MarkDownRender";
 
 export default function DetailsScreen() {
   const { id } = useLocalSearchParams();
@@ -35,9 +21,6 @@ export default function DetailsScreen() {
 
   const [wordSelected, setWordSelected] = useState("");
   const [isModalVisible, setModalVisible] = useState(false);
-
-  // Animación para el modal
-  const slideAnim = useRef(new Animated.Value(0)).current;
 
   // Cargar la lectura desde el store
   const getLectureById = useLectureStore((state) => state.getLectureById);
@@ -49,46 +32,6 @@ export default function DetailsScreen() {
     setIsLoading(false); // Desactivar indicador de carga
   }, [id]);
 
-  // PanResponder para manejar el gesto de arrastre
-  const panResponder = useRef(
-    PanResponder.create({
-      onMoveShouldSetPanResponder: (_, gestureState) => {
-        return gestureState.dy > 10;
-      },
-      onPanResponderMove: (_, gestureState) => {
-        const newValue = Math.max(0, gestureState.dy);
-        slideAnim.setValue(newValue);
-      },
-      onPanResponderRelease: (_, gestureState) => {
-        if (gestureState.dy > 150) {
-          closeModal();
-        } else {
-          Animated.spring(slideAnim, {
-            toValue: 0,
-            useNativeDriver: true,
-          }).start();
-        }
-      },
-    })
-  ).current;
-
-  const openModal = useCallback(() => {
-    setModalVisible(true);
-    Animated.timing(slideAnim, {
-      toValue: 0,
-      duration: 300,
-      useNativeDriver: true,
-    }).start();
-  }, [slideAnim]);
-
-  const closeModal = useCallback(() => {
-    Animated.timing(slideAnim, {
-      toValue: height,
-      duration: 300,
-      useNativeDriver: true,
-    }).start(() => setModalVisible(false));
-  }, [slideAnim]);
-
   const speakWord = useCallback((word: string) => {
     if (word) {
       Speech.speak(word, {
@@ -97,83 +40,20 @@ export default function DetailsScreen() {
     }
   }, []);
 
-  const renderWords = useCallback(
-    (content: string, textStyles: any) => {
-      return (
-        <Text key={content} style={styles.espaciado}>
-          {content.split(/\s+/).map((word, index) => {
-            const wordClean = word.replace(
-              /^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/gu,
-              ""
-            );
-
-            return (
-              <Pressable
-                key={`word_${index}`}
-                onPress={() => {
-                  setWordSelected(wordClean);
-                  speakWord(wordClean);
-                }}
-                onLongPress={() => speakWord(wordClean)}
-              >
-                <Text style={textStyles}>{word} </Text>
-              </Pressable>
-            );
-          })}
-        </Text>
-      );
-    },
-    [speakWord]
-  );
-
-  const rules = useMemo(
-    () => ({
-      text: (node: any, children: any, parent: any, styles: any) => {
-        const content = node.content || "";
-        return renderWords(content, styles.text);
-      },
-      heading1: (node: any, children: any, parent: any, styles: any) => {
-        const content = node.children[0].children[0].content || "";
-        return renderWords(content, styles.heading1);
-      },
-      heading2: (node: any, children: any, parent: any, styles: any) => {
-        const content = node.children[0].children[0].content || "";
-        return renderWords(content, styles.heading2);
-      },
-      heading3: (node: any, children: any, parent: any, styles: any) => {
-        const content = node.children[0].children[0].content || "";
-        return renderWords(content, styles.heading2);
-      },
-      list_item: (node: any, children: any, parent: any, styles: any) => {
-        const isOrdered = parent.type === "ordered_list";
-        const index = parent.indexOf(node);
-        const bullet = isOrdered ? `${index + 1}.` : "•";
-
-        return (
-          <View key={node.key} style={styles.listItem}>
-            <Text style={styles.bullet}>{bullet}</Text>
-            <Text style={styles.listItemText}>{children}</Text>
-          </View>
-        );
-      },
-    }),
-    [renderWords]
-  );
-
   return (
     <View style={styles.container}>
       {isLoading ? (
         <ActivityIndicator
           size="large"
-          color="#0a84ff"
+          color="#1bcd2a"
           style={styles.loadingIndicator}
         />
       ) : (
-        <ScrollView style={styles.markdownContainer}>
-          <Markdown style={styles} rules={rules}>
-            {lecture?.content || `# No lecture found with id ${id}`}
-          </Markdown>
-        </ScrollView>
+        <MarkDownRender
+          lecture={lecture}
+          id={String(id)}
+          setWordSelected={setWordSelected}
+        />
       )}
 
       {wordSelected.length > 0 && (
@@ -185,37 +65,21 @@ export default function DetailsScreen() {
             <Ionicons name="volume-high-outline" size={24} color="white" />
           </TouchableOpacity>
           <Text style={styles.wordSelected}>{wordSelected}</Text>
-          <TouchableOpacity style={{ padding: 24 }} onPress={openModal}>
+          <TouchableOpacity
+            style={{ padding: 24 }}
+            onPress={() => setModalVisible(true)}
+          >
             <Ionicons name="book-outline" size={24} color="white" />
           </TouchableOpacity>
         </View>
       )}
 
       {isModalVisible && (
-        <View style={styles.overlay}>
-          <TouchableWithoutFeedback onPress={closeModal}>
-            <View style={styles.overlayBackground} />
-          </TouchableWithoutFeedback>
-          <Animated.View
-            style={[
-              styles.modal,
-              {
-                transform: [{ translateY: slideAnim }],
-              },
-            ]}
-          >
-            <View
-              {...panResponder.panHandlers}
-              style={{ width: "100%", paddingVertical: 4 }}
-            >
-              <View style={styles.modalHandle} />
-            </View>
-            <SidePanelModalWord
-              isVisible={isModalVisible}
-              wordSelected={wordSelected}
-            />
-          </Animated.View>
-        </View>
+        <ModalDragger
+          wordSelected={wordSelected}
+          isModalVisible={isModalVisible}
+          setModalVisible={setModalVisible}
+        />
       )}
     </View>
   );
@@ -224,7 +88,7 @@ export default function DetailsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#141414",
+    backgroundColor: "#000000",
     paddingHorizontal: 12,
     paddingTop: 20,
   },
@@ -232,12 +96,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-  },
-  text: {
-    color: "#eeeeee",
-    fontSize: 18,
-    marginBottom: 20,
-    lineHeight: 32,
   },
   wordActionContainer: {
     flexDirection: "row",
@@ -254,76 +112,5 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#eeeeee",
     fontSize: 24,
-  },
-  markdownContainer: {
-    flex: 1,
-    width: "100%",
-  },
-  espaciado: {
-    marginBottom: 24,
-  },
-  heading1: {
-    fontSize: 28,
-    color: "white",
-    fontWeight: "bold",
-  },
-  heading2: {
-    fontSize: 24,
-    color: "white",
-    fontWeight: "bold",
-  },
-  heading3: {
-    fontSize: 22,
-    color: "#b6b6b6ff",
-    fontWeight: "semibold",
-  },
-  listItem: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    paddingHorizontal: 8,
-    marginVertical: 6,
-  },
-  bullet: {
-    color: "white",
-    fontSize: 42,
-    paddingRight: 8,
-    position: "relative",
-    bottom: 12,
-  },
-  listItemText: {
-    flex: 1,
-    color: "white",
-    fontSize: 18,
-  },
-  modal: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    height: "88%",
-    backgroundColor: "#333",
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    paddingHorizontal: 16,
-    bottom: 0,
-  },
-  overlay: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    justifyContent: "flex-end",
-  },
-  overlayBackground: {
-    flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.3)",
-  },
-  modalHandle: {
-    width: 60,
-    height: 5,
-    backgroundColor: "gray",
-    alignSelf: "center",
-    borderRadius: 3,
-    marginVertical: 10,
   },
 });
