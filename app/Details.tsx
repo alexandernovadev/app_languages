@@ -15,21 +15,19 @@ import { ModalDragger } from "@/components/shared/ModalDragger";
 import { MarkDownRender } from "@/components/Pages/Details/MarkDownRender";
 
 export default function DetailsScreen() {
-  const { id } = useLocalSearchParams();
   const [lecture, setLecture] = useState<Lecture>();
-  const [isLoading, setIsLoading] = useState(true); // Agrega el estado isLoading
-
+  const [isLoading, setIsLoading] = useState(true);
   const [wordSelected, setWordSelected] = useState("");
   const [isModalVisible, setModalVisible] = useState(false);
+  const { id } = useLocalSearchParams();
 
-  // Cargar la lectura desde el store
   const getLectureById = useLectureStore((state) => state.getLectureById);
 
   useEffect(() => {
-    setIsLoading(true); // Activar indicador de carga
+    setIsLoading(true);
     const fetchedLecture = getLectureById(String(id));
     setLecture(fetchedLecture);
-    setIsLoading(false); // Desactivar indicador de carga
+    setIsLoading(false);
   }, [id]);
 
   const speakWord = useCallback((word: string) => {
