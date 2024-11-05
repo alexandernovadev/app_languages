@@ -1,4 +1,4 @@
-import React, { useRef, useCallback } from "react";
+import React, { useRef, useCallback, useEffect } from "react";
 import {
   Animated,
   Dimensions,
@@ -23,7 +23,7 @@ export const ModalDragger = ({
   wordSelected,
 }: PropsModalDragger) => {
   // Animación para el modal
-  const slideAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(height)).current;
 
   // PanResponder para manejar el gesto de arrastre
   const panResponder = useRef(
@@ -48,15 +48,6 @@ export const ModalDragger = ({
     })
   ).current;
 
-  const openModal = useCallback(() => {
-    setModalVisible(true);
-    Animated.timing(slideAnim, {
-      toValue: 0,
-      duration: 300,
-      useNativeDriver: true,
-    }).start();
-  }, [slideAnim]);
-
   const closeModal = useCallback(() => {
     Animated.timing(slideAnim, {
       toValue: height,
@@ -64,6 +55,16 @@ export const ModalDragger = ({
       useNativeDriver: true,
     }).start(() => setModalVisible(false));
   }, [slideAnim]);
+
+  useEffect(() => {
+    if (isModalVisible) {
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [isModalVisible]);
 
   return (
     <View style={styles.overlay}>
@@ -92,6 +93,7 @@ export const ModalDragger = ({
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   modal: {
     position: "absolute",
