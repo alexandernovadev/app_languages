@@ -22,10 +22,19 @@ export const ModalDragger = ({
   isModalVisible,
   wordSelected,
 }: PropsModalDragger) => {
-  // Animación para el modal
   const slideAnim = useRef(new Animated.Value(height)).current;
 
-  // PanResponder para manejar el gesto de arrastre
+  useEffect(() => {
+    if (isModalVisible) {
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [isModalVisible]);
+
+  // PanResponder to handle the drag
   const panResponder = useRef(
     PanResponder.create({
       onMoveShouldSetPanResponder: (_, gestureState) => {
@@ -55,16 +64,6 @@ export const ModalDragger = ({
       useNativeDriver: true,
     }).start(() => setModalVisible(false));
   }, [slideAnim]);
-
-  useEffect(() => {
-    if (isModalVisible) {
-      Animated.timing(slideAnim, {
-        toValue: 0,
-        duration: 200,
-        useNativeDriver: true,
-      }).start();
-    }
-  }, [isModalVisible]);
 
   return (
     <View style={styles.overlay}>
