@@ -1,10 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, TextInput, TouchableOpacity, Text, View, ScrollView } from "react-native";
+import {
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  Text,
+  View,
+  ScrollView,
+  ActivityIndicator,
+} from "react-native";
 import { ThemedText } from "@/components/shared/ThemedText";
 import { ThemedView } from "@/components/shared/ThemedView";
 import { Word } from "@/interfaces/models/Word";
 import { BACKURL } from "@/api/backurl";
-
 
 export default function AddwordScreen() {
   const [word, setWord] = useState("");
@@ -13,7 +20,9 @@ export default function AddwordScreen() {
 
   const getWordFromDb = async (word: string) => {
     try {
-      const response = await fetch(`${BACKURL}/api/words/word/${word}`);
+      const response = await fetch(
+        `${BACKURL}/api/words/word/${word.toLowerCase()}`
+      );
       const { data } = await response.json();
       setWordDb(data);
     } catch (error) {
@@ -60,50 +69,98 @@ export default function AddwordScreen() {
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
+          placeholder="Escribe una palabra..."
+          placeholderTextColor="#888"
           value={word}
           onChangeText={setWord}
         />
-        <TouchableOpacity style={styles.button} onPress={generateWord} disabled={loadingGetWord}>
-        <ThemedText>
-            m
-                </ThemedText>
+        <TouchableOpacity
+          style={[styles.button, loadingGetWord && styles.buttonDisabled]}
+          onPress={generateWord}
+          disabled={loadingGetWord}
+        >
+          {loadingGetWord ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <ThemedText style={styles.buttonText}>Generar</ThemedText>
+          )}
         </TouchableOpacity>
       </View>
 
-      <ScrollView style={styles.wordContainer}>
+      <ScrollView contentContainerStyle={styles.wordContainer}>
         {wordDb ? (
-          <View>
+          <View style={styles.card}>
             <View style={styles.wordHeader}>
               <ThemedText style={styles.wordTitle}>{wordDb.word}</ThemedText>
-              <TouchableOpacity onPress={listenWord}>
-                <ThemedText>
-              x
-                </ThemedText>
+
+              <TouchableOpacity
+                onPress={listenWord}
+                style={styles.speakerButton}
+              >
+                <Text style={styles.speakerText}>🔊</Text>
               </TouchableOpacity>
             </View>
+            <View
+              style={{
+                paddingVertical: 10,
+                
+              }}
+            >
+              <ThemedText style={styles.wordTitle}>
+                {wordDb.spanish.word}
+              </ThemedText>
+            </View>
+
             {wordDb.IPA && <Text style={styles.ipa}>{wordDb.IPA}</Text>}
             <Text style={styles.definition}>{wordDb.definition}</Text>
 
-            {wordDb.examples && (
+            {wordDb.examples && wordDb.examples.length > 0 && (
               <View>
-                <Text style={styles.sectionTitle}>Examples:</Text>
+                <Text style={styles.sectionTitle}>Ejemplos:</Text>
                 {wordDb.examples.map((example, index) => (
-                  <Text key={index} style={styles.example}>{example}</Text>
+                  <Text key={index} style={styles.example}>
+                    • {example}
+                  </Text>
                 ))}
               </View>
             )}
 
-            {wordDb.sinonyms && (
+            {wordDb.sinonyms && wordDb.sinonyms.length > 0 && (
               <View>
-                <Text style={styles.sectionTitle}>Synonyms:</Text>
-                {wordDb.sinonyms.map((synonym, index) => (
-                  <Text key={index} style={styles.synonym}>{synonym}</Text>
+                <Text style={styles.sectionTitle}>Sinónimos:</Text>
+                <Text style={styles.synonym}>{wordDb.sinonyms.join(", ")}</Text>
+              </View>
+            )}
+
+            {wordDb.type && (
+              <View>
+                <Text style={styles.sectionTitle}>Tipo:</Text>
+                <Text style={styles.modalText}>{wordDb.type.join(", ")}</Text>
+              </View>
+            )}
+
+            {wordDb.level && (
+              <View>
+                <Text style={styles.sectionTitle}>Nivel:</Text>
+                <Text style={styles.modalText}>{wordDb.level}</Text>
+              </View>
+            )}
+
+            {wordDb.codeSwitching && wordDb.codeSwitching.length > 0 && (
+              <View>
+                <Text style={styles.sectionTitle}>Code-Switching:</Text>
+                {wordDb.codeSwitching.map((sentence, index) => (
+                  <Text key={index} style={styles.example}>
+                    • {sentence}
+                  </Text>
                 ))}
               </View>
             )}
           </View>
         ) : (
-          <ThemedText>No word found</ThemedText>
+          <ThemedText style={styles.noWordText}>
+            Add new word to see its definition
+          </ThemedText>
         )}
       </ScrollView>
     </ThemedView>
@@ -114,6 +171,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
+    backgroundColor: "#121212", // 🌙 Modo oscuro
   },
   inputContainer: {
     flexDirection: "row",
@@ -121,57 +179,95 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   input: {
-    borderWidth: 1,
-    borderColor: "gray",
-    padding: 8,
-    borderRadius: 5,
     flex: 1,
+    backgroundColor: "#1e1e1e",
+    color: "#fff",
+    padding: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#333",
     marginRight: 10,
-    color: "white",
-
   },
   button: {
-    backgroundColor: "green",
-    padding: 10,
-    borderRadius: 5,
-    alignItems: "center",
-    justifyContent: "center",
+    backgroundColor: "#4CAF50",
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+  },
+  buttonDisabled: {
+    backgroundColor: "#888",
+  },
+  buttonText: {
+    color: "#fff",
+    fontWeight: "bold",
   },
   wordContainer: {
-    marginTop: 20,
+    paddingBottom: 60,
+  },
+  card: {
+    backgroundColor: "#1e1e1e",
+    padding: 16,
+    borderRadius: 10,
+    width: "100%",
   },
   wordHeader: {
     flexDirection: "row",
-    alignItems: "center",
     justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 10,
   },
   wordTitle: {
     fontSize: 24,
     fontWeight: "bold",
+    color: "#fff",
+    textTransform: "capitalize",
+  },
+  speakerButton: {
+    backgroundColor: "#BB86FC",
+    padding: 8,
+    borderRadius: 50,
+  },
+  speakerText: {
+    fontSize: 18,
+    color: "#fff",
   },
   ipa: {
     fontSize: 18,
-    color: "gray",
+    color: "#BB86FC",
     marginBottom: 5,
   },
   definition: {
     fontSize: 16,
+    color: "#bbb",
+    flex: 1,
+    textAlign: "justify",
     marginBottom: 10,
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: "bold",
+    color: "#4CAF50",
     marginTop: 10,
   },
   example: {
     fontSize: 16,
-    color: "black",
+    color: "#ccc",
     marginLeft: 10,
   },
   synonym: {
     fontSize: 16,
-    color: "black",
-    marginLeft: 10,
+    color: "#FF9800",
     fontStyle: "italic",
+  },
+  modalText: {
+    fontSize: 14,
+    color: "#bbb",
+    marginTop: 5,
+  },
+  noWordText: {
+    fontSize: 18,
+    color: "#888",
+    textAlign: "center",
+    marginTop: 20,
   },
 });
