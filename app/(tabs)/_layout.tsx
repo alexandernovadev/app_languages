@@ -32,6 +32,20 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="cards"
+        options={{
+          title: "Cards",
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon
+              name={focused ? "card" : "card-outline"}
+              color={color}
+            />
+          ),
+        }}
+      />
+
+  
+      <Tabs.Screen
         name="words"
         options={{
           title: "Words",
@@ -44,25 +58,13 @@ export default function TabLayout() {
         }}
       />
 
-      <Tabs.Screen
-        name="settings"
+<Tabs.Screen
+        name="addword"
         options={{
-          title: "Settings",
+          title: "Addword",
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
-              name={focused ? "settings" : "settings-outline"}
-              color={color}
-            />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="profile"
-        options={{
-          title: "Profile",
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon
-              name={focused ? "person" : "person-outline"}
+              name={focused ? "add-circle" : "add-circle-outline"}
               color={color}
             />
           ),
