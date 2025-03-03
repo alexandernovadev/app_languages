@@ -20,11 +20,17 @@ export default function WordsScreen() {
   const [totalPages, setTotalPages] = useState(1);
   const [selectedWord, setSelectedWord] = useState<Word | null>(null);
 
+  // Resetear la paginación cuando cambia la búsqueda
+  useEffect(() => {
+    setPage(1);
+  }, [search]);
+
   useEffect(() => {
     const fetchWords = async () => {
       try {
+        const query = search ? `&wordUser=${search.toLowerCase()}` : "";
         const response = await fetch(
-          `${BACKURL}/api/words?page=${page}&wordUser=${search}`
+          `${BACKURL}/api/words?page=${page}${query}`
         );
         const data = await response.json();
         if (data.success) {
@@ -37,14 +43,14 @@ export default function WordsScreen() {
     };
 
     fetchWords();
-  }, [page, search]);
+  }, [page, search]); // 🔥 Ahora también se ejecuta cuando cambia `search`
 
-  // Función para capitalizar la primera letra de una palabra
-  const capitalize = (word: string) => word.charAt(0).toUpperCase() + word.slice(1);
+  const capitalize = (word: string) =>
+    word.charAt(0).toUpperCase() + word.slice(1);
 
   return (
     <ThemedView style={styles.container}>
-      {/* 🔎 Input fijo en la parte superior */}
+      {/* 🔎 Input de búsqueda */}
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
@@ -60,17 +66,15 @@ export default function WordsScreen() {
         data={words}
         keyExtractor={(item) => item.word}
         renderItem={({ item }) => (
-          <TouchableOpacity style={styles.row} onPress={() => setSelectedWord(item)}>
-            {/* 📌 Primera línea: Word + IPA */}
+          <TouchableOpacity
+            style={styles.row}
+            onPress={() => setSelectedWord(item)}
+          >
             <View style={styles.headerRow}>
               <Text style={styles.word}>{capitalize(item.word)}</Text>
               <Text style={styles.ipa}>{item.IPA}</Text>
             </View>
-
-            {/* 📌 Segunda línea: Spanish */}
             <Text style={styles.spanish}>{capitalize(item.spanish.word)}</Text>
-
-            {/* 📌 Tercera línea: Definition */}
             <Text style={styles.definition}>{item.definition}</Text>
           </TouchableOpacity>
         )}
@@ -96,31 +100,41 @@ export default function WordsScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* 📌 Modal con TODAS las propiedades */}
+      {/* 📌 Modal con todas las propiedades */}
       {selectedWord && (
         <Modal visible={true} transparent animationType="slide">
           <View style={styles.modalContainer}>
             <View style={styles.modalContent}>
               <ScrollView>
-                <Text style={styles.modalTitle}>{capitalize(selectedWord.word)}</Text>
+                <Text style={styles.modalTitle}>
+                  {capitalize(selectedWord.word)}
+                </Text>
                 <Text style={styles.modalIPA}>{selectedWord.IPA}</Text>
 
                 <Text style={styles.modalSubtitle}>Traducción:</Text>
-                <Text style={styles.modalText}>{capitalize(selectedWord.spanish.word)}</Text>
+                <Text style={styles.modalText}>
+                  {capitalize(selectedWord.spanish.word)}
+                </Text>
 
                 <Text style={styles.modalSubtitle}>Definición:</Text>
                 <Text style={styles.modalText}>{selectedWord.definition}</Text>
 
                 <Text style={styles.modalSubtitle}>Ejemplos:</Text>
                 {selectedWord.examples.map((example, index) => (
-                  <Text key={index} style={styles.modalText}>• {example}</Text>
+                  <Text key={index} style={styles.modalText}>
+                    • {example}
+                  </Text>
                 ))}
 
                 <Text style={styles.modalSubtitle}>Sinónimos:</Text>
-                <Text style={styles.modalText}>{selectedWord.sinonyms?.join(", ")}</Text>
+                <Text style={styles.modalText}>
+                  {selectedWord.sinonyms?.join(", ")}
+                </Text>
 
                 <Text style={styles.modalSubtitle}>Tipo:</Text>
-                <Text style={styles.modalText}>{selectedWord.type.join(", ")}</Text>
+                <Text style={styles.modalText}>
+                  {selectedWord.type.join(", ")}
+                </Text>
 
                 <Text style={styles.modalSubtitle}>Nivel:</Text>
                 <Text style={styles.modalText}>{selectedWord.level}</Text>
@@ -128,11 +142,16 @@ export default function WordsScreen() {
                 {/* 🔥 CodeSwitching */}
                 <Text style={styles.modalSubtitle}>Code-Switching:</Text>
                 {selectedWord.codeSwitching.map((sentence, index) => (
-                  <Text key={index} style={styles.modalText}>• {sentence}</Text>
+                  <Text key={index} style={styles.modalText}>
+                    • {sentence}
+                  </Text>
                 ))}
               </ScrollView>
 
-              <TouchableOpacity style={styles.closeButton} onPress={() => setSelectedWord(null)}>
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={() => setSelectedWord(null)}
+              >
                 <Text style={styles.closeButtonText}>Cerrar</Text>
               </TouchableOpacity>
             </View>
@@ -172,10 +191,16 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 5,
+    width: "100%",
   },
   word: { color: "#fff", fontWeight: "bold", fontSize: 18 },
-  ipa: { color: "#BB86FC", fontWeight: "bold", fontSize: 16 }, // Morado
-  spanish: { color: "#4CAF50", fontWeight: "bold", fontSize: 16, marginBottom: 5 }, // Verde
+  ipa: { color: "#BB86FC", fontWeight: "bold", fontSize: 16 },
+  spanish: {
+    color: "#4CAF50",
+    fontWeight: "bold",
+    fontSize: 16,
+    marginBottom: 5,
+  },
   definition: { color: "#bbb", fontSize: 14 },
 
   pagination: {
@@ -195,7 +220,6 @@ const styles = StyleSheet.create({
   button: { color: "#4CAF50", fontWeight: "bold", padding: 10 },
   pageText: { color: "#fff" },
 
-  // 🎨 Estilos del Modal
   modalContainer: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.8)",
@@ -216,8 +240,18 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 10,
   },
-  modalIPA: { fontSize: 18, color: "#BB86FC", textAlign: "center", marginBottom: 10 },
-  modalSubtitle: { fontSize: 16, fontWeight: "bold", color: "#4CAF50", marginTop: 10 },
+  modalIPA: {
+    fontSize: 18,
+    color: "#BB86FC",
+    textAlign: "center",
+    marginBottom: 10,
+  },
+  modalSubtitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#4CAF50",
+    marginTop: 10,
+  },
   modalText: { fontSize: 14, color: "#fff", marginTop: 5 },
   closeButton: {
     backgroundColor: "#BB86FC",
