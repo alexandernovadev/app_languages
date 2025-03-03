@@ -30,7 +30,7 @@ const FlashcardApp = () => {
     fetchRecentHardOrMediumWords();
   }, []);
 
-  if (loading) return <Loading text={"Loading Cards"}/>;
+  if (loading) return <Loading text={"Loading Cards"} />;
 
   if (error) return <Text style={styles.errorText}>{error}</Text>;
 
@@ -86,6 +86,8 @@ const FlashcardApp = () => {
   };
 
   const updateLevel = async (level: string) => {
+    if (!currentCard) return;
+
     try {
       const response = await fetch(
         `${BACKURL}/api/words/${currentCard?._id}/level`,
@@ -97,10 +99,18 @@ const FlashcardApp = () => {
           body: JSON.stringify({ level }),
         }
       );
+
       const data = await response.json();
+
       if (data.success) {
         console.log("Word level updated successfully");
-        fetchRecentHardOrMediumWords();
+
+        // Actualizar solo la palabra en el store de Zustand sin hacer un fetch completo
+        useWordCardStore.setState((state) => ({
+          words: state.words.map((word) =>
+            word._id === currentCard._id ? { ...word, level } : word
+          ),
+        }));
       } else {
         console.error("Error updating word level:", data.message);
       }
@@ -187,6 +197,8 @@ const FlashcardApp = () => {
                 />
               </TouchableOpacity>
             </View>
+            {/* 🔥 Agregamos el IPA en morado aquí 🔥 */}
+            <Text style={styles.pronunciation}>{currentCard?.IPA}</Text>
             <Text style={styles.definition}>{currentCard?.definition}</Text>
 
             {currentCard?.spanish && (
@@ -344,8 +356,8 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   pronunciation: {
-    fontSize: 18,
-    color: "#8B949E",
+    fontSize: 20,
+    color: "#5944ae", // Morado
     marginTop: 10,
   },
   definition: {
@@ -360,18 +372,23 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
     paddingHorizontal: 10,
+    paddingVertical: 5, // Añadir espacio vertical para mejor apariencia
     borderColor: "#5944ae",
-    maxWidth: 90,
+    width: "auto", // Ancho dinámico según el contenido
+    height: "auto", // Alto dinámico
     textAlign: "center",
     textTransform: "capitalize",
   },
+
   levelText: {
     fontSize: 18,
     color: "#d0de11",
-    paddingHorizontal: 10, // Horizontal padding for pill shape
+    paddingHorizontal: 10, // Espaciado horizontal para forma de píldora
+    paddingVertical: 5, // Agregar espacio vertical
     borderRadius: 12,
     borderWidth: 1,
-    maxWidth: 90,
+    width: "auto", // Ancho automático
+    height: "auto", // Alto automático
     textAlign: "center",
     marginVertical: 10,
   },

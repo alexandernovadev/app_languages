@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
   },
   ipaText: {
     fontSize: 20,
-    color: "#2eb12e",
+    color: "#7a5cf1", // Morado
     marginTop: 4,
     fontWeight: "bold",
   },

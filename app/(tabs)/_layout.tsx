@@ -44,7 +44,6 @@ export default function TabLayout() {
         }}
       />
 
-  
       <Tabs.Screen
         name="words"
         options={{
@@ -58,7 +57,7 @@ export default function TabLayout() {
         }}
       />
 
-<Tabs.Screen
+      <Tabs.Screen
         name="addword"
         options={{
           title: "Addword",
@@ -70,6 +69,34 @@ export default function TabLayout() {
           ),
         }}
       />
+
+<Tabs.Screen
+        name="lectures"
+        options={{
+          title: "Lectures",
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon
+              name={focused ? "library" : "library-outline"}
+              color={color}
+            />
+          ),
+        }}
+      />
+
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: "Profile",
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon
+              name={focused ? "person" : "person-outline"}
+              color={color}
+            />
+          ),
+        }}
+      />
+
+
     </Tabs>
   );
 }
