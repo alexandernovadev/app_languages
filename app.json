@@ -21,7 +21,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/loogo.png",
-        "backgroundColor": "#0000"
+        "backgroundColor": "#20222a"
       },
       "statusBar": {
         "hidden": true,
