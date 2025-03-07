@@ -9,7 +9,7 @@ import {
   Modal,
   ScrollView,
 } from "react-native";
-import { ThemedView } from "@/components/shared/ThemedView";
+import { MainLayoutView } from "@/components/shared/MainLayoutView";
 import { Word } from "@/interfaces/models/Word";
 import { BACKURL } from "@/api/backurl";
 import WordCardRoot from "@/components/shared/WordCardRoot";
@@ -50,7 +50,7 @@ export default function WordsScreen() {
     word.charAt(0).toUpperCase() + word.slice(1);
 
   return (
-    <ThemedView style={styles.container}>
+    <MainLayoutView style={styles.container}>
       {/* 🔎 Input de búsqueda */}
       <View style={styles.inputContainer}>
         <TextInput
@@ -114,7 +114,7 @@ export default function WordsScreen() {
           </View>
         </Modal>
       )}
-    </ThemedView>
+    </MainLayoutView>
   );
 }
 

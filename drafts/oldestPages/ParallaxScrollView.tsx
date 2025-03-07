@@ -7,7 +7,7 @@ import Animated, {
   useScrollViewOffset,
 } from "react-native-reanimated";
 
-import { ThemedView } from "@/components/shared/ThemedView";
+import { MainLayoutView } from "@/components/shared/MainLayoutView";
 
 const HEADER_HEIGHT = 250;
 
@@ -47,7 +47,7 @@ export default function ParallaxScrollView({
   });
 
   return (
-    <ThemedView style={styles.container}>
+    <MainLayoutView style={styles.container}>
       <Animated.ScrollView ref={scrollRef} scrollEventThrottle={16}>
         <Animated.View
           style={[
@@ -58,9 +58,9 @@ export default function ParallaxScrollView({
         >
           {headerImage}
         </Animated.View>
-        <ThemedView style={styles.content}>{children}</ThemedView>
+        <MainLayoutView style={styles.content}>{children}</MainLayoutView>
       </Animated.ScrollView>
-    </ThemedView>
+    </MainLayoutView>
   );
 }
 

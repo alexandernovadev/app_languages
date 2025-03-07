@@ -1,27 +1,17 @@
 import { View, type ViewProps } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useThemeColor } from "@/hooks/useThemeColor";
-import { ScrollView } from "react-native";
+import { Colors } from "@/constants/Colors";
 
-export type ThemedViewProps = ViewProps & {
-  lightColor?: string;
-  darkColor?: string;
+export type MainLayoutViewProps = ViewProps & {
   children?: React.ReactNode;
 };
 
-export function ThemedView({
+export function MainLayoutView({
   style,
-  lightColor,
   children,
-  darkColor,
   ...otherProps
-}: ThemedViewProps) {
-  const backgroundColor = useThemeColor(
-    { light: lightColor, dark: darkColor },
-    "background"
-  );
-  // Aui el bg negro
-    console.log("backgroundColor ",backgroundColor);
+}: MainLayoutViewProps) {
+  const backgroundColor = Colors.customColors.black.black900;
 
   return (
     <SafeAreaView

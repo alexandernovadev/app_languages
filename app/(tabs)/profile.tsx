@@ -1,19 +1,17 @@
-import { Button, Image, StyleSheet } from "react-native";
-import { ThemedText } from "@/components/shared/ThemedText";
-import { ThemedView } from "@/components/shared/ThemedView";
+import { Text, StyleSheet } from "react-native";
+import { MainLayoutView } from "@/components/shared/MainLayoutView";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "react-native-screens/lib/typescript/native-stack/types";
 import { RootStackParamList } from "../_layout";
-import FlashcardApp from "@/components/Pages/Words/FlashcardApp";
 
 export default function ProfileScreen() {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   return (
-    <ThemedView>
-      <ThemedText>V. 2025 2 marzo nova</ThemedText>
-    </ThemedView>
+    <MainLayoutView>
+      <Text>V. 2025 2 marzo nova</Text>
+    </MainLayoutView>
   );
 }
 

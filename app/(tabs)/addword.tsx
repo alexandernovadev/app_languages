@@ -8,8 +8,7 @@ import {
   ScrollView,
   ActivityIndicator,
 } from "react-native";
-import { ThemedText } from "@/components/shared/ThemedText";
-import { ThemedView } from "@/components/shared/ThemedView";
+import { MainLayoutView } from "@/components/shared/MainLayoutView";
 import { Word } from "@/interfaces/models/Word";
 import { BACKURL } from "@/api/backurl";
 
@@ -65,7 +64,7 @@ export default function AddwordScreen() {
   };
 
   return (
-    <ThemedView style={styles.container}>
+    <MainLayoutView style={styles.container}>
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
@@ -82,7 +81,7 @@ export default function AddwordScreen() {
           {loadingGetWord ? (
             <ActivityIndicator color="#fff" />
           ) : (
-            <ThemedText style={styles.buttonText}>Generar</ThemedText>
+            <Text style={styles.buttonText}>Generar</Text>
           )}
         </TouchableOpacity>
       </View>
@@ -91,7 +90,7 @@ export default function AddwordScreen() {
         {wordDb ? (
           <View style={styles.card}>
             <View style={styles.wordHeader}>
-              <ThemedText style={styles.wordTitle}>{wordDb.word}</ThemedText>
+              <Text style={styles.wordTitle}>{wordDb.word}</Text>
 
               <TouchableOpacity
                 onPress={listenWord}
@@ -106,9 +105,9 @@ export default function AddwordScreen() {
                 
               }}
             >
-              <ThemedText style={styles.wordTitle}>
+              <Text style={styles.wordTitle}>
                 {wordDb.spanish.word}
-              </ThemedText>
+              </Text>
             </View>
 
             {wordDb.IPA && <Text style={styles.ipa}>{wordDb.IPA}</Text>}
@@ -158,12 +157,12 @@ export default function AddwordScreen() {
             )}
           </View>
         ) : (
-          <ThemedText style={styles.noWordText}>
+          <Text style={styles.noWordText}>
             Add new word to see its definition
-          </ThemedText>
+          </Text>
         )}
       </ScrollView>
-    </ThemedView>
+    </MainLayoutView>
   );
 }
 
