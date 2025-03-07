@@ -1,4 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
+
+// 📌 React Native Components
 import {
   StyleSheet,
   View,
@@ -9,14 +11,23 @@ import {
   RefreshControl,
   ImageBackground,
 } from "react-native";
+
+// 📌 Librerías externas
 import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "react-native-screens/lib/typescript/native-stack/types";
+
+// 📌 Importaciones locales (store, utils, layouts, types)
 import { useLectureStore } from "@/store/useLectureStore";
 import { getTitle } from "@/utils/getTitleFromMD";
 import { MainLayoutView } from "@/components/Layouts/MainLayoutView";
-import { navigation } from "@/hooks/useNavigation";
+import { RootStackParamList } from "@/app/_layout";
 import { Colors } from "@/constants/Colors";
 
-export function HomePage() {
+export const HomePage = () => {
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
   const { lectures, loading, fetchLectures, page, total } = useLectureStore();
   const [refreshing, setRefreshing] = useState(false);
 
@@ -116,7 +127,7 @@ export function HomePage() {
       />
     </MainLayoutView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
