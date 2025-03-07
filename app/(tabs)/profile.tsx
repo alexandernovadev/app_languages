@@ -21,6 +21,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
-    color: Colors.customColors.silver.silver200,
+    color: Colors.silver.silver200,
   }
 });

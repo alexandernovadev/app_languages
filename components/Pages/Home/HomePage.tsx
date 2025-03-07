@@ -13,7 +13,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useLectureStore } from "@/store/useLectureStore";
 import { getTitle } from "@/utils/getTitleFromMD";
 import { MainLayoutView } from "@/components/Layouts/MainLayoutView";
-import {navigation} from "@/hooks/useNavigation";
+import { navigation } from "@/hooks/useNavigation";
 import { Colors } from "@/constants/Colors";
 
 export function HomePage() {
@@ -40,12 +40,12 @@ export function HomePage() {
           <Ionicons
             name="search-outline"
             size={20}
-            color={Colors.customColors.white.white300}
+            color={Colors.white.white300}
             style={styles.searchIcon}
           />
           <TextInput
             placeholder="Search"
-            placeholderTextColor={Colors.customColors.white.white500}
+            placeholderTextColor={Colors.white.white500}
             style={styles.searchInput}
           />
         </View>
@@ -53,7 +53,7 @@ export function HomePage() {
           <Ionicons
             name="options-outline"
             size={24}
-            color={Colors.customColors.white.white300}
+            color={Colors.white.white300}
           />
         </TouchableOpacity>
       </View>
@@ -73,7 +73,7 @@ export function HomePage() {
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.card}
-            onPress={() => navigation.navigate("Details", { id: item._id }) }
+            onPress={() => navigation.navigate("Details", { id: item._id })}
           >
             <ImageBackground
               source={{ uri: item.img }}
@@ -88,7 +88,11 @@ export function HomePage() {
               <Text style={styles.cardTitle}>{getTitle(item.content)}</Text>
               <View style={styles.infoContainer}>
                 <View style={styles.iconContainer}>
-                  <Ionicons name="time-outline" size={16} color="#aaa" />
+                  <Ionicons
+                    name="time-outline"
+                    size={16}
+                    color={Colors.white.white300}
+                  />
                   <Text style={styles.infoText}>{item.time} min</Text>
                 </View>
                 <Text style={styles.levelBadge}>{item.level}</Text>
@@ -101,12 +105,7 @@ export function HomePage() {
             <TouchableOpacity
               onPress={handleLoadMore}
               disabled={loading}
-              style={{
-                marginVertical: 16,
-                backgroundColor: "#2d8f3d",
-                padding: 8,
-                borderRadius: 8,
-              }}
+              style={styles.loadMoreButton}
             >
               <Text style={{ color: "#eaeaea", textAlign: "center" }}>
                 {loading ? "Loading..." : "Load more"}
@@ -122,7 +121,8 @@ export function HomePage() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.customColors.black.black900,
+    backgroundColor: Colors.black.black900,
+    paddingTop: 8,
   },
   searchFilterContainer: {
     flexDirection: "row",
@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: Colors.customColors.black.black400,
+    backgroundColor: Colors.black.black400,
     borderRadius: 8,
     paddingHorizontal: 8,
     paddingVertical: 8,
@@ -143,13 +143,19 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    color: "#eeeee",
+    color: Colors.white.white300,
   },
   filterButton: {
-    backgroundColor: Colors.customColors.black.black400,
+    backgroundColor: Colors.black.black400,
     borderRadius: 8,
     padding: 8,
     marginLeft: 8,
+  },
+  loadMoreButton: {
+    marginVertical: 16,
+    backgroundColor: Colors.green.green700,
+    padding: 8,
+    borderRadius: 8,
   },
   cardList: {
     paddingBottom: 16,
@@ -158,7 +164,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   card: {
-    backgroundColor: Colors.customColors.black.black500,
+    backgroundColor: Colors.black.black500,
     borderRadius: 12,
     overflow: "hidden",
     marginBottom: 16,
@@ -166,7 +172,7 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     height: 80,
-    backgroundColor: Colors.customColors.black.black400,
+    backgroundColor: Colors.black.black400,
     justifyContent: "flex-start",
     alignItems: "flex-start",
     paddingLeft: 8,
@@ -178,7 +184,7 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   cardTitle: {
-    color: Colors.customColors.white.white300,
+    color: Colors.white.white300,
     fontSize: 14,
     fontWeight: "500",
     marginBottom: 4,
@@ -193,12 +199,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   infoText: {
-    color: Colors.customColors.white.white300,
+    color: Colors.white.white300,
     fontSize: 12,
     marginLeft: 4,
   },
   levelBadge: {
-    color: Colors.customColors.blue.blue600,
+    color: Colors.blue.blue600,
     fontSize: 12,
     fontWeight: "600",
   },

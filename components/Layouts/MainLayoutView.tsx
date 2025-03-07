@@ -11,7 +11,7 @@ export function MainLayoutView({
   children,
   ...otherProps
 }: MainLayoutViewProps) {
-  const backgroundColor = Colors.customColors.black.black900;
+  const backgroundColor = Colors.black.black900;
 
   return (
     <SafeAreaView

@@ -14,7 +14,7 @@ export default function NoTabsScreen() {
         title="Volver a las Pestañas"
         // @ts-ignore
         onPress={() => navigation.navigate("(tabs)")}
-        color={Colors.customColors.orange.orange500}
+        color={Colors.orange.orange500}
       />
     </MainLayoutView>
   );

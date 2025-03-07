@@ -13,6 +13,6 @@ export default function LectureScreen() {
 
 const styles = StyleSheet.create({
   text: {
-    color: Colors.customColors.green.green200,
+    color: Colors.green.green200,
   },
 });
