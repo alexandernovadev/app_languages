@@ -1,5 +1,3 @@
-import { useWordCardStore } from "@/store/useWordCardStore";
-import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
 import {
   View,
@@ -8,33 +6,28 @@ import {
   TouchableOpacity,
   Animated,
   Easing,
-  ScrollView,
   Image,
 } from "react-native";
 
 import * as Speech from "expo-speech";
+import { Ionicons } from "@expo/vector-icons";
 
-import { Loading } from "@/components/shared/Loading";
 import { Colors } from "@/constants/Colors";
+import { Loading } from "@/components/shared/Loading";
 import WordCardRoot from "@/components/shared/WordCardRoot/WordCardRoot";
+import { useWordStore } from "@/store/useWordStore";
 
 export const FlashcardApp = () => {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
   const flipAnimation = useState(new Animated.Value(0))[0];
 
-  // Zustand store to fetch words
   const { words, loading, error, fetchRecentHardOrMediumWords } =
-    useWordCardStore();
+    useWordStore();
 
-  // Fetch words data on component mount
   useEffect(() => {
     fetchRecentHardOrMediumWords();
   }, []);
-
-  if (loading) return <Loading text={"Loading Cards"} />;
-
-  if (error) return <Text style={styles.errorText}>{error}</Text>;
 
   const currentCard = words[currentCardIndex];
 
@@ -86,6 +79,10 @@ export const FlashcardApp = () => {
       Speech.speak(currentCard?.word, { language: "en-US" });
     }
   };
+
+  if (loading && words) return <Loading text={"Loading Cards"} />;
+
+  if (error) return <Text style={styles.errorText}>{error}</Text>;
 
   return (
     <View style={styles.container}>
@@ -239,7 +236,7 @@ const styles = StyleSheet.create({
   arrowsButton: {
     backgroundColor: Colors.green.green700,
     borderRadius: 50,
-    padding: 12,
+    padding: 8,
     alignItems: "center",
     justifyContent: "center",
     shadowColor: "#000",

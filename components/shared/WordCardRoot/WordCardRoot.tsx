@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   View,
   Text,
@@ -12,46 +12,17 @@ import { Ionicons } from "@expo/vector-icons";
 import * as Speech from "expo-speech";
 
 import { getLevelColor } from "@/utils/getLevelColor";
-import { BACKURL } from "@/api/backurl";
 import { Word } from "@/interfaces/models/Word";
 import { Colors } from "@/constants/Colors";
-import { useWordCardStore } from "@/store/useWordCardStore";
 import { SectionContainerProps, SectionHeaderProps, StylesType } from "./types";
+import { useWordStore } from "@/store/useWordStore";
 
 const WordCardRoot = ({ word }: { word: Word }) => {
+  
+  const { updateWordLevel } = useWordStore();
+
   const listenWord = (rate = 0.8, language = "en-US") => {
     Speech.speak(word.word, { language, rate });
-  };
-
-  // Services
-  const updateLevel = async (level: string) => {
-    if (!word) return;
-
-    try {
-      const response = await fetch(`${BACKURL}/api/words/${word?._id}/level`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ level }),
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        console.log("Word level updated successfully");
-
-        useWordCardStore.setState((state) => ({
-          words: state.words.map((w) =>
-            w._id === word._id ? { ...w, level } : w
-          ),
-        }));
-      } else {
-        console.error("Error updating word level:", data.message);
-      }
-    } catch (error) {
-      console.error("Error updating word level:", error);
-    }
   };
 
   const SectionContainer = ({
@@ -84,6 +55,8 @@ const WordCardRoot = ({ word }: { word: Word }) => {
   const handleRefresh = (type: string) => {
     console.log(`Refresh ${type} coming soon`);
   };
+
+  if (!word) return <Text style={styles.itemText}>NO WORKS</Text>
 
   return (
     <View style={styles.card}>
@@ -226,7 +199,7 @@ const WordCardRoot = ({ word }: { word: Word }) => {
               styles.levelButton,
               styles[`${level}Button` as keyof StylesType],
             ]}
-            onPress={() => updateLevel(level)}
+            onPress={() => updateWordLevel(word._id!, level)}
           >
             <Text style={styles.buttonLevelText}>
               {level.charAt(0).toUpperCase() + level.slice(1)}
