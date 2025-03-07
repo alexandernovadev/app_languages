@@ -4,7 +4,6 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  ActivityIndicator,
 } from "react-native";
 import * as Speech from "expo-speech";
 import { useLocalSearchParams } from "expo-router";

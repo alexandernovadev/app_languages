@@ -1,16 +1,18 @@
-import { Text, StyleSheet } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import { NativeStackNavigationProp } from "react-native-screens/lib/typescript/native-stack/types";
-import { RootStackParamList } from "../_layout";
 import { MainLayoutView } from "@/components/shared/MainLayoutView";
+import { Colors } from "@/constants/Colors";
+import { Text, StyleSheet } from "react-native";
+
 
 export default function LectureScreen() {
-  const navigation =
-    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-
   return (
     <MainLayoutView>
-      <Text>Aqui lectures generatore coming soon...</Text>
+      <Text style={styles.text}>Aqui lectures generatore coming soon...</Text>
     </MainLayoutView>
   );
 }
+
+const styles = StyleSheet.create({
+  text: {
+    color: Colors.customColors.green.green200,
+  },
+});
