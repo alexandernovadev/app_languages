@@ -1,7 +1,4 @@
-import {
-  DarkTheme,
-  ThemeProvider,
-} from "@react-navigation/native";
+import { DarkTheme, ThemeProvider } from "@react-navigation/native";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
@@ -11,6 +8,7 @@ import { Platform } from "react-native";
 import "react-native-reanimated";
 import * as NavigationBar from "expo-navigation-bar";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { DARKMODE } from "@/constants/themeMain";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -32,20 +30,16 @@ export default function RootLayout() {
       SplashScreen.hideAsync();
     }
 
-    // Configura el modo de pantalla completa en Android
     if (Platform.OS === "android") {
       NavigationBar.setVisibilityAsync("hidden");
     }
   }, [loaded]);
 
-  if (!loaded) {
-    return null;
-  }
+  if (!loaded) return null;
 
   return (
     <ThemeProvider value={DarkTheme}>
-      {/* Oculta la barra de estado en ambas plataformas */}
-      <StatusBar hidden style={"dark"} />
+      <StatusBar hidden style={DARKMODE} />
 
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
