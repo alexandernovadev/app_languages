@@ -1,4 +1,4 @@
-import { MainLayoutView } from "@/components/shared/MainLayoutView";
+import { MainLayoutView } from "@/components/Layouts/MainLayoutView";
 import { Colors } from "@/constants/Colors";
 import { Text, StyleSheet } from "react-native";
 

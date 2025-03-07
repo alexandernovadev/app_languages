@@ -14,7 +14,7 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "react-native-screens/lib/typescript/native-stack/types";
 import { useLectureStore } from "@/store/useLectureStore";
 import { getTitle } from "@/utils/getTitleFromMD";
-import { MainLayoutView } from "@/components/shared/MainLayoutView";
+import { MainLayoutView } from "@/components/Layouts/MainLayoutView";
 import { RootStackParamList } from "@/app/_layout";
 
 export function HomePage() {

@@ -11,7 +11,7 @@ import {
 import { Word } from "@/interfaces/models/Word";
 import { BACKURL } from "@/api/backurl";
 import WordCardRoot from "@/components/shared/WordCardRoot";
-import { MainLayoutView } from "@/components/shared/MainLayoutView";
+import { MainLayoutView } from "@/components/Layouts/MainLayoutView";
 
 export function WordsPage() {
   const [words, setWords] = useState<Word[]>([]);

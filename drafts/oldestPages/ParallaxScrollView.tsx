@@ -1,4 +1,4 @@
-import { MainLayoutView } from "@/components/shared/MainLayoutView";
+import { MainLayoutView } from "@/components/Layouts/MainLayoutView";
 import type { PropsWithChildren, ReactElement } from "react";
 import { StyleSheet } from "react-native";
 import Animated, {

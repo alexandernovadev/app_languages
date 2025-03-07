@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { Word } from "@/interfaces/models/Word";
 import { BACKURL } from "@/api/backurl";
-import { MainLayoutView } from "@/components/shared/MainLayoutView";
+import { MainLayoutView } from "@/components/Layouts/MainLayoutView";
 
 export default function AddWordPage() {
   const [word, setWord] = useState("");
