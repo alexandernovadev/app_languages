@@ -12,6 +12,7 @@ import {
 import { ThemedView } from "@/components/shared/ThemedView";
 import { Word } from "@/interfaces/models/Word";
 import { BACKURL } from "@/api/backurl";
+import WordCardRoot from "@/components/shared/WordCardRoot";
 
 export default function WordsScreen() {
   const [words, setWords] = useState<Word[]>([]);
@@ -100,61 +101,16 @@ export default function WordsScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* 📌 Modal con todas las propiedades */}
       {selectedWord && (
         <Modal visible={true} transparent animationType="slide">
-          <View style={styles.modalContainer}>
-            <View style={styles.modalContent}>
-              <ScrollView>
-                <Text style={styles.modalTitle}>
-                  {capitalize(selectedWord.word)}
-                </Text>
-                <Text style={styles.modalIPA}>{selectedWord.IPA}</Text>
-
-                <Text style={styles.modalSubtitle}>Traducción:</Text>
-                <Text style={styles.modalText}>
-                  {capitalize(selectedWord.spanish.word)}
-                </Text>
-
-                <Text style={styles.modalSubtitle}>Definición:</Text>
-                <Text style={styles.modalText}>{selectedWord.definition}</Text>
-
-                <Text style={styles.modalSubtitle}>Ejemplos:</Text>
-                {selectedWord.examples.map((example, index) => (
-                  <Text key={index} style={styles.modalText}>
-                    • {example}
-                  </Text>
-                ))}
-
-                <Text style={styles.modalSubtitle}>Sinónimos:</Text>
-                <Text style={styles.modalText}>
-                  {selectedWord.sinonyms?.join(", ")}
-                </Text>
-
-                <Text style={styles.modalSubtitle}>Tipo:</Text>
-                <Text style={styles.modalText}>
-                  {selectedWord.type.join(", ")}
-                </Text>
-
-                <Text style={styles.modalSubtitle}>Nivel:</Text>
-                <Text style={styles.modalText}>{selectedWord.level}</Text>
-
-                {/* 🔥 CodeSwitching */}
-                <Text style={styles.modalSubtitle}>Code-Switching:</Text>
-                {selectedWord.codeSwitching.map((sentence, index) => (
-                  <Text key={index} style={styles.modalText}>
-                    • {sentence}
-                  </Text>
-                ))}
-              </ScrollView>
-
-              <TouchableOpacity
-                style={styles.closeButton}
-                onPress={() => setSelectedWord(null)}
-              >
-                <Text style={styles.closeButtonText}>Cerrar</Text>
-              </TouchableOpacity>
-            </View>
+          <View style={styles.cardhijo}>
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => setSelectedWord(null)}
+            >
+              <Text style={styles.closeButtonText}>Cerrar</Text>
+            </TouchableOpacity>
+            <WordCardRoot word={selectedWord} />
           </View>
         </Modal>
       )}
@@ -164,6 +120,10 @@ export default function WordsScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
+  cardhijo: {
+    width: "100%",
+    height: "91%",
+  },
   inputContainer: {
     position: "absolute",
     top: 0,
@@ -254,11 +214,10 @@ const styles = StyleSheet.create({
   },
   modalText: { fontSize: 14, color: "#fff", marginTop: 5 },
   closeButton: {
-    backgroundColor: "#BB86FC",
+    backgroundColor: "#4CAF50",
     padding: 10,
     borderRadius: 5,
     alignItems: "center",
-    marginTop: 10,
   },
   closeButtonText: { color: "#fff", fontWeight: "bold" },
 });
