@@ -11,10 +11,12 @@ import {
   ScrollView,
   Image,
 } from "react-native";
+
 import * as Speech from "expo-speech";
-import { BACKURL } from "@/api/backurl";
+
 import { Loading } from "@/components/shared/Loading";
 import { Colors } from "@/constants/Colors";
+import WordCardRoot from "@/components/shared/WordCardRoot/WordCardRoot";
 
 export const FlashcardApp = () => {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
@@ -85,56 +87,11 @@ export const FlashcardApp = () => {
     }
   };
 
-  const updateLevel = async (level: string) => {
-    if (!currentCard) return;
-
-    try {
-      const response = await fetch(
-        `${BACKURL}/api/words/${currentCard?._id}/level`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ level }),
-        }
-      );
-
-      const data = await response.json();
-
-      if (data.success) {
-        console.log("Word level updated successfully");
-
-        // Actualizar solo la palabra en el store de Zustand sin hacer un fetch completo
-        useWordCardStore.setState((state) => ({
-          words: state.words.map((word) =>
-            word._id === currentCard._id ? { ...word, level } : word
-          ),
-        }));
-      } else {
-        console.error("Error updating word level:", data.message);
-      }
-    } catch (error) {
-      console.error("Error updating word level:", error);
-    }
-  };
-
-  // Helper function to determine level color
-  const getLevelColor = (level: string) => {
-    switch (level) {
-      case "easy":
-        return "#248924"; // green for easy
-      case "medium":
-        return "#0664c8"; // blue for medium
-      case "hard":
-        return "#c73737"; // red for hard
-      default:
-        return "#d0de11"; // default color if level is undefined
-    }
-  };
-
   return (
     <View style={styles.container}>
+      <Text style={styles.cardIndexText}>
+        Card {currentCardIndex + 1} of {words.length}
+      </Text>
       <View style={styles.cardContainer}>
         <Animated.View
           style={[
@@ -146,7 +103,11 @@ export const FlashcardApp = () => {
           <View style={styles.wordRow}>
             <Text style={styles.word}>{currentCard?.word}</Text>
             <TouchableOpacity onPress={listenWord} style={styles.speakerIcon}>
-              <Ionicons name="volume-high-outline" size={32} color={Colors.green.green400} />
+              <Ionicons
+                name="volume-high-outline"
+                size={32}
+                color={Colors.green.green400}
+              />
             </TouchableOpacity>
           </View>
           <Text style={styles.pronunciation}>{currentCard?.IPA}</Text>
@@ -154,7 +115,7 @@ export const FlashcardApp = () => {
             <Image
               source={{ uri: currentCard?.img }}
               style={styles.image}
-              resizeMode="contain"
+              resizeMode="cover"
             />
           ) : null}
         </Animated.View>
@@ -166,115 +127,7 @@ export const FlashcardApp = () => {
             flipped && styles.cardBack,
           ]}
         >
-          <ScrollView contentContainerStyle={styles.scrollContent}>
-            {currentCard?.type && (
-              <Text style={styles.typeText}>
-                {currentCard?.type.join(", ")}
-              </Text>
-            )}
-            {currentCard?.level && (
-              <Text
-                style={[
-                  styles.levelText,
-                  { textTransform: "capitalize", fontWeight: "bold" },
-                  {
-                    color: getLevelColor(currentCard.level),
-                    borderColor: getLevelColor(currentCard.level),
-                  },
-                ]}
-              >
-                {currentCard.level}
-              </Text>
-            )}
-
-            <View style={[styles.wordRow, { marginTop: 12 }]}>
-              <Text style={styles.word}>{currentCard?.word}</Text>
-              <TouchableOpacity onPress={listenWord} style={styles.speakerIcon}>
-                <Ionicons
-                  name="volume-high-outline"
-                  size={32}
-                  color={Colors.white.white300}
-                />
-              </TouchableOpacity>
-            </View>
-
-            <Text style={styles.pronunciation}>{currentCard?.IPA}</Text>
-            <Text style={styles.definition}>{currentCard?.definition}</Text>
-
-            {currentCard?.spanish && (
-              <View style={styles.examplesContainer}>
-                <Text style={styles.exampleTextTitle}>
-                  {currentCard?.spanish.word}
-                </Text>
-                <Text style={styles.exampleText}>
-                  {currentCard?.spanish.definition}
-                </Text>
-              </View>
-            )}
-
-            {currentCard?.img ? (
-              <Image
-                source={{ uri: currentCard?.img }}
-                style={styles.image}
-                resizeMode="contain"
-              />
-            ) : null}
-
-            {currentCard?.examples && (
-              <View style={styles.examplesContainer}>
-                <Text style={styles.examplesTitle}>Examples</Text>
-                {currentCard?.examples.map((example, index) => (
-                  <Text key={index} style={styles.exampleText}>
-                    • {example}
-                  </Text>
-                ))}
-              </View>
-            )}
-
-            {currentCard?.codeSwitching && (
-              <View style={styles.examplesContainer}>
-                <Text style={styles.examplesTitle}>
-                  Code-Switching Examples
-                </Text>
-                {currentCard?.codeSwitching.map((example, index) => (
-                  <Text key={index} style={styles.exampleText}>
-                    • {example}
-                  </Text>
-                ))}
-              </View>
-            )}
-
-            {currentCard?.sinonyms && (
-              <View style={styles.examplesContainer}>
-                <Text style={styles.examplesTitle}>Synonyms</Text>
-                {currentCard?.sinonyms.map((synonym, index) => (
-                  <Text key={index} style={styles.exampleText}>
-                    • {synonym}
-                  </Text>
-                ))}
-              </View>
-            )}
-          </ScrollView>
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity
-              style={[styles.levelButton, styles.easyButton]}
-              onPress={() => updateLevel("easy")}
-            >
-              <Text style={styles.buttonText}>Easy</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.levelButton, styles.mediumButton]}
-              onPress={() => updateLevel("medium")}
-            >
-              <Text style={styles.buttonText}>Medium</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.levelButton, styles.hardButton]}
-              onPress={() => updateLevel("hard")}
-            >
-              <Text style={styles.buttonText}>Hard</Text>
-            </TouchableOpacity>
-          </View>
+          <WordCardRoot word={currentCard} />
         </Animated.View>
       </View>
 
@@ -282,27 +135,22 @@ export const FlashcardApp = () => {
         <TouchableOpacity
           onPress={handlePrevious}
           disabled={currentCardIndex === 0}
+          style={styles.arrowsButton}
         >
           <Ionicons name="chevron-back" size={32} color="white" />
         </TouchableOpacity>
-        <Text style={styles.cardIndexText}>
-          Card {currentCardIndex + 1} of {words.length}
-        </Text>
-        <TouchableOpacity onPress={handleNext}>
+
+        <TouchableOpacity style={styles.flipButton} onPress={flipCard}>
+          <View style={styles.flipButtonContent}>
+            <Ionicons name="sync" size={20} color="white" />
+            <Text style={styles.flipButtonText}>Flip</Text>
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.arrowsButton} onPress={handleNext}>
           <Ionicons name="chevron-forward" size={32} color="white" />
         </TouchableOpacity>
       </View>
-      <TouchableOpacity style={styles.flipButton} onPress={flipCard}>
-        <Text style={styles.flipButtonText}>
-          <Ionicons
-            name="sync"
-            size={16}
-            style={{ paddingHorizontal: 13 }}
-            color="white"
-          />
-          Flip
-        </Text>
-      </TouchableOpacity>
     </View>
   );
 };
@@ -314,8 +162,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   cardContainer: {
-    width: 320,
-    height: 620,
+    width: "95%",
+    height: "82%",
     position: "relative",
   },
   card: {
@@ -324,12 +172,13 @@ const styles = StyleSheet.create({
     position: "absolute",
     backfaceVisibility: "hidden",
     borderRadius: 10,
-    padding: 20,
+    padding: 2,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#1f2023a8",
     borderWidth: 1,
-    borderColor: "#2eb12e",
+    borderColor: Colors.green.green800,
+    backgroundColor: Colors.black.black800,
+    paddingHorizontal: 8,
   },
   cardFront: {
     zIndex: 1,
@@ -338,7 +187,6 @@ const styles = StyleSheet.create({
     zIndex: 0,
   },
   scrollContent: {
-    paddingHorizontal: 10,
     paddingBottom: 20,
   },
   wordRow: {
@@ -350,142 +198,79 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: "bold",
     textTransform: "capitalize",
-    color: "#2eb12e",
+    color: Colors.green.green600,
   },
   speakerIcon: {
     marginLeft: 10,
   },
   pronunciation: {
     fontSize: 20,
-    color: "#5944ae", // Morado
+    color: Colors.purple.purpleNova,
     marginTop: 10,
-  },
-  definition: {
-    fontSize: 18,
-    color: "#C9D1D9",
-    marginTop: 10,
-  },
-  typeText: {
-    fontSize: 16,
-    color: "#5944ae",
-    marginTop: 5,
-    borderRadius: 12,
-    borderWidth: 1,
-    paddingHorizontal: 10,
-    paddingVertical: 5, // Añadir espacio vertical para mejor apariencia
-    borderColor: "#5944ae",
-    width: "auto", // Ancho dinámico según el contenido
-    height: "auto", // Alto dinámico
-    textAlign: "center",
-    textTransform: "capitalize",
-  },
-
-  levelText: {
-    fontSize: 18,
-    color: "#d0de11",
-    paddingHorizontal: 10, // Espaciado horizontal para forma de píldora
-    paddingVertical: 5, // Agregar espacio vertical
-    borderRadius: 12,
-    borderWidth: 1,
-    width: "auto", // Ancho automático
-    height: "auto", // Alto automático
-    textAlign: "center",
-    marginVertical: 10,
   },
   image: {
     width: "100%",
-    height: 150,
-    borderRadius: 10,
+    height: 240,
+    borderRadius: 16,
     marginTop: 10,
-    borderWidth: 1,
-    borderColor: "#f9f9f9",
   },
   examplesContainer: {
     marginTop: 10,
   },
-  examplesTitle: {
-    fontSize: 20,
-    color: "#2eb12e",
-    fontWeight: "bold",
-    marginBottom: 6,
-  },
-  exampleText: {
+  cardIndexText: {
     fontSize: 16,
-    color: "#8B949E",
-    marginTop: 4,
-    lineHeight: 24,
+    color: Colors.white.white300,
+    marginBottom: 4,
   },
-  exampleTextTitle: {
-    fontSize: 22,
-    textTransform: "capitalize",
-    marginTop: 4,
-    lineHeight: 24,
-    color: "#2eb12e",
-    fontWeight: "bold",
-  },
-  boldText: {
-    fontWeight: "bold",
-    color: "#2eb12e",
-  },
-  flipButton: {
+  errorText: {
+    fontSize: 18,
+    color: Colors.red.red500,
     marginTop: 20,
-    paddingVertical: 5,
-    paddingHorizontal: 15,
-    backgroundColor: "#238636",
-    borderRadius: 5,
-    display: "flex",
-    alignContent: "center",
-    alignItems: "center",
-  },
-  flipButtonText: {
-    color: "#FFFFFF",
-    fontSize: 16,
-    fontWeight: "bold",
-    padding: 5,
-    marginHorizontal: 10,
   },
   navigationContainer: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     alignSelf: "center",
-    width: "76%",
-    marginTop: 20,
+    width: "100%",
+    paddingHorizontal: 20,
+    marginTop: 12,
   },
-  cardIndexText: {
-    fontSize: 16,
-    color: "#C9D1D9",
+  arrowsButton: {
+    backgroundColor: Colors.green.green700,
+    borderRadius: 50,
+    padding: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 5,
   },
-  errorText: {
-    fontSize: 18,
-    color: "#ff4c4c",
-    marginTop: 20,
-  },
-
-  buttonContainer: {
+  flipButton: {
     flexDirection: "row",
-    justifyContent: "space-around",
-    gap: 10,
-    marginTop: 20,
-  },
-  levelButton: {
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: Colors.green.green700,
     paddingVertical: 10,
     paddingHorizontal: 20,
-    borderRadius: 5,
+    borderRadius: 25,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 5,
   },
-  easyButton: {
-    backgroundColor: "#248924",
+  flipButtonContent: {
+    flexDirection: "row",
+    alignItems: "center",
   },
-  mediumButton: {
-    backgroundColor: "#0664c8",
-  },
-  hardButton: {
-    backgroundColor: "#c73737",
-  },
-  buttonText: {
-    color: "#FFFFFF",
+  flipButtonText: {
+    color: Colors.white.white300,
     fontSize: 16,
     fontWeight: "bold",
+    marginLeft: 8, // Espacio entre el icono y el texto
   },
 });
 
