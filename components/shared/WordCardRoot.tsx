@@ -1,6 +1,4 @@
-import { useWordCardStore } from "@/store/useWordCardStore";
-import { Ionicons } from "@expo/vector-icons";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   View,
   Text,
@@ -9,18 +7,19 @@ import {
   ScrollView,
   Image,
 } from "react-native";
+
+import { Ionicons } from "@expo/vector-icons";
 import * as Speech from "expo-speech";
+
+import { getLevelColor } from "@/utils/getLevelColor";
 import { BACKURL } from "@/api/backurl";
-import { Loading } from "@/components/shared/Loading";
 import { Word } from "@/interfaces/models/Word";
+import { Colors } from "@/constants/Colors";
+import { useWordCardStore } from "@/store/useWordCardStore";
 
 const WordCardRoot = ({ word }: { word: Word }) => {
-  const listenWord = () => {
-    Speech.speak(word.word, { language: "en-US", rate: 0.8 });
-  };
-
-  const slowerListenWord = () => {
-    Speech.speak(word.word, { language: "en-US", rate: 0.09 });
+  const listenWord = (rate = 0.8, language = "en-US") => {
+    Speech.speak(word.word, { language, rate });
   };
 
   // Services
@@ -41,7 +40,6 @@ const WordCardRoot = ({ word }: { word: Word }) => {
       if (data.success) {
         console.log("Word level updated successfully");
 
-        // Actualizar solo la palabra en el store de Zustand sin hacer un fetch completo
         useWordCardStore.setState((state) => ({
           words: state.words.map((word) =>
             word._id === word._id ? { ...word, level } : word
@@ -55,24 +53,10 @@ const WordCardRoot = ({ word }: { word: Word }) => {
     }
   };
 
-  // Helper function to determine level color
-  const getLevelColor = (level: string) => {
-    switch (level) {
-      case "easy":
-        return "#248924"; // green for easy
-      case "medium":
-        return "#0664c8"; // blue for medium
-      case "hard":
-        return "#c73737"; // red for hard
-      default:
-        return "#d0de11"; // default color if level is undefined
-    }
-  };
-
   return (
-    <View style={[styles.card]}>
+    <View style={styles.card}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <View style={styles.wordRow}>
+        <View style={styles.levellangContainer}>
           <Text style={styles.cardIndexText}>🇺🇸</Text>
           <Text
             style={[
@@ -87,50 +71,75 @@ const WordCardRoot = ({ word }: { word: Word }) => {
           </Text>
         </View>
 
-        <View style={[styles.wordRow, { marginTop: 12 }]}>
-          <Text style={styles.word}>{word.word}</Text>
-          <Text style={styles.word}>👀 {word.seen}</Text>
+        <View style={styles.wordSeensContainer}>
+          <Text style={styles.textWord}>{word.word}</Text>
+          <Text style={styles.textSeen}>👀 {word.seen}</Text>
         </View>
-        <View style={styles.Row}>
+
+        <View style={styles.ipaSpeakerContainer}>
           <Text style={styles.pronunciation}>{word.IPA}</Text>
-          <View style={styles.Row}>
-            <TouchableOpacity onPress={listenWord} style={styles.speakerIcon}>
-              <Ionicons name="volume-high-outline" size={32} color="#ffffff" />
+          <View style={styles.speakersContainer}>
+            <TouchableOpacity
+              onPress={() => listenWord}
+              style={styles.speakerIcon}
+            >
+              <Text style={styles.speakersIcons}>🔊</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={slowerListenWord}>
-              <Text style={styles.speakerTurtleIcon}>🐢</Text>
+            <TouchableOpacity onPress={() => listenWord(0.09)}>
+              <Text style={styles.speakersIcons}>🐢</Text>
             </TouchableOpacity>
           </View>
         </View>
-        <Text style={styles.definition}>{word.definition}</Text>
-        <View style={styles.examplesContainer}>
-          <Text style={styles.exampleTextTitle}>{word.spanish.word}</Text>
-          <Text style={styles.exampleText}>{word.spanish.definition}</Text>
-        </View>
-        <Text style={styles.typeText}>{word.type.join(", ")}</Text>
 
-        {word.img ? (
-          <Image
-            source={{ uri: word.img }}
-            style={styles.image}
-            resizeMode="contain"
-          />
-        ) : null}
+        <Text style={styles.definition} selectable>{word.definition}</Text>
+
+        <View style={styles.spanishContainer}>
+          <Text style={styles.spanishWord}>{word.spanish.word}</Text>
+          <Text style={styles.spanisDefinition}>{word.spanish.definition}</Text>
+        </View>
+
+        <View style={styles.imageContainer}>
+          <View style={styles.RowContainer}>
+            <Text style={styles.titleBox}>Image</Text>
+            <TouchableOpacity
+              onPress={() => {
+                console.log("Refresh examples Comnig soon");
+              }}
+            >
+              <Ionicons
+                name="refresh-outline"
+                size={24}
+                color={Colors.white.white300}
+              />
+            </TouchableOpacity>
+          </View>
+          {word.img ? (
+            <Image
+              source={{ uri: word.img }}
+              style={styles.image}
+              resizeMode="contain"
+            />
+          ) : null}
+        </View>
 
         {word.examples && (
           <View style={styles.examplesContainer}>
-            <View style={styles.wordRow}>
-              <Text style={styles.examplesTitle}>Examples</Text>
+            <View style={styles.RowContainer}>
+              <Text style={styles.titleBox}>Examples</Text>
               <TouchableOpacity
                 onPress={() => {
                   console.log("Refresh examples Comnig soon");
                 }}
               >
-                <Ionicons name="refresh-outline" size={24} color="#ffffff" />
+                <Ionicons
+                  name="refresh-outline"
+                  size={24}
+                  color={Colors.white.white300}
+                />
               </TouchableOpacity>
             </View>
             {word.examples.map((example, index) => (
-              <Text key={index} style={styles.exampleText}>
+              <Text key={index} style={styles.exampleText} selectable>
                 • {example}
               </Text>
             ))}
@@ -138,19 +147,23 @@ const WordCardRoot = ({ word }: { word: Word }) => {
         )}
 
         {word.codeSwitching && (
-          <View style={styles.examplesContainer}>
-            <View style={styles.wordRow}>
-              <Text style={styles.examplesTitle}>Code-Switching</Text>
+          <View style={styles.codeSwitchingContainer}>
+            <View style={styles.RowContainer}>
+              <Text style={styles.titleBox}>Code-Switching</Text>
               <TouchableOpacity
                 onPress={() => {
                   console.log("Refresh Code-Switching Comnig soon");
                 }}
               >
-                <Ionicons name="refresh-outline" size={24} color="#ffffff" />
+                <Ionicons
+                  name="refresh-outline"
+                  size={24}
+                  color={Colors.white.white300}
+                />
               </TouchableOpacity>
             </View>
             {word.codeSwitching.map((example, index) => (
-              <Text key={index} style={styles.exampleText}>
+              <Text key={index} style={styles.exampleText} selectable>
                 • {example}
               </Text>
             ))}
@@ -158,59 +171,63 @@ const WordCardRoot = ({ word }: { word: Word }) => {
         )}
 
         {word.sinonyms && (
-          <View style={styles.examplesContainer}>
-            <View style={styles.wordRow}>
-              <Text style={styles.examplesTitle}>Synonyms</Text>
+          <View style={styles.synonymsContainer}>
+            <View style={styles.RowContainer}>
+              <Text style={styles.titleBox}>Synonyms</Text>
               <TouchableOpacity
                 onPress={() => {
                   console.log("Refresh Synonyms Comnig soon");
                 }}
               >
-                <Ionicons name="refresh-outline" size={24} color="#ffffff" />
+                <Ionicons
+                  name="refresh-outline"
+                  size={24}
+                  color={Colors.white.white300}
+                />
               </TouchableOpacity>
             </View>
             {word.sinonyms.map((synonym, index) => (
-              <Text key={index} style={styles.exampleText}>
-                • {synonym}
+              <Text key={index} style={styles.synonymList} selectable>
+                🔹 {synonym}
               </Text>
             ))}
           </View>
         )}
 
-        <View
-          style={[
-            styles.Row,
-            { marginTop: 20, borderBlockColor: "red", borderWidth: 2 },
-          ]}
-        >
+        <View style={styles.typeWordContainer}>
+          <Text style={styles.titleBox}>Type Word</Text>
+          <Text style={styles.typeText}>{word.type.join(", ")}</Text>
+        </View>
+
+        <View style={styles.datesContainer}>
           <View>
-            <Text style={styles.examplesTitle}>Updated</Text>
+            <Text style={styles.titleBox}>Updated</Text>
             <Text style={styles.dates}>Thuesday 12 - 2023</Text>
           </View>
           <View>
-            <Text style={styles.examplesTitle}>Created</Text>
+            <Text style={styles.titleBox}>Created</Text>
             <Text style={styles.dates}>Thuesday 12 - 2023</Text>
           </View>
         </View>
       </ScrollView>
-      <View style={styles.buttonContainer}>
+      <View style={styles.buttonsLevelContainer}>
         <TouchableOpacity
           style={[styles.levelButton, styles.easyButton]}
           onPress={() => updateLevel("easy")}
         >
-          <Text style={styles.buttonText}>Easy</Text>
+          <Text style={styles.buttonLevelText}>Easy</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.levelButton, styles.mediumButton]}
           onPress={() => updateLevel("medium")}
         >
-          <Text style={styles.buttonText}>Medium</Text>
+          <Text style={styles.buttonLevelText}>Medium</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.levelButton, styles.hardButton]}
           onPress={() => updateLevel("hard")}
         >
-          <Text style={styles.buttonText}>Hard</Text>
+          <Text style={styles.buttonLevelText}>Hard</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -222,67 +239,100 @@ const styles = StyleSheet.create({
     padding: 20,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#101010f5",
+    backgroundColor: Colors.black.black800,
   },
   scrollContent: {
     paddingHorizontal: 10,
     paddingBottom: 20,
   },
-  wordRow: {
+  wordSeensContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginTop: 8,
+  },
+  RowContainer: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
   },
-  Row: {
+  typeWordContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginVertical: 12,
+  },
+  ipaSpeakerContainer: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
   },
-  word: {
+  speakersContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  levellangContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  textWord: {
     fontSize: 32,
     fontWeight: "bold",
     textTransform: "capitalize",
-    color: "#2eb12e",
+    color: Colors.green.green600,
+  },
+  textSeen: {
+    fontSize: 16,
+    color: Colors.yellow.yellow500,
+    fontWeight: "bold",
   },
   speakerIcon: {
     marginLeft: 10,
   },
-  speakerTurtleIcon: {
+  speakersIcons: {
     marginLeft: 10,
-    fontSize: 32,
+    fontSize: 20,
+    borderColor: Colors.white.white500,
+    borderWidth: 2,
+    borderRadius: 100,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 9,
   },
   pronunciation: {
-    fontSize: 18,
-    color: "#5944ae", // Morado
+    fontSize: 20,
+    color: Colors.purple.purpleNova,
     marginTop: 10,
   },
   definition: {
     fontSize: 18,
-    color: "#C9D1D9",
+    color: Colors.gray.gray400,
     marginTop: 10,
   },
   typeText: {
     fontSize: 16,
-    color: "#5944ae",
+    color: Colors.white.white200,
     marginTop: 5,
     borderRadius: 12,
-    borderWidth: 1,
+    borderWidth: 2,
     paddingHorizontal: 10,
-    paddingVertical: 5, // Añadir espacio vertical para mejor apariencia
-    borderColor: "#5944ae",
-    width: "auto", // Ancho dinámico según el contenido
-    height: "auto", // Alto dinámico
+    paddingVertical: 5,
+    borderColor: Colors.purple.purpleNova,
+    width: "auto",
+    height: "auto",
     textAlign: "center",
     textTransform: "capitalize",
   },
   dates: {
     fontSize: 16,
-    color: "#C9D1D9",
+    color: Colors.gray.gray400,
     marginTop: 10,
   },
   levelText: {
     fontSize: 18,
-    color: "#d0de11",
     paddingHorizontal: 10,
     textTransform: "capitalize",
     fontWeight: "bold",
@@ -296,51 +346,91 @@ const styles = StyleSheet.create({
   },
   image: {
     width: "100%",
-    height: 150,
     borderRadius: 10,
     marginTop: 10,
-    borderWidth: 1,
-    borderColor: "#f9f9f9",
+    aspectRatio: 16 / 9,
   },
   examplesContainer: {
-    marginTop: 10,
+    marginVertical: 10,
   },
-  examplesTitle: {
-    fontSize: 20,
-    color: "#2eb12e",
+
+  spanishContainer: {
+    marginVertical: 10,
+  },
+  imageContainer: {
+    marginVertical: 10,
+  },
+  spanishWord: {
+    color: Colors.blue.blue800,
+    fontSize: 24,
+    textTransform: "capitalize",
     fontWeight: "bold",
     marginBottom: 6,
+    lineHeight: 24,
+  },
+  spanisDefinition: {
+    color: Colors.white.white700,
+    lineHeight: 24,
+    fontSize: 17,
+  },
+  codeSwitchingContainer: {
+    marginTop: 10,
+  },
+  synonymsContainer: {
+    marginTop: 10,
+  },
+  titleBox: {
+    fontSize: 18,
+    color: Colors.silver.silver400,
+    fontWeight: "bold",
+    marginBottom: 6,
+    textDecorationLine: "underline",
+    fontStyle: "italic",
   },
   exampleText: {
     fontSize: 16,
-    color: "#8B949E",
+    color: Colors.white.white500,
     marginTop: 4,
     lineHeight: 24,
+  },
+  synonymList: {
+    fontSize: 16,
+    color: Colors.white.white900,
+    marginTop: 4,
+    lineHeight: 24,
+    textTransform: "capitalize",
   },
   exampleTextTitle: {
     fontSize: 22,
     textTransform: "capitalize",
     marginTop: 4,
     lineHeight: 24,
-    color: "#2eb12e",
+    color: Colors.green.green500,
     fontWeight: "bold",
   },
   boldText: {
     fontWeight: "bold",
-    color: "#2eb12e",
+    color: Colors.green.green500,
   },
 
   cardIndexText: {
     fontSize: 16,
-    color: "#C9D1D9",
+    color: Colors.blue.blue500,
   },
   errorText: {
     fontSize: 18,
-    color: "#ff4c4c",
+    color: Colors.red.red500,
     marginTop: 20,
   },
-
-  buttonContainer: {
+  datesContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginTop: 20,
+    borderBlockColor: Colors.orange.orange500,
+    borderWidth: 2,
+  },
+  buttonsLevelContainer: {
     flexDirection: "row",
     justifyContent: "space-around",
     gap: 10,
@@ -352,16 +442,16 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   easyButton: {
-    backgroundColor: "#248924",
+    backgroundColor: Colors.green.green700,
   },
   mediumButton: {
-    backgroundColor: "#0664c8",
+    backgroundColor: Colors.blue.blue700,
   },
   hardButton: {
-    backgroundColor: "#c73737",
+    backgroundColor: Colors.red.red700,
   },
-  buttonText: {
-    color: "#FFFFFF",
+  buttonLevelText: {
+    color: Colors.white.white200,
     fontSize: 16,
     fontWeight: "bold",
   },

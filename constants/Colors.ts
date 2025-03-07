@@ -81,8 +81,9 @@ export const Colors = {
     orange900: "#E65100",
   },
   purple: {
+    purpleNova: "#5944ae",
     purple200: "#BB86FC",
-    purple300: "#BB86FF",
+    purple300: "#5944ae",
     purple400: "#AB47BC",
     purple500: "#9C27B0",
     purple600: "#8E24AA",
