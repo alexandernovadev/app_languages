@@ -6,12 +6,12 @@ import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
+  const colorScheme = "dark";
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
+        tabBarActiveTintColor: Colors[colorScheme].tint,
         headerShown: false,
         tabBarStyle: {
           paddingBottom: 5,
@@ -70,7 +70,7 @@ export default function TabLayout() {
         }}
       />
 
-<Tabs.Screen
+      <Tabs.Screen
         name="lectures"
         options={{
           title: "Lectures",
@@ -95,8 +95,6 @@ export default function TabLayout() {
           ),
         }}
       />
-
-
     </Tabs>
   );
 }

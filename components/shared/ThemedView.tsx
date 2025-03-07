@@ -20,6 +20,8 @@ export function ThemedView({
     { light: lightColor, dark: darkColor },
     "background"
   );
+  // Aui el bg negro
+    console.log("backgroundColor ",backgroundColor);
 
   return (
     <SafeAreaView
