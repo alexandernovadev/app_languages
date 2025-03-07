@@ -10,21 +10,18 @@ import {
   ImageBackground,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
-import { NativeStackNavigationProp } from "react-native-screens/lib/typescript/native-stack/types";
 import { useLectureStore } from "@/store/useLectureStore";
 import { getTitle } from "@/utils/getTitleFromMD";
 import { MainLayoutView } from "@/components/Layouts/MainLayoutView";
-import { RootStackParamList } from "@/app/_layout";
+import {navigation} from "@/hooks/useNavigation";
+import { Colors } from "@/constants/Colors";
 
 export function HomePage() {
-  const navigation =
-    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { lectures, loading, fetchLectures, page, total } = useLectureStore();
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
-    fetchLectures(); // Load the initial set of lectures
+    fetchLectures();
   }, [fetchLectures]);
 
   const onRefresh = useCallback(() => {
@@ -33,9 +30,7 @@ export function HomePage() {
   }, [fetchLectures]);
 
   const handleLoadMore = () => {
-    if (lectures.length < total) {
-      fetchLectures(page + 1); // Load next page
-    }
+    if (lectures.length < total) fetchLectures(page + 1);
   };
 
   return (
@@ -45,17 +40,21 @@ export function HomePage() {
           <Ionicons
             name="search-outline"
             size={20}
-            color="#aaa"
+            color={Colors.customColors.white.white300}
             style={styles.searchIcon}
           />
           <TextInput
             placeholder="Search"
-            placeholderTextColor="#aaa"
+            placeholderTextColor={Colors.customColors.white.white500}
             style={styles.searchInput}
           />
         </View>
         <TouchableOpacity style={styles.filterButton}>
-          <Ionicons name="options-outline" size={24} color="#aaa" />
+          <Ionicons
+            name="options-outline"
+            size={24}
+            color={Colors.customColors.white.white300}
+          />
         </TouchableOpacity>
       </View>
 
@@ -74,7 +73,7 @@ export function HomePage() {
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.card}
-            onPress={() => navigation.navigate("Details", { id: item._id })}
+            onPress={() => navigation.navigate("Details", { id: item._id }) }
           >
             <ImageBackground
               source={{ uri: item.img }}
@@ -123,7 +122,7 @@ export function HomePage() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#000000",
+    backgroundColor: Colors.customColors.black.black900,
   },
   searchFilterContainer: {
     flexDirection: "row",
@@ -134,7 +133,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#333",
+    backgroundColor: Colors.customColors.black.black400,
     borderRadius: 8,
     paddingHorizontal: 8,
     paddingVertical: 8,
@@ -147,7 +146,7 @@ const styles = StyleSheet.create({
     color: "#eeeee",
   },
   filterButton: {
-    backgroundColor: "#333",
+    backgroundColor: Colors.customColors.black.black400,
     borderRadius: 8,
     padding: 8,
     marginLeft: 8,
@@ -159,7 +158,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   card: {
-    backgroundColor: "#2c2c2e",
+    backgroundColor: Colors.customColors.black.black500,
     borderRadius: 12,
     overflow: "hidden",
     marginBottom: 16,
@@ -167,7 +166,7 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     height: 80,
-    backgroundColor: "#444",
+    backgroundColor: Colors.customColors.black.black400,
     justifyContent: "flex-start",
     alignItems: "flex-start",
     paddingLeft: 8,
@@ -179,7 +178,7 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   cardTitle: {
-    color: "#fff",
+    color: Colors.customColors.white.white300,
     fontSize: 14,
     fontWeight: "500",
     marginBottom: 4,
@@ -194,12 +193,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   infoText: {
-    color: "#aaa",
+    color: Colors.customColors.white.white300,
     fontSize: 12,
     marginLeft: 4,
   },
   levelBadge: {
-    color: "#0a84ff",
+    color: Colors.customColors.blue.blue600,
     fontSize: 12,
     fontWeight: "600",
   },
