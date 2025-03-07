@@ -361,11 +361,9 @@ const styles = StyleSheet.create<StylesType>({
     fontSize: 17,
   },
   titleBox: {
-    fontSize: 18,
+    fontSize: 17,
     color: Colors.silver.silver400,
     fontWeight: "bold",
-    marginBottom: 6,
-    fontStyle: "italic",
   },
   itemText: {
     fontSize: 16,
@@ -396,8 +394,8 @@ const styles = StyleSheet.create<StylesType>({
   },
   dates: {
     fontSize: 16,
-    color: Colors.gray.gray400,
-    marginTop: 10,
+    color: Colors.gray.gray300,
+    marginBottom: 10,
   },
   image: {
     width: "100%",
