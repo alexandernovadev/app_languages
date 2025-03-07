@@ -12,12 +12,11 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import { MainLayoutView } from "@/components/shared/MainLayoutView";
 import { NativeStackNavigationProp } from "react-native-screens/lib/typescript/native-stack/types";
 import { useLectureStore } from "@/store/useLectureStore";
 import { getTitle } from "@/utils/getTitleFromMD";
 import { RootStackParamList } from "../_layout";
-
+import { MainLayoutView } from "@/components/shared/MainLayoutView";
 
 export default function HomeScreen() {
   const navigation =

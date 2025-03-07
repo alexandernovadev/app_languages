@@ -1,8 +1,9 @@
 import { Text, StyleSheet } from "react-native";
-import { MainLayoutView } from "@/components/shared/MainLayoutView";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "react-native-screens/lib/typescript/native-stack/types";
 import { RootStackParamList } from "../_layout";
+import { MainLayoutView } from "@/components/shared/MainLayoutView";
+import { Colors } from "@/constants/Colors";
 
 export default function ProfileScreen() {
   const navigation =
@@ -10,7 +11,7 @@ export default function ProfileScreen() {
 
   return (
     <MainLayoutView>
-      <Text>V. 2025 2 marzo nova</Text>
+      <Text style={styles.titleContainer}>V. 2025 2 marzo nova</Text>
     </MainLayoutView>
   );
 }
@@ -20,16 +21,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: "absolute",
-  },
+    color: Colors.customColors.silver.silver200,
+  }
 });

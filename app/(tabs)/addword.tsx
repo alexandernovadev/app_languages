@@ -8,9 +8,9 @@ import {
   ScrollView,
   ActivityIndicator,
 } from "react-native";
-import { MainLayoutView } from "@/components/shared/MainLayoutView";
 import { Word } from "@/interfaces/models/Word";
 import { BACKURL } from "@/api/backurl";
+import { MainLayoutView } from "@/components/shared/MainLayoutView";
 
 export default function AddwordScreen() {
   const [word, setWord] = useState("");
