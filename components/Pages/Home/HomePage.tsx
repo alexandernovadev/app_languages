@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
 
-// 📌 React Native Components
 import {
   StyleSheet,
   View,
@@ -12,12 +11,10 @@ import {
   ImageBackground,
 } from "react-native";
 
-// 📌 Librerías externas
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "react-native-screens/lib/typescript/native-stack/types";
 
-// 📌 Importaciones locales (store, utils, layouts, types)
 import { useLectureStore } from "@/store/useLectureStore";
 import { getTitle } from "@/utils/getTitleFromMD";
 import { MainLayoutView } from "@/components/Layouts/MainLayoutView";
@@ -118,7 +115,7 @@ export const HomePage = () => {
               disabled={loading}
               style={styles.loadMoreButton}
             >
-              <Text style={{ color: "#eaeaea", textAlign: "center" }}>
+              <Text style={styles.loadMoreButtonText}>
                 {loading ? "Loading..." : "Load more"}
               </Text>
             </TouchableOpacity>
@@ -167,6 +164,10 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.green.green700,
     padding: 8,
     borderRadius: 8,
+  },
+  loadMoreButtonText: {
+    color: Colors.white.white400,
+    textAlign: "center",
   },
   cardList: {
     paddingBottom: 16,
