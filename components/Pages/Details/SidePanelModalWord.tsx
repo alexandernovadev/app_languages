@@ -8,11 +8,16 @@ import {
   StyleSheet,
   ScrollView,
 } from "react-native";
+
 import * as Speech from "expo-speech";
 import Ionicons from "@expo/vector-icons/Ionicons";
+
 import { Word } from "@/interfaces/models/Word";
 import { BACKURL } from "@/api/backurl";
+import { Colors } from "@/constants/Colors";
 
+
+// TODO : Esta sera remplazada por Componente de Word 
 interface SidePanelProps {
   isVisible: boolean;
   wordSelected: string | null;
@@ -76,7 +81,7 @@ export const SidePanelModalWord: React.FC<SidePanelProps> = ({
         <Text style={styles.wordText}>{wordSelected}</Text>
         {wordDb && (
           <TouchableOpacity onPress={listenWord} style={styles.speakerIcon}>
-            <Ionicons name="volume-high-outline" size={32} color="white" />
+            <Ionicons name="volume-high-outline" size={32} color={Colors.white.white300}/>
           </TouchableOpacity>
         )}
       </View>

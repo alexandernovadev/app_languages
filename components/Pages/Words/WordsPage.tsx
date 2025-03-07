@@ -12,6 +12,7 @@ import { Word } from "@/interfaces/models/Word";
 import { BACKURL } from "@/api/backurl";
 import WordCardRoot from "@/components/shared/WordCardRoot";
 import { MainLayoutView } from "@/components/Layouts/MainLayoutView";
+import { Colors } from "@/constants/Colors";
 
 export function WordsPage() {
   const [words, setWords] = useState<Word[]>([]);
@@ -43,7 +44,7 @@ export function WordsPage() {
     };
 
     fetchWords();
-  }, [page, search]); // 🔥 Ahora también se ejecuta cuando cambia `search`
+  }, [page, search]); 
 
   const capitalize = (word: string) =>
     word.charAt(0).toUpperCase() + word.slice(1);
@@ -55,7 +56,7 @@ export function WordsPage() {
         <TextInput
           style={styles.input}
           placeholder="Buscar palabra..."
-          placeholderTextColor="#888"
+          placeholderTextColor={Colors.gray.gray300}
           value={search}
           onChangeText={setSearch}
         />
@@ -132,14 +133,14 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   input: {
-    backgroundColor: "#333",
-    color: "#fff",
+    backgroundColor: Colors.gray.gray850,
+    color: Colors.white.white300,
     padding: 12,
     borderRadius: 8,
     width: "100%",
   },
   row: {
-    backgroundColor: "#1e1e1e",
+    backgroundColor: Colors.black.black700,
     padding: 12,
     borderRadius: 8,
     marginBottom: 8,
@@ -152,15 +153,15 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     width: "100%",
   },
-  word: { color: "#fff", fontWeight: "bold", fontSize: 18 },
-  ipa: { color: "#BB86FC", fontWeight: "bold", fontSize: 16 },
+  word: { color: Colors.white.white300, fontWeight: "bold", fontSize: 18 },
+  ipa: { color: Colors.purple.purple200, fontWeight: "bold", fontSize: 16 },
   spanish: {
-    color: "#4CAF50",
+    color: Colors.green.green500,
     fontWeight: "bold",
     fontSize: 16,
     marginBottom: 5,
   },
-  definition: { color: "#bbb", fontSize: 14 },
+  definition: { color: Colors.white.white400, fontSize: 14 },
 
   pagination: {
     position: "absolute",
@@ -176,17 +177,18 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 8,
     borderTopRightRadius: 8,
   },
-  button: { color: "#4CAF50", fontWeight: "bold", padding: 10 },
+  button: { color: Colors.green.green600, fontWeight: "bold", padding: 10 },
   pageText: { color: "#fff" },
 
+  // TODO Replace it 
   modalContainer: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.8)",
+    backgroundColor: Colors.black.black800,
     justifyContent: "center",
     alignItems: "center",
   },
   modalContent: {
-    backgroundColor: "#222",
+    backgroundColor: Colors.black.black800,
     padding: 20,
     borderRadius: 10,
     width: "90%",

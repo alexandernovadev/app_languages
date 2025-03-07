@@ -14,6 +14,7 @@ import {
 import * as Speech from "expo-speech";
 import { BACKURL } from "@/api/backurl";
 import { Loading } from "@/components/shared/Loading";
+import { Colors } from "@/constants/Colors";
 
 export const FlashcardApp = () => {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
@@ -145,7 +146,7 @@ export const FlashcardApp = () => {
           <View style={styles.wordRow}>
             <Text style={styles.word}>{currentCard?.word}</Text>
             <TouchableOpacity onPress={listenWord} style={styles.speakerIcon}>
-              <Ionicons name="volume-high-outline" size={32} color="#2eb12e" />
+              <Ionicons name="volume-high-outline" size={32} color={Colors.green.green400} />
             </TouchableOpacity>
           </View>
           <Text style={styles.pronunciation}>{currentCard?.IPA}</Text>
@@ -192,11 +193,11 @@ export const FlashcardApp = () => {
                 <Ionicons
                   name="volume-high-outline"
                   size={32}
-                  color="#ffffff"
+                  color={Colors.white.white300}
                 />
               </TouchableOpacity>
             </View>
-            {/* 🔥 Agregamos el IPA en morado aquí 🔥 */}
+
             <Text style={styles.pronunciation}>{currentCard?.IPA}</Text>
             <Text style={styles.definition}>{currentCard?.definition}</Text>
 

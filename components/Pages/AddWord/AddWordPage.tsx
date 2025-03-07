@@ -11,6 +11,7 @@ import {
 import { Word } from "@/interfaces/models/Word";
 import { BACKURL } from "@/api/backurl";
 import { MainLayoutView } from "@/components/Layouts/MainLayoutView";
+import { Colors } from "@/constants/Colors";
 
 export default function AddWordPage() {
   const [word, setWord] = useState("");
@@ -170,7 +171,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: "#121212", // 🌙 Modo oscuro
+    backgroundColor: Colors.black.black900, 
   },
   inputContainer: {
     flexDirection: "row",
@@ -179,27 +180,29 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    backgroundColor: "#1e1e1e",
+    backgroundColor:  Colors.black.black800,
     color: "#fff",
     padding: 12,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#333",
+    borderColor:  Colors.black.black500,
     marginRight: 10,
   },
   button: {
-    backgroundColor: "#4CAF50",
+    backgroundColor:  Colors.green.green700,
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderRadius: 8,
   },
   buttonDisabled: {
-    backgroundColor: "#888",
+    backgroundColor:  Colors.gray.gray900,
   },
   buttonText: {
-    color: "#fff",
+    color:  Colors.white.white200,
     fontWeight: "bold",
   },
+
+  // Todo Replace it 
   wordContainer: {
     paddingBottom: 60,
   },
