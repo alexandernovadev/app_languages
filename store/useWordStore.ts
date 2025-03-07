@@ -4,16 +4,17 @@ import { Word } from "@/interfaces/models/Word";
 
 interface WordState {
   words: Word[];
-  wordActive: Word;
+  wordActive: Word | null;
   loading: boolean;
   error: string | null;
   fetchRecentHardOrMediumWords: () => Promise<void>;
   updateWordLevel: (wordId: string, level: string) => Promise<void>;
+  setActiveWord: (word: Word) => void; 
 }
 
 export const useWordStore = create<WordState>((set) => ({
   words: [],
-  wordActive: {} as Word,
+  wordActive: null,
   loading: false,
   error: null,
 
@@ -54,4 +55,6 @@ export const useWordStore = create<WordState>((set) => ({
       set({ error: "Error updating word level", loading: false });
     }
   },
+
+  setActiveWord: (word) => set({ wordActive: word }),
 }));

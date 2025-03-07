@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import {
   View,
   Text,
@@ -12,17 +12,15 @@ import { Ionicons } from "@expo/vector-icons";
 import * as Speech from "expo-speech";
 
 import { getLevelColor } from "@/utils/getLevelColor";
-import { Word } from "@/interfaces/models/Word";
 import { Colors } from "@/constants/Colors";
 import { SectionContainerProps, SectionHeaderProps, StylesType } from "./types";
 import { useWordStore } from "@/store/useWordStore";
 
-const WordCardRoot = ({ word }: { word: Word }) => {
-  
-  const { updateWordLevel } = useWordStore();
+const WordCardRoot = () => {
+  const { wordActive: word, updateWordLevel } = useWordStore();
 
   const listenWord = (rate = 0.8, language = "en-US") => {
-    Speech.speak(word.word, { language, rate });
+    Speech.speak(word?.word!, { language, rate });
   };
 
   const SectionContainer = ({
@@ -56,7 +54,7 @@ const WordCardRoot = ({ word }: { word: Word }) => {
     console.log(`Refresh ${type} coming soon`);
   };
 
-  if (!word) return <Text style={styles.itemText}>NO WORKS</Text>
+  if (!word) return <Text style={styles.itemText}>NO WORKS</Text>;
 
   return (
     <View style={styles.card}>
