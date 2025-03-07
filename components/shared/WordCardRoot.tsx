@@ -91,7 +91,9 @@ const WordCardRoot = ({ word }: { word: Word }) => {
           </View>
         </View>
 
-        <Text style={styles.definition} selectable>{word.definition}</Text>
+        <Text style={styles.definition} selectable>
+          {word.definition}
+        </Text>
 
         <View style={styles.spanishContainer}>
           <Text style={styles.spanishWord}>{word.spanish.word}</Text>
@@ -352,13 +354,34 @@ const styles = StyleSheet.create({
   },
   examplesContainer: {
     marginVertical: 10,
+    borderColor: Colors.black.black200,
+    borderWidth: 1,
+    padding: 8,
+    borderRadius: 8,
   },
-
   spanishContainer: {
     marginVertical: 10,
   },
   imageContainer: {
     marginVertical: 10,
+    borderColor: Colors.black.black200,
+    borderWidth: 1,
+    padding: 8,
+    borderRadius: 8,
+  },
+  codeSwitchingContainer: {
+    marginVertical: 10,
+    borderColor: Colors.black.black200,
+    borderWidth: 1,
+    padding: 8,
+    borderRadius: 8,
+  },
+  synonymsContainer: {
+    marginVertical: 10,
+    borderColor: Colors.black.black200,
+    borderWidth: 1,
+    padding: 8,
+    borderRadius: 8,
   },
   spanishWord: {
     color: Colors.blue.blue800,
@@ -373,18 +396,11 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     fontSize: 17,
   },
-  codeSwitchingContainer: {
-    marginTop: 10,
-  },
-  synonymsContainer: {
-    marginTop: 10,
-  },
   titleBox: {
     fontSize: 18,
     color: Colors.silver.silver400,
     fontWeight: "bold",
     marginBottom: 6,
-    textDecorationLine: "underline",
     fontStyle: "italic",
   },
   exampleText: {
