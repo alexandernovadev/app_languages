@@ -7,7 +7,6 @@ import { StatusBar } from "expo-status-bar";
 import { Platform } from "react-native";
 import "react-native-reanimated";
 import * as NavigationBar from "expo-navigation-bar";
-import { useColorScheme } from "@/hooks/useColorScheme";
 import { DARKMODE } from "@/constants/themeMain";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -20,7 +19,6 @@ export type RootStackParamList = {
 };
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
