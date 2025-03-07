@@ -7,10 +7,13 @@ import {
   StyleSheet,
   Image,
 } from "react-native";
+
 import Markdown, { ASTNode } from "react-native-markdown-display";
 import * as Speech from "expo-speech";
+
 import { Lecture } from "@/interfaces/models/Lectures";
 import { FontAwesome } from "@expo/vector-icons";
+import { Colors } from "@/constants/Colors";
 
 interface PropsMarkDownRender {
   lecture: Lecture | undefined;
@@ -113,11 +116,13 @@ export const MarkDownRender = ({
     [renderWords]
   );
 
+
+  // Todo : Hacer el efecto parallaz en infoContainer
   return (
     <ScrollView style={styles.markdownContainer}>
       <View style={styles.infoContainer}>
         <View style={styles.badgeContainer}>
-          <FontAwesome name="clock-o" size={16} color="#4CAF50" />
+          <FontAwesome name="clock-o" size={16} color={Colors.green.green900} />
           <Text style={styles.badgeText}>{lecture?.time} min</Text>
         </View>
         <View style={[styles.badgeContainer, styles.levelBadge]}>
@@ -150,6 +155,7 @@ const styles = StyleSheet.create({
   markdownContainer: {
     flex: 1,
     width: "100%",
+    marginBottom: 24,
   },
   espaciado: {
     marginBottom: 24,
@@ -165,24 +171,24 @@ const styles = StyleSheet.create({
   badgeContainer: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#333",
+    backgroundColor: Colors.gray.gray850,
     borderRadius: 12,
     paddingHorizontal: 8,
     paddingVertical: 4,
     marginRight: 8,
-    borderColor: "#4CAF50",
+    borderColor: Colors.green.green500,
     borderWidth: 1,
   },
   badgeText: {
-    color: "#eeeeee",
+    color: Colors.white.white300,
     fontSize: 16,
     marginLeft: 4,
   },
   levelBadge: {
-    borderColor: "#2196F3",
+    borderColor: Colors.blue.blue800,
   },
   languageBadge: {
-    borderColor: "#333",
+    borderColor: Colors.gray.gray850,
   },
   image: {
     width: "100%",
@@ -191,23 +197,23 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   text: {
-    color: "#eeeeee",
+    color: Colors.white.white300,
     fontSize: 18,
     lineHeight: 32,
   },
   heading1: {
     fontSize: 28,
-    color: "white",
+    color: Colors.white.white400,
     fontWeight: "bold",
   },
   heading2: {
     fontSize: 24,
-    color: "white",
+    color: Colors.white.white500,
     fontWeight: "bold",
   },
   heading3: {
     fontSize: 22,
-    color: "#b6b6b6ff",
+    color: Colors.white.white500,
     fontWeight: "semibold",
   },
   listItem: {
@@ -217,7 +223,7 @@ const styles = StyleSheet.create({
     marginVertical: 6,
   },
   bullet: {
-    color: "white",
+    color: Colors.white.white600,
     fontSize: 42,
     paddingRight: 8,
     position: "relative",
@@ -225,7 +231,7 @@ const styles = StyleSheet.create({
   },
   listItemText: {
     flex: 1,
-    color: "white",
+    color: Colors.white.white600,
     fontSize: 18,
   },
 });

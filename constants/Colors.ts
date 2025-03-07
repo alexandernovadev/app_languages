@@ -9,6 +9,17 @@ export const Colors = {
     white800: "#B0B0B0",
     white900: "#A3A3A3",
   },
+  gray: {
+    gray200: "#EEEEEE",
+    gray300: "#E0E0E0",
+    gray400: "#BDBDBD",
+    gray500: "#9E9E9E",
+    gray600: "#757575",
+    gray700: "#616161",
+    gray800: "#424242",
+    gray850: "#333333",
+    gray900: "#212121",
+  },
   black: {
     black200: "#4F4F4F",
     black300: "#454545",
