@@ -1,6 +1,5 @@
 import {
   DarkTheme,
-  DefaultTheme,
   ThemeProvider,
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
@@ -21,7 +20,6 @@ export type RootStackParamList = {
   Details: { id: string };
   NoTabsScreen: undefined;
 };
-
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -45,13 +43,13 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+    <ThemeProvider value={DarkTheme}>
       {/* Oculta la barra de estado en ambas plataformas */}
-      <StatusBar hidden style={colorScheme === "dark" ? "light" : "dark"} />
-      
+      <StatusBar hidden style={"dark"} />
+
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="Details" options={{  headerShown: false }}  />
+        <Stack.Screen name="Details" options={{ headerShown: false }} />
         <Stack.Screen name="NoTabsScreen" options={{ headerShown: false }} />
       </Stack>
     </ThemeProvider>
