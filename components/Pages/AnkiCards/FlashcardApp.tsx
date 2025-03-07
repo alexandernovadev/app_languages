@@ -10,13 +10,12 @@ import {
   Easing,
   ScrollView,
   Image,
-  ActivityIndicator,
 } from "react-native";
 import * as Speech from "expo-speech";
 import { BACKURL } from "@/api/backurl";
 import { Loading } from "@/components/shared/Loading";
 
-const FlashcardApp = () => {
+export const FlashcardApp = () => {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
   const flipAnimation = useState(new Animated.Value(0))[0];
