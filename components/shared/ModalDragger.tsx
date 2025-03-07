@@ -8,6 +8,7 @@ import {
   StyleSheet,
 } from "react-native";
 import { SidePanelModalWord } from "../Pages/Details/SidePanelModalWord";
+import { Colors } from "@/constants/Colors";
 
 interface PropsModalDragger {
   wordSelected: string;
@@ -99,10 +100,9 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: "88%",
-    backgroundColor: "#333",
+    backgroundColor: Colors.black.black800,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    paddingHorizontal: 16,
     bottom: 0,
   },
   overlay: {
@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
   },
   overlayBackground: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.3)",
+    backgroundColor: Colors.translucentBlack.black40,
   },
   modalHandle: {
     width: 60,

@@ -8,10 +8,12 @@ import {
   ScrollView,
   ActivityIndicator,
 } from "react-native";
+
 import { Word } from "@/interfaces/models/Word";
 import { BACKURL } from "@/api/backurl";
 import { MainLayoutView } from "@/components/Layouts/MainLayoutView";
 import { Colors } from "@/constants/Colors";
+import WordCardRoot from "@/components/shared/WordCardRoot/WordCardRoot";
 
 export default function AddWordPage() {
   const [word, setWord] = useState("");
@@ -56,13 +58,6 @@ export default function AddWordPage() {
     }
   }, [word]);
 
-  const listenWord = () => {
-    if (wordDb?.word) {
-      const utterance = new SpeechSynthesisUtterance(wordDb.word);
-      utterance.lang = "en-US";
-      speechSynthesis.speak(utterance);
-    }
-  };
 
   return (
     <MainLayoutView style={styles.container}>
@@ -70,7 +65,7 @@ export default function AddWordPage() {
         <TextInput
           style={styles.input}
           placeholder="Escribe una palabra..."
-          placeholderTextColor="#888"
+          placeholderTextColor={Colors.gray.gray850}
           value={word}
           onChangeText={setWord}
         />
@@ -80,7 +75,7 @@ export default function AddWordPage() {
           disabled={loadingGetWord}
         >
           {loadingGetWord ? (
-            <ActivityIndicator color="#fff" />
+            <ActivityIndicator color={Colors.white.white400} />
           ) : (
             <Text style={styles.buttonText}>Generar</Text>
           )}
@@ -89,74 +84,7 @@ export default function AddWordPage() {
 
       <ScrollView contentContainerStyle={styles.wordContainer}>
         {wordDb ? (
-          <View style={styles.card}>
-            <View style={styles.wordHeader}>
-              <Text style={styles.wordTitle}>{wordDb.word}</Text>
-
-              <TouchableOpacity
-                onPress={listenWord}
-                style={styles.speakerButton}
-              >
-                <Text style={styles.speakerText}>🔊</Text>
-              </TouchableOpacity>
-            </View>
-            <View
-              style={{
-                paddingVertical: 10,
-                
-              }}
-            >
-              <Text style={styles.wordTitle}>
-                {wordDb.spanish.word}
-              </Text>
-            </View>
-
-            {wordDb.IPA && <Text style={styles.ipa}>{wordDb.IPA}</Text>}
-            <Text style={styles.definition}>{wordDb.definition}</Text>
-
-            {wordDb.examples && wordDb.examples.length > 0 && (
-              <View>
-                <Text style={styles.sectionTitle}>Ejemplos:</Text>
-                {wordDb.examples.map((example, index) => (
-                  <Text key={index} style={styles.example}>
-                    • {example}
-                  </Text>
-                ))}
-              </View>
-            )}
-
-            {wordDb.sinonyms && wordDb.sinonyms.length > 0 && (
-              <View>
-                <Text style={styles.sectionTitle}>Sinónimos:</Text>
-                <Text style={styles.synonym}>{wordDb.sinonyms.join(", ")}</Text>
-              </View>
-            )}
-
-            {wordDb.type && (
-              <View>
-                <Text style={styles.sectionTitle}>Tipo:</Text>
-                <Text style={styles.modalText}>{wordDb.type.join(", ")}</Text>
-              </View>
-            )}
-
-            {wordDb.level && (
-              <View>
-                <Text style={styles.sectionTitle}>Nivel:</Text>
-                <Text style={styles.modalText}>{wordDb.level}</Text>
-              </View>
-            )}
-
-            {wordDb.codeSwitching && wordDb.codeSwitching.length > 0 && (
-              <View>
-                <Text style={styles.sectionTitle}>Code-Switching:</Text>
-                {wordDb.codeSwitching.map((sentence, index) => (
-                  <Text key={index} style={styles.example}>
-                    • {sentence}
-                  </Text>
-                ))}
-              </View>
-            )}
-          </View>
+          <WordCardRoot word={wordDb} />
         ) : (
           <Text style={styles.noWordText}>
             Add new word to see its definition
@@ -171,7 +99,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: Colors.black.black900, 
+    backgroundColor: Colors.black.black900,
   },
   inputContainer: {
     flexDirection: "row",
@@ -180,95 +108,33 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    backgroundColor:  Colors.black.black800,
-    color: "#fff",
+    backgroundColor: Colors.black.black800,
+    color: Colors.white.white400,
     padding: 12,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor:  Colors.black.black500,
+    borderColor: Colors.black.black500,
     marginRight: 10,
   },
   button: {
-    backgroundColor:  Colors.green.green700,
+    backgroundColor: Colors.green.green700,
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderRadius: 8,
   },
   buttonDisabled: {
-    backgroundColor:  Colors.gray.gray900,
+    backgroundColor: Colors.gray.gray900,
   },
   buttonText: {
-    color:  Colors.white.white200,
+    color: Colors.white.white200,
     fontWeight: "bold",
   },
-
-  // Todo Replace it 
   wordContainer: {
     paddingBottom: 60,
   },
-  card: {
-    backgroundColor: "#1e1e1e",
-    padding: 16,
-    borderRadius: 10,
-    width: "100%",
-  },
-  wordHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 10,
-  },
-  wordTitle: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#fff",
-    textTransform: "capitalize",
-  },
-  speakerButton: {
-    backgroundColor: "#BB86FC",
-    padding: 8,
-    borderRadius: 50,
-  },
-  speakerText: {
-    fontSize: 18,
-    color: "#fff",
-  },
-  ipa: {
-    fontSize: 18,
-    color: "#BB86FC",
-    marginBottom: 5,
-  },
-  definition: {
-    fontSize: 16,
-    color: "#bbb",
-    flex: 1,
-    textAlign: "justify",
-    marginBottom: 10,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#4CAF50",
-    marginTop: 10,
-  },
-  example: {
-    fontSize: 16,
-    color: "#ccc",
-    marginLeft: 10,
-  },
-  synonym: {
-    fontSize: 16,
-    color: "#FF9800",
-    fontStyle: "italic",
-  },
-  modalText: {
-    fontSize: 14,
-    color: "#bbb",
-    marginTop: 5,
-  },
   noWordText: {
     fontSize: 18,
-    color: "#888",
+    color: Colors.gray.gray600,
     textAlign: "center",
     marginTop: 20,
   },

@@ -15,18 +15,17 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { Word } from "@/interfaces/models/Word";
 import { BACKURL } from "@/api/backurl";
 import { Colors } from "@/constants/Colors";
+import WordCardRoot from "@/components/shared/WordCardRoot/WordCardRoot";
 
-
-// TODO : Esta sera remplazada por Componente de Word 
 interface SidePanelProps {
   isVisible: boolean;
   wordSelected: string | null;
 }
 
-export const SidePanelModalWord: React.FC<SidePanelProps> = ({
+export const SidePanelModalWord = ({
   isVisible,
   wordSelected,
-}) => {
+}: SidePanelProps) => {
   const [wordDb, setWordDb] = useState<Word | undefined>(undefined);
   const [loadingGetWord, setLoadingGetWord] = useState(false);
 
@@ -77,90 +76,25 @@ export const SidePanelModalWord: React.FC<SidePanelProps> = ({
 
   return (
     <ScrollView style={styles.container}>
-      <View style={styles.wordRow}>
-        <Text style={styles.wordText}>{wordSelected}</Text>
-        {wordDb && (
-          <TouchableOpacity onPress={listenWord} style={styles.speakerIcon}>
-            <Ionicons name="volume-high-outline" size={32} color={Colors.white.white300}/>
-          </TouchableOpacity>
-        )}
-      </View>
-      {wordDb?.IPA && <Text style={styles.ipaText}>{wordDb.IPA}</Text>}
-
       {wordDb ? (
         <View style={styles.content}>
-          {wordDb.level && (
-            <Text style={styles.levelText}>Nivel: {wordDb.level}</Text>
-          )}
-          {wordDb.type && (
-            <Text style={styles.typeText}>Type {wordDb.type.join(", ")}</Text>
-          )}
-          <Text style={styles.definition}>{wordDb.definition}</Text>
-
-          {wordDb.img && (
-            <Image
-              source={{ uri: wordDb.img }}
-              style={styles.image}
-              resizeMode="cover"
-            />
-          )}
-
-          {wordDb.examples && (
-            <View style={styles.examplesContainer}>
-              <Text style={styles.examplesTitle}>Examples</Text>
-              {wordDb.examples.map((example, index) => (
-                <Text key={index} style={styles.exampleText}>
-                  • {example}
-                </Text>
-              ))}
-            </View>
-          )}
-
-          {wordDb.codeSwitching && (
-            <View style={styles.examplesContainer}>
-              <Text style={styles.examplesTitle}>Code-Switching Examples</Text>
-              {wordDb.codeSwitching.map((example, index) => (
-                <Text key={index} style={styles.exampleText}>
-                  • {example}
-                </Text>
-              ))}
-            </View>
-          )}
-
-          {wordDb.sinonyms && (
-            <View style={styles.examplesContainer}>
-              <Text style={styles.examplesTitle}>Sinonyms</Text>
-              {wordDb.sinonyms.map((sinonym, index) => (
-                <Text
-                  key={index}
-                  style={[styles.exampleText, { textTransform: "capitalize" }]}
-                >
-                  <Text
-                  style={styles.boldText}
-                  >{index + 1}) </Text> {sinonym}
-                </Text>
-              ))}
-            </View>
-          )}
-
-          {wordDb.spanish && (
-            <View style={[styles.examplesContainer, { paddingBottom: 12 }]}>
-              <Text style={styles.examplesTitle}>Spanish</Text>
-              <Text
-                style={[styles.exampleText, { textTransform: "capitalize" }]}
-              >
-                <Text style={styles.boldText}>Word </Text>
-                {wordDb.spanish.word}
-              </Text>
-              <Text style={styles.exampleText}>
-                <Text style={styles.boldText}>Definición </Text>
-                {wordDb.spanish.definition}
-              </Text>
-            </View>
-          )}
+          <WordCardRoot word={wordDb} />
         </View>
       ) : (
         <View style={styles.noWordContainer}>
+          <View style={styles.wordRow}>
+            <Text style={styles.wordText}>{wordSelected}</Text>
+            {wordDb && (
+              <TouchableOpacity onPress={listenWord} style={styles.speakerIcon}>
+                <Ionicons
+                  name="volume-high-outline"
+                  size={32}
+                  color={Colors.white.white300}
+                />
+              </TouchableOpacity>
+            )}
+          </View>
+
           <Text style={styles.noWordText}>Word not found in the database.</Text>
           <TouchableOpacity
             onPress={generateWord}
@@ -187,7 +121,6 @@ export const SidePanelModalWord: React.FC<SidePanelProps> = ({
 const styles = StyleSheet.create({
   container: {
     height: "100%",
-    paddingRight: 10,
     paddingBottom: 24,
   },
   wordRow: {
@@ -198,7 +131,7 @@ const styles = StyleSheet.create({
   },
   wordText: {
     fontSize: 40,
-    color: "#2eb12e",
+    color: Colors.green.green600,
     fontWeight: "bold",
     textTransform: "capitalize",
   },
@@ -208,52 +141,9 @@ const styles = StyleSheet.create({
   content: {
     marginTop: 20,
   },
-  levelText: {
-    fontSize: 16,
-    color: "#d0de11",
-  },
-  typeText: {
-    fontSize: 14,
-    color: "#44ae44",
-    marginTop: 2,
-  },
-  definition: {
-    fontSize: 18,
-    color: "white",
-    marginTop: 10,
-  },
-  ipaText: {
-    fontSize: 20,
-    color: "#7a5cf1", // Morado
-    marginTop: 4,
-    fontWeight: "bold",
-  },
-  image: {
-    width: "100%",
-    height: 150,
-    borderRadius: 10,
-    marginTop: 10,
-    borderWidth: 1,
-    borderColor: "green",
-  },
-  examplesContainer: {
-    marginTop: 10,
-  },
-  examplesTitle: {
-    fontSize: 22,
-    color: "#2b952b",
-    marginBottom: 6,
-    fontWeight: "bold",
-  },
-  exampleText: {
-    fontSize: 16,
-    color: "white",
-    marginTop: 4,
-    lineHeight: 26,
-  },
   boldText: {
     fontWeight: "bold",
-    color: "#2eb12e",
+    color: Colors.green.green600,
   },
   noWordContainer: {
     flex: 1,
@@ -261,7 +151,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   noWordText: {
-    color: "#2eb12e",
+    color: Colors.green.green600,
     marginBottom: 10,
     marginTop: 32,
     paddingTop: 32,
@@ -269,12 +159,12 @@ const styles = StyleSheet.create({
   generateButton: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#2eb12e",
+    backgroundColor: Colors.green.green600,
     padding: 10,
     borderRadius: 8,
   },
   generateButtonText: {
-    color: "white",
+    color: Colors.white.white300,
     fontSize: 16,
   },
 });
