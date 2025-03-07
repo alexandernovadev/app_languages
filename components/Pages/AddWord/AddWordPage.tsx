@@ -9,82 +9,53 @@ import {
   ActivityIndicator,
 } from "react-native";
 
-import { Word } from "@/interfaces/models/Word";
-import { BACKURL } from "@/api/backurl";
+import { useWordStore } from "@/store/useWordStore";
 import { MainLayoutView } from "@/components/Layouts/MainLayoutView";
 import { Colors } from "@/constants/Colors";
 import WordCardRoot from "@/components/shared/WordCardRoot/WordCardRoot";
 
 export default function AddWordPage() {
   const [word, setWord] = useState("");
-  const [wordDb, setWordDb] = useState<Word | undefined>(undefined);
-  const [loadingGetWord, setLoadingGetWord] = useState(false);
-
-  const getWordFromDb = async (word: string) => {
-    try {
-      const response = await fetch(
-        `${BACKURL}/api/words/word/${word.toLowerCase()}`
-      );
-      const { data } = await response.json();
-      setWordDb(data);
-    } catch (error) {
-      console.error("Error fetching word from DB:", error);
-    }
-  };
-
-  const generateWord = async () => {
-    if (!word.trim()) return;
-    setLoadingGetWord(true);
-    try {
-      const response = await fetch(`${BACKURL}/api/ai/generate-wordJson`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ prompt: word, language: "en" }),
-      });
-      const { data } = await response.json();
-      setWordDb(data);
-    } catch (error) {
-      console.error("Error generating word:", error);
-    } finally {
-      setLoadingGetWord(false);
-    }
-  };
+  const { wordActive, loading, getWord, generateWord } = useWordStore();
 
   useEffect(() => {
-    if (word) {
-      getWordFromDb(word);
+    if (word.trim()) {
+      const delayDebounceFn = setTimeout(() => {
+        getWord(word);
+      }, 500);
+      return () => clearTimeout(delayDebounceFn);
     }
   }, [word]);
-
 
   return (
     <MainLayoutView style={styles.container}>
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
-          placeholder="Escribe una palabra..."
+          placeholder="Look up new word"
           placeholderTextColor={Colors.gray.gray850}
           value={word}
           onChangeText={setWord}
         />
         <TouchableOpacity
-          style={[styles.button, loadingGetWord && styles.buttonDisabled]}
-          onPress={generateWord}
-          disabled={loadingGetWord}
+          style={[
+            styles.button,
+            (loading || wordActive) && styles.buttonDisabled,
+          ]}
+          onPress={() => generateWord(word)}
+          disabled={!!loading || !!wordActive}
         >
-          {loadingGetWord ? (
+          {loading ? (
             <ActivityIndicator color={Colors.white.white400} />
           ) : (
-            <Text style={styles.buttonText}>Generar</Text>
+            <Text style={styles.buttonText}>Make</Text>
           )}
         </TouchableOpacity>
       </View>
 
       <ScrollView contentContainerStyle={styles.wordContainer}>
-        {wordDb ? (
-          <WordCardRoot word={wordDb} />
+        {wordActive ? (
+          <WordCardRoot />
         ) : (
           <Text style={styles.noWordText}>
             Add new word to see its definition
