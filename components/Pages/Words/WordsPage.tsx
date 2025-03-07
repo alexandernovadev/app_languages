@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { Word } from "@/interfaces/models/Word";
 import { BACKURL } from "@/api/backurl";
-import WordCardRoot from "@/components/shared/WordCardRoot";
+import WordCardRoot from "@/components/shared/WordCardRoot/WordCardRoot";
 import { MainLayoutView } from "@/components/Layouts/MainLayoutView";
 import { Colors } from "@/constants/Colors";
 
@@ -44,7 +44,7 @@ export function WordsPage() {
     };
 
     fetchWords();
-  }, [page, search]); 
+  }, [page, search]);
 
   const capitalize = (word: string) =>
     word.charAt(0).toUpperCase() + word.slice(1);
@@ -180,7 +180,7 @@ const styles = StyleSheet.create({
   button: { color: Colors.green.green600, fontWeight: "bold", padding: 10 },
   pageText: { color: "#fff" },
 
-  // TODO Replace it 
+  // TODO Replace it
   modalContainer: {
     flex: 1,
     backgroundColor: Colors.black.black800,
