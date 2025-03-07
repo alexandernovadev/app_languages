@@ -242,13 +242,13 @@ const WordCardRoot = ({ word }: { word: Word }) => {
 const styles = StyleSheet.create<StylesType>({
   // Contenedores principales
   card: {
-    padding: 20,
+    padding: 12,
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: Colors.black.black800,
   },
   scrollContent: {
-    paddingHorizontal: 10,
+    paddingHorizontal: 8,
     paddingBottom: 20,
   },
 
@@ -260,7 +260,7 @@ const styles = StyleSheet.create<StylesType>({
     marginVertical: 5,
   },
   sectionContainer: {
-    marginVertical: 10,
+    marginVertical: 2,
   },
   boxedContainer: {
     marginVertical: 10,
@@ -273,7 +273,7 @@ const styles = StyleSheet.create<StylesType>({
     flexDirection: "row",
     justifyContent: "space-around",
     gap: 10,
-    marginTop: 20,
+    marginTop: 8,
   },
   datesContainer: {
     padding: 4,
