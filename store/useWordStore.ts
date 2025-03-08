@@ -12,7 +12,8 @@ interface WordState {
     page: number;
     search: string;
   };
-  loading: boolean;
+  loading: boolean; // Para operaciones generales
+  loadingUpdate: boolean; // Para actualizar palabras
   error: string | null;
 
   fetchRecentHardOrMediumWords: () => Promise<void>;
@@ -35,6 +36,7 @@ export const useWordStore = create<WordState>((set, get) => ({
     search: "",
   },
   loading: false,
+  loadingUpdate: false, // Inicialmente no está en carga
   error: null,
 
   fetchRecentHardOrMediumWords: async () => {
@@ -52,26 +54,33 @@ export const useWordStore = create<WordState>((set, get) => ({
   },
 
   updateWordLevel: async (wordId, level) => {
-    set({ loading: true });
+    set({ loadingUpdate: true, error: null }); // Solo afecta a la actualización
+
     try {
       const response = await fetch(`${BACKURL}/api/words/${wordId}/level`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ level }),
       });
+
       const data = await response.json();
       if (data.success) {
         set((state) => ({
           words: state.words.map((w) =>
             w._id === wordId ? { ...w, level } : w
           ),
-          loading: false,
+          wordActive:
+            state.wordActive && state.wordActive._id === wordId
+              ? { ...state.wordActive, level }
+              : state.wordActive,
         }));
       } else {
-        set({ error: "Error updating word level", loading: false });
+        set({ error: "Error updating word level" });
       }
     } catch (error) {
-      set({ error: "Error updating word level", loading: false });
+      set({ error: "Error updating word level" });
+    } finally {
+      set({ loadingUpdate: false });
     }
   },
 

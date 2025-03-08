@@ -17,7 +17,7 @@ import { SectionContainerProps, SectionHeaderProps, StylesType } from "./types";
 import { useWordStore } from "@/store/useWordStore";
 
 const WordCardRoot = () => {
-  const { wordActive: word, updateWordLevel } = useWordStore();
+  const { wordActive: word, loadingUpdate, updateWordLevel } = useWordStore();
 
   const listenWord = (rate = 0.8, language = "en-US") => {
     Speech.speak(word?.word!, { language, rate });
@@ -196,8 +196,10 @@ const WordCardRoot = () => {
             style={[
               styles.levelButton,
               styles[`${level}Button` as keyof StylesType],
+              loadingUpdate && { opacity: 0.5 },
             ]}
             onPress={() => updateWordLevel(word._id!, level)}
+            disabled={loadingUpdate}
           >
             <Text style={styles.buttonLevelText}>
               {level.charAt(0).toUpperCase() + level.slice(1)}
