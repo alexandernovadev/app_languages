@@ -15,6 +15,7 @@ import { getLevelColor } from "@/utils/getLevelColor";
 import { Colors } from "@/constants/Colors";
 import { SectionContainerProps, SectionHeaderProps, StylesType } from "./types";
 import { useWordStore } from "@/store/useWordStore";
+import { formatDateV1 } from "@/utils/formatDates";
 
 const WordCardRoot = () => {
   const { wordActive: word, loadingUpdate, updateWordLevel } = useWordStore();
@@ -179,11 +180,15 @@ const WordCardRoot = () => {
           <View style={styles.datesContent}>
             <View style={styles.dateItem}>
               <Text style={styles.titleBox}>Updated</Text>
-              <Text style={styles.dates}>{String(word.updatedAt)}</Text>
+              <Text style={styles.dates}>
+                {formatDateV1(String(word.updatedAt))}
+              </Text>
             </View>
             <View style={styles.dateItem}>
               <Text style={styles.titleBox}>Created</Text>
-              <Text style={styles.dates}>{String(word.createdAt)}</Text>
+              <Text style={styles.dates}>
+                {formatDateV1(String(word.createdAt))}
+              </Text>
             </View>
           </View>
         </SectionContainer>

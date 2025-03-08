@@ -23,7 +23,7 @@ export function WordsPage() {
     setSearch,
     setPage,
     setActiveWord,
-    loading, // Nuevo estado para manejar la carga
+    loading, 
   } = useWordStore();
 
   const [modalVisible, setModalVisible] = useState(false);
@@ -61,7 +61,6 @@ export function WordsPage() {
 
   return (
     <MainLayoutView style={styles.container}>
-      {/* 🔎 Input de búsqueda */}
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
@@ -72,11 +71,10 @@ export function WordsPage() {
         />
       </View>
 
-      {/* 📜 Lista de palabras o indicador de carga */}
       {loading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={Colors.green.green600} />
-          <Text style={styles.loadingText}>Cargando palabras...</Text>
+          <Text style={styles.loadingText}>Loading words...</Text>
         </View>
       ) : (
         <FlatList
@@ -106,7 +104,6 @@ export function WordsPage() {
         />
       )}
 
-      {/* ⬅➡ Paginador */}
       <View style={styles.pagination}>
         <TouchableOpacity
           onPress={() => setPage(Math.max(page - 1, 1))}
@@ -125,14 +122,13 @@ export function WordsPage() {
         </TouchableOpacity>
       </View>
 
-      {/* 📝 Modal para mostrar la palabra activa */}
       <Modal visible={modalVisible} transparent animationType="slide">
         <View style={styles.cardhijo}>
           <TouchableOpacity
             style={styles.closeButton}
             onPress={handleCloseModal}
           >
-            <Text style={styles.closeButtonText}>Cerrar</Text>
+            <Text style={styles.closeButtonText}>Close</Text>
           </TouchableOpacity>
           {wordActive && <WordCardRoot />}
         </View>
