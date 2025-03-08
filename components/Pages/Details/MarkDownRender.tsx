@@ -30,6 +30,7 @@ export const MarkDownRender = ({
     if (word) {
       Speech.speak(word, {
         language: "en-US",
+        rate:.9
       });
     }
   }, []);
