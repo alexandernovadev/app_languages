@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -8,46 +8,39 @@ import {
   StyleSheet,
   Modal,
 } from "react-native";
-import { Word } from "@/interfaces/models/Word";
-import { BACKURL } from "@/api/backurl";
+
 import WordCardRoot from "@/components/shared/WordCardRoot/WordCardRoot";
 import { MainLayoutView } from "@/components/Layouts/MainLayoutView";
 import { Colors } from "@/constants/Colors";
+import { useWordStore } from "@/store/useWordStore";
 
 export function WordsPage() {
-  const [words, setWords] = useState<Word[]>([]);
-  const [search, setSearch] = useState("");
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [selectedWord, setSelectedWord] = useState<Word | null>(null);
+  const {
+    wordsList: { words, search, page, totalPages },
+    wordActive,
+    fetchWords,
+    setSearch,
+    setPage,
+    setActiveWord,
+  } = useWordStore();
 
-  // Resetear la paginación cuando cambia la búsqueda
+  const [modalVisible, setModalVisible] = useState(false);
+
   useEffect(() => {
-    setPage(1);
-  }, [search]);
-
-  useEffect(() => {
-    const fetchWords = async () => {
-      try {
-        const query = search ? `&wordUser=${search.toLowerCase()}` : "";
-        const response = await fetch(
-          `${BACKURL}/api/words?page=${page}${query}`
-        );
-        const data = await response.json();
-        if (data.success) {
-          setWords(data.data);
-          setTotalPages(data.pagination.pages);
-        }
-      } catch (error) {
-        console.error("Error al obtener palabras:", error);
-      }
-    };
-
     fetchWords();
   }, [page, search]);
 
   const capitalize = (word: string) =>
     word.charAt(0).toUpperCase() + word.slice(1);
+
+  const handleOpenModal = (word: any) => {
+    setActiveWord(word);
+    setModalVisible(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalVisible(false);
+  };
 
   return (
     <MainLayoutView style={styles.container}>
@@ -58,7 +51,7 @@ export function WordsPage() {
           placeholder="Buscar palabra..."
           placeholderTextColor={Colors.gray.gray300}
           value={search}
-          onChangeText={setSearch}
+          onChangeText={(text) => setSearch(text)}
         />
       </View>
 
@@ -69,7 +62,7 @@ export function WordsPage() {
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.row}
-            onPress={() => setSelectedWord(item)}
+            onPress={() => handleOpenModal(item)}
           >
             <View style={styles.headerRow}>
               <Text style={styles.word}>{capitalize(item.word)}</Text>
@@ -85,7 +78,7 @@ export function WordsPage() {
       {/* ⬅➡ Paginador */}
       <View style={styles.pagination}>
         <TouchableOpacity
-          onPress={() => setPage((prev) => Math.max(prev - 1, 1))}
+          onPress={() => setPage(Math.max(page - 1, 1))}
           disabled={page === 1}
         >
           <Text style={styles.button}>Anterior</Text>
@@ -94,26 +87,25 @@ export function WordsPage() {
           {page} / {totalPages}
         </Text>
         <TouchableOpacity
-          onPress={() => setPage((prev) => Math.min(prev + 1, totalPages))}
+          onPress={() => setPage(Math.min(page + 1, totalPages))}
           disabled={page === totalPages}
         >
           <Text style={styles.button}>Siguiente</Text>
         </TouchableOpacity>
       </View>
 
-      {selectedWord && (
-        <Modal visible={true} transparent animationType="slide">
-          <View style={styles.cardhijo}>
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={() => setSelectedWord(null)}
-            >
-              <Text style={styles.closeButtonText}>Cerrar</Text>
-            </TouchableOpacity>
-            <WordCardRoot word={selectedWord} />
-          </View>
-        </Modal>
-      )}
+      {/* 📝 Modal para mostrar la palabra activa */}
+      <Modal visible={modalVisible} transparent animationType="slide">
+        <View style={styles.cardhijo}>
+          <TouchableOpacity
+            style={styles.closeButton}
+            onPress={handleCloseModal}
+          >
+            <Text style={styles.closeButtonText}>Cerrar</Text>
+          </TouchableOpacity>
+          {wordActive && <WordCardRoot />}
+        </View>
+      </Modal>
     </MainLayoutView>
   );
 }
@@ -178,47 +170,12 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 8,
   },
   button: { color: Colors.green.green600, fontWeight: "bold", padding: 10 },
-  pageText: { color: "#fff" },
-
-  // TODO Replace it
-  modalContainer: {
-    flex: 1,
-    backgroundColor: Colors.black.black800,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  modalContent: {
-    backgroundColor: Colors.black.black800,
-    padding: 20,
-    borderRadius: 10,
-    width: "90%",
-    maxHeight: "80%",
-  },
-  modalTitle: {
-    fontSize: 22,
-    fontWeight: "bold",
-    color: "#fff",
-    textAlign: "center",
-    marginBottom: 10,
-  },
-  modalIPA: {
-    fontSize: 18,
-    color: "#BB86FC",
-    textAlign: "center",
-    marginBottom: 10,
-  },
-  modalSubtitle: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#4CAF50",
-    marginTop: 10,
-  },
-  modalText: { fontSize: 14, color: "#fff", marginTop: 5 },
+  pageText: { color: Colors.white.white300 },
   closeButton: {
-    backgroundColor: "#4CAF50",
+    backgroundColor: Colors.green.green700,
     padding: 10,
     borderRadius: 5,
     alignItems: "center",
   },
-  closeButtonText: { color: "#fff", fontWeight: "bold" },
+  closeButtonText: { color: Colors.white.white200, fontWeight: "bold" },
 });

@@ -1,11 +1,16 @@
 import { create } from "zustand";
-
 import { BACKURL } from "@/api/backurl";
 import { Word } from "@/interfaces/models/Word";
 
 interface WordState {
   words: Word[];
   wordActive: Word | null;
+  wordsList: {
+    words: Word[];
+    totalPages: number;
+    page: number;
+    search: string;
+  };
   loading: boolean;
   error: string | null;
 
@@ -14,11 +19,20 @@ interface WordState {
   setActiveWord: (word: Word) => void;
   getWord: (word: string) => Promise<void>;
   generateWord: (word: string) => Promise<void>;
+  fetchWords: (search?: string, page?: number) => Promise<void>;
+  setSearch: (search: string) => void;
+  setPage: (page: number) => void;
 }
 
-export const useWordStore = create<WordState>((set) => ({
+export const useWordStore = create<WordState>((set, get) => ({
   words: [],
   wordActive: null,
+  wordsList: {
+    words: [],
+    totalPages: 1,
+    page: 1,
+    search: "",
+  },
   loading: false,
   error: null,
 
@@ -90,4 +104,34 @@ export const useWordStore = create<WordState>((set) => ({
       set({ error: "Error generating word", loading: false });
     }
   },
+
+  fetchWords: async (
+    search = get().wordsList.search,
+    page = get().wordsList.page
+  ) => {
+    set({ loading: true, error: null });
+    try {
+      const query = search ? `&wordUser=${search.toLowerCase()}` : "";
+      const response = await fetch(`${BACKURL}/api/words?page=${page}${query}`);
+      const data = await response.json();
+      if (data.success) {
+        set({
+          wordsList: {
+            words: data.data,
+            totalPages: data.pagination.pages,
+            page,
+            search,
+          },
+          loading: false,
+        });
+      }
+    } catch (error) {
+      set({ error: "Error fetching words", loading: false });
+    }
+  },
+
+  setSearch: (search) =>
+    set((state) => ({ wordsList: { ...state.wordsList, search, page: 1 } })),
+  setPage: (page) =>
+    set((state) => ({ wordsList: { ...state.wordsList, page } })),
 }));
