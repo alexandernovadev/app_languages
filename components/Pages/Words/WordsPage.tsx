@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Modal,
+  ActivityIndicator,
 } from "react-native";
 
 import WordCardRoot from "@/components/shared/WordCardRoot/WordCardRoot";
@@ -22,6 +23,7 @@ export function WordsPage() {
     setSearch,
     setPage,
     setActiveWord,
+    loading, // Nuevo estado para manejar la carga
   } = useWordStore();
 
   const [modalVisible, setModalVisible] = useState(false);
@@ -34,7 +36,7 @@ export function WordsPage() {
 
     searchTimeout.current = setTimeout(() => {
       fetchWords();
-    }, 500); // Espera 500ms antes de hacer la petición
+    }, 500);
 
     return () => {
       if (searchTimeout.current) clearTimeout(searchTimeout.current);
@@ -70,30 +72,39 @@ export function WordsPage() {
         />
       </View>
 
-      {/* 📜 Lista de palabras */}
-      <FlatList
-        data={words}
-        keyExtractor={(item) => item.word}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.row}
-            onPress={() => handleOpenModal(item)}
-          >
-            <View style={styles.headerRow}>
-              <Text style={styles.word}>{capitalize(item.word)}</Text>
-              <Text style={styles.ipa}>{item.IPA}</Text>
+      {/* 📜 Lista de palabras o indicador de carga */}
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={Colors.green.green600} />
+          <Text style={styles.loadingText}>Cargando palabras...</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={words}
+          keyExtractor={(item) => item.word}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              style={styles.row}
+              onPress={() => handleOpenModal(item)}
+            >
+              <View style={styles.headerRow}>
+                <Text style={styles.word}>{capitalize(item.word)}</Text>
+                <Text style={styles.ipa}>{item.IPA}</Text>
+              </View>
+              <Text style={styles.spanish}>
+                {capitalize(item.spanish.word)}
+              </Text>
+              <Text style={styles.definition}>{item.definition}</Text>
+            </TouchableOpacity>
+          )}
+          contentContainerStyle={{ paddingBottom: 60, paddingTop: 80 }}
+          ListEmptyComponent={
+            <View style={styles.emptyContainer}>
+              <Text style={styles.emptyText}>❌ Not Found</Text>
             </View>
-            <Text style={styles.spanish}>{capitalize(item.spanish.word)}</Text>
-            <Text style={styles.definition}>{item.definition}</Text>
-          </TouchableOpacity>
-        )}
-        contentContainerStyle={{ paddingBottom: 60, paddingTop: 80 }}
-        ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>❌ Not Found</Text>
-          </View>
-        }
-      />
+          }
+        />
+      )}
 
       {/* ⬅➡ Paginador */}
       <View style={styles.pagination}>
@@ -207,5 +218,15 @@ const styles = StyleSheet.create({
     color: Colors.gray.gray300,
     fontSize: 16,
     fontWeight: "bold",
+  },
+  loadingContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  loadingText: {
+    marginTop: 10,
+    color: Colors.white.white300,
+    fontSize: 16,
   },
 });
