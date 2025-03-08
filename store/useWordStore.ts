@@ -1,4 +1,5 @@
 import { create } from "zustand";
+
 import { BACKURL } from "@/api/backurl";
 import { Word } from "@/interfaces/models/Word";
 
