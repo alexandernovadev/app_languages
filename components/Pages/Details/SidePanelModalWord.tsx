@@ -1,19 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import {
   View,
   Text,
   TouchableOpacity,
-  Image,
   ActivityIndicator,
   StyleSheet,
   ScrollView,
 } from "react-native";
-
 import * as Speech from "expo-speech";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
-import { Word } from "@/interfaces/models/Word";
-import { BACKURL } from "@/api/backurl";
+import { useWordStore } from "@/store/useWordStore";
 import { Colors } from "@/constants/Colors";
 import WordCardRoot from "@/components/shared/WordCardRoot/WordCardRoot";
 
@@ -26,39 +23,7 @@ export const SidePanelModalWord = ({
   isVisible,
   wordSelected,
 }: SidePanelProps) => {
-  const [wordDb, setWordDb] = useState<Word | undefined>(undefined);
-  const [loadingGetWord, setLoadingGetWord] = useState(false);
-
-  const getWord = async (word: string) => {
-    try {
-      const response = await fetch(
-        `${BACKURL}/api/words/word/${word.toLocaleLowerCase()}`
-      );
-      const { data } = await response.json();
-      setWordDb(data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const generateWord = async () => {
-    setLoadingGetWord(true);
-    try {
-      const response = await fetch(`${BACKURL}/api/ai/generate-wordJson`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ prompt: wordSelected, language: "en" }),
-      });
-      const { data } = await response.json();
-      setWordDb(data);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoadingGetWord(false);
-    }
-  };
+  const { wordActive, loading, getWord, generateWord } = useWordStore();
 
   useEffect(() => {
     if (isVisible && wordSelected) {
@@ -67,8 +32,8 @@ export const SidePanelModalWord = ({
   }, [isVisible, wordSelected]);
 
   const listenWord = () => {
-    if (wordDb?.word) {
-      Speech.speak(wordDb.word, { language: "en-US" });
+    if (wordActive?.word) {
+      Speech.speak(wordActive.word, { language: "en-US" });
     }
   };
 
@@ -76,15 +41,15 @@ export const SidePanelModalWord = ({
 
   return (
     <ScrollView style={styles.container}>
-      {wordDb ? (
+      {wordActive ? (
         <View style={styles.content}>
-          <WordCardRoot word={wordDb} />
+          <WordCardRoot />
         </View>
       ) : (
         <View style={styles.noWordContainer}>
           <View style={styles.wordRow}>
             <Text style={styles.wordText}>{wordSelected}</Text>
-            {wordDb && (
+            {wordActive && (
               <TouchableOpacity onPress={listenWord} style={styles.speakerIcon}>
                 <Ionicons
                   name="volume-high-outline"
@@ -97,11 +62,14 @@ export const SidePanelModalWord = ({
 
           <Text style={styles.noWordText}>Word not found in the database.</Text>
           <TouchableOpacity
-            onPress={generateWord}
-            disabled={loadingGetWord}
-            style={styles.generateButton}
+            onPress={() => generateWord(wordSelected!)}
+            disabled={loading || !!wordActive}
+            style={[
+              styles.generateButton,
+              (loading || wordActive) && styles.buttonDisabled,
+            ]}
           >
-            {loadingGetWord && (
+            {loading && (
               <ActivityIndicator
                 size="small"
                 color="white"
@@ -109,7 +77,7 @@ export const SidePanelModalWord = ({
               />
             )}
             <Text style={styles.generateButtonText}>
-              {loadingGetWord ? "Generating..." : "Generate Word with AI"}
+              {loading ? "Generating..." : "Generate Word with AI"}
             </Text>
           </TouchableOpacity>
         </View>
@@ -141,10 +109,6 @@ const styles = StyleSheet.create({
   content: {
     marginTop: 20,
   },
-  boldText: {
-    fontWeight: "bold",
-    color: Colors.green.green600,
-  },
   noWordContainer: {
     flex: 1,
     justifyContent: "center",
@@ -166,5 +130,8 @@ const styles = StyleSheet.create({
   generateButtonText: {
     color: Colors.white.white300,
     fontSize: 16,
+  },
+  buttonDisabled: {
+    backgroundColor: Colors.gray.gray900,
   },
 });
