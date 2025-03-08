@@ -11,7 +11,7 @@ export default function ProfileScreen() {
 
   return (
     <MainLayoutView>
-      <Text style={styles.titleContainer}>V. 2025 2 marzo nova</Text>
+      <Text style={styles.titleContainer}>V. 2025 8 marzo Nova, 2.0.0</Text>
     </MainLayoutView>
   );
 }
