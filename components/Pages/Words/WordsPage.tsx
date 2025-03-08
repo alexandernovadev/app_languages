@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
   View,
   Text,
@@ -25,10 +25,25 @@ export function WordsPage() {
   } = useWordStore();
 
   const [modalVisible, setModalVisible] = useState(false);
+  const searchTimeout = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    fetchWords();
-  }, [page, search]);
+    if (searchTimeout.current) {
+      clearTimeout(searchTimeout.current);
+    }
+
+    searchTimeout.current = setTimeout(() => {
+      fetchWords();
+    }, 500); // Espera 500ms antes de hacer la petición
+
+    return () => {
+      if (searchTimeout.current) clearTimeout(searchTimeout.current);
+    };
+  }, [search, page]);
+
+  const handleSearchChange = (text: string) => {
+    setSearch(text);
+  };
 
   const capitalize = (word: string) =>
     word.charAt(0).toUpperCase() + word.slice(1);
@@ -51,7 +66,7 @@ export function WordsPage() {
           placeholder="Buscar palabra..."
           placeholderTextColor={Colors.gray.gray300}
           value={search}
-          onChangeText={(text) => setSearch(text)}
+          onChangeText={handleSearchChange}
         />
       </View>
 
@@ -73,6 +88,11 @@ export function WordsPage() {
           </TouchableOpacity>
         )}
         contentContainerStyle={{ paddingBottom: 60, paddingTop: 80 }}
+        ListEmptyComponent={
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyText}>❌ Not Found</Text>
+          </View>
+        }
       />
 
       {/* ⬅➡ Paginador */}
@@ -178,4 +198,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   closeButtonText: { color: Colors.white.white200, fontWeight: "bold" },
+  emptyContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 20,
+  },
+  emptyText: {
+    color: Colors.gray.gray300,
+    fontSize: 16,
+    fontWeight: "bold",
+  },
 });

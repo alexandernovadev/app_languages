@@ -54,7 +54,7 @@ export const useWordStore = create<WordState>((set, get) => ({
   },
 
   updateWordLevel: async (wordId, level) => {
-    set({ loadingUpdate: true, error: null }); // Solo afecta a la actualización
+    set({ loadingUpdate: true, error: null }); 
 
     try {
       const response = await fetch(`${BACKURL}/api/words/${wordId}/level`, {
