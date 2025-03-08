@@ -2,13 +2,13 @@
   "expo": {
     "name": "Languages AI",
     "slug": "app_llm_languages",
-    "version": "2.0.0",
+    "version": "2.21.0",
     "orientation": "portrait",
     "icon": "./assets/images/loogo.png",
     "scheme": "myapp",
-    "userInterfaceStyle": "automatic",
+    "userInterfaceStyle": "dark",
     "splash": {
-      "image": "./assets/images/loogo.png",
+      "image": "./assets/images/splashv2.png",
       "resizeMode": "contain",
       "backgroundColor": "#20222a"
     },
