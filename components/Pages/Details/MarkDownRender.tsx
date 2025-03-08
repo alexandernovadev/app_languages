@@ -189,7 +189,8 @@ const styles = StyleSheet.create({
     borderColor: Colors.blue.blue800,
   },
   languageBadge: {
-    borderColor: Colors.gray.gray850,
+    borderColor: Colors.gray.gray300,
+    borderWidth:1
   },
   image: {
     width: "100%",
