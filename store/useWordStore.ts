@@ -12,18 +12,44 @@ interface WordState {
     page: number;
     search: string;
   };
-  loading: boolean; // Para operaciones generales
-  loadingUpdate: boolean; // Para actualizar palabras
+  loading: boolean;
+  loadingUpdate: boolean;
   error: string | null;
-
-  fetchRecentHardOrMediumWords: () => Promise<void>;
-  updateWordLevel: (wordId: string, level: string) => Promise<void>;
+  
+  setSearch: (search: string) => void;
   setActiveWord: (word: Word) => void;
+  setPage: (page: number) => void;
+
   getWord: (word: string) => Promise<void>;
   generateWord: (word: string) => Promise<void>;
+  fetchRecentHardOrMediumWords: () => Promise<void>;
   fetchWords: (search?: string, page?: number) => Promise<void>;
-  setSearch: (search: string) => void;
-  setPage: (page: number) => void;
+  updateWordLevel: (wordId: string, level: string) => Promise<void>;
+
+  // Methods AI
+  updateWordExamples: (
+    wordId: string,
+    word: string,
+    language: string,
+    oldExamples: string[]
+  ) => Promise<void>;
+  updateWordCodeSwitching: (
+    wordId: string,
+    word: string,
+    language: string,
+    oldExamples: string[]
+  ) => Promise<void>;
+  updateWordTypes: (
+    wordId: string,
+    word: string,
+    language: string
+  ) => Promise<void>;
+  updateWordSynonyms: (
+    wordId: string,
+    word: string,
+    language: string
+  ) => Promise<void>;
+  updateWordImage: (wordId: string, word: string) => Promise<void>;
 }
 
 export const useWordStore = create<WordState>((set, get) => ({
@@ -54,7 +80,7 @@ export const useWordStore = create<WordState>((set, get) => ({
   },
 
   updateWordLevel: async (wordId, level) => {
-    set({ loadingUpdate: true, error: null }); 
+    set({ loadingUpdate: true, error: null });
 
     try {
       const response = await fetch(`${BACKURL}/api/words/${wordId}/level`, {
@@ -83,8 +109,6 @@ export const useWordStore = create<WordState>((set, get) => ({
       set({ loadingUpdate: false });
     }
   },
-
-  setActiveWord: (word) => set({ wordActive: word }),
 
   getWord: async (word) => {
     set({ loading: true, error: null });
@@ -140,8 +164,175 @@ export const useWordStore = create<WordState>((set, get) => ({
     }
   },
 
+  // Metodos AI
+  updateWordExamples: async (wordId, word, language, oldExamples) => {
+    set({ loadingUpdate: true, error: null });
+    try {
+      const response = await fetch(
+        `${BACKURL}/api/ai/generate-word-examples/${wordId}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ word, language, oldExamples }),
+        }
+      );
+      const data = await response.json();
+      if (data.success) {
+        set((state) => ({
+          wordActive:
+            state.wordActive && state.wordActive._id === wordId
+              ? {
+                  ...state.wordActive,
+                  examples: data.data.examples,
+                  updatedAt: data.updatedAt,
+                }
+              : state.wordActive,
+        }));
+      } else {
+        set({ error: "Error updating word examples" });
+      }
+    } catch (error) {
+      set({ error: "Error updating word examples" });
+    } finally {
+      set({ loadingUpdate: false });
+    }
+  },
+
+  updateWordCodeSwitching: async (wordId, word, language, oldExamples) => {
+    set({ loadingUpdate: true, error: null });
+    try {
+      const response = await fetch(
+        `${BACKURL}/api/ai/generate-code-switching/${wordId}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ word, language, oldExamples }),
+        }
+      );
+      const data = await response.json();
+      if (data.success) {
+        set((state) => ({
+          wordActive:
+            state.wordActive && state.wordActive._id === wordId
+              ? {
+                  ...state.wordActive,
+                  codeSwitching: data.data.examples,
+                  updatedAt: data.updatedAt,
+                }
+              : state.wordActive,
+        }));
+      } else {
+        set({ error: "Error updating word code-switching examples" });
+      }
+    } catch (error) {
+      set({ error: "Error updating word code-switching examples" });
+    } finally {
+      set({ loadingUpdate: false });
+    }
+  },
+
+  updateWordTypes: async (wordId, word, language) => {
+    set({ loadingUpdate: true, error: null });
+    try {
+      const response = await fetch(
+        `${BACKURL}/api/ai/generate-word-wordtypes/${wordId}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ word, language }),
+        }
+      );
+      const data = await response.json();
+      if (data.success) {
+        set((state) => ({
+          wordActive:
+            state.wordActive && state.wordActive._id === wordId
+              ? {
+                  ...state.wordActive,
+                  type: data.data.type,
+                  updatedAt: data.updatedAt,
+                }
+              : state.wordActive,
+        }));
+      } else {
+        set({ error: "Error updating word types" });
+      }
+    } catch (error) {
+      set({ error: "Error updating word types" });
+    } finally {
+      set({ loadingUpdate: false });
+    }
+  },
+
+  updateWordSynonyms: async (wordId, word, language) => {
+    set({ loadingUpdate: true, error: null });
+    try {
+      const response = await fetch(
+        `${BACKURL}/api/ai/generate-code-synonyms/${wordId}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ word, language }),
+        }
+      );
+      const data = await response.json();
+      if (data.success) {
+        set((state) => ({
+          wordActive:
+            state.wordActive && state.wordActive._id === wordId
+              ? {
+                  ...state.wordActive,
+                  synonyms: data.data.synonyms,
+                  updatedAt: data.updatedAt,
+                }
+              : state.wordActive,
+        }));
+      } else {
+        set({ error: "Error updating word synonyms" });
+      }
+    } catch (error) {
+      set({ error: "Error updating word synonyms" });
+    } finally {
+      set({ loadingUpdate: false });
+    }
+  },
+
+  updateWordImage: async (wordId, word) => {
+    set({ loadingUpdate: true, error: null });
+    try {
+      const response = await fetch(
+        `${BACKURL}/api/ai/generate-image/${wordId}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ word }),
+        }
+      );
+      const data = await response.json();
+      if (data.success) {
+        set((state) => ({
+          wordActive:
+            state.wordActive && state.wordActive._id === wordId
+              ? {
+                  ...state.wordActive,
+                  imageUrl: data.data.imageUrl,
+                  updatedAt: data.updatedAt,
+                }
+              : state.wordActive,
+        }));
+      } else {
+        set({ error: "Error updating word image" });
+      }
+    } catch (error) {
+      set({ error: "Error updating word image" });
+    } finally {
+      set({ loadingUpdate: false });
+    }
+  },
+
   setSearch: (search) =>
     set((state) => ({ wordsList: { ...state.wordsList, search, page: 1 } })),
   setPage: (page) =>
     set((state) => ({ wordsList: { ...state.wordsList, page } })),
+  setActiveWord: (word) => set({ wordActive: word }),
 }));

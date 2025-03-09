@@ -33,7 +33,7 @@ export const SidePanelModalWord = ({
 
   const listenWord = () => {
     if (wordActive?.word) {
-      Speech.speak(wordActive.word, { language: "en-US" });
+      Speech.speak(wordActive.word, { language: "en-US", rate: 0.9 });
     }
   };
 

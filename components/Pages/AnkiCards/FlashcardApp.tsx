@@ -31,7 +31,7 @@ export const FlashcardApp = () => {
 
   const currentCard = words[currentCardIndex];
 
-  const flipCard = () => {
+  const flipCard: () => void = () => {
     if (flipped) {
       Animated.timing(flipAnimation, {
         toValue: 0,
