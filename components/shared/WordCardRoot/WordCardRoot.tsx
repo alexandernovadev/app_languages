@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   View,
   Text,
@@ -33,6 +33,10 @@ const WordCardRoot = () => {
   const listenWord = (rate = 0.8, language = "en-US") => {
     Speech.speak(word?.word!, { language, rate });
   };
+
+  useEffect(() => {
+    console.log("Loas ", JSON.stringify(word, null, 3));
+  }, [word]);
 
   const SectionContainer = ({
     children,
@@ -182,7 +186,6 @@ const WordCardRoot = () => {
                   word.sinonyms || []
                 )
               }
-         
             />
             {word.sinonyms.map((synonym, index) => (
               <Text key={index} style={styles.synonymList} selectable>
@@ -197,7 +200,14 @@ const WordCardRoot = () => {
           <SectionContainer hasBox>
             <SectionHeader
               title="Word Types"
-              onRefresh={() => handleRefresh("Types")}
+              onRefresh={() =>
+                updateWordTypes(
+                  word._id!,
+                  word.word,
+                  word.language,
+                  word.type || []
+                )
+              }
             />
             {word.type.map((type, index) => (
               <Text key={index} style={styles.synonymList} selectable>

@@ -11,7 +11,7 @@ export interface Word {
   img?: string;
   level: string;
   codeSwitching: string[];
-  sinonyms?: string[];
+  sinonyms: string[];
   createdAt: string;
   updatedAt: string;
   __v?: number;

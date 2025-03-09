@@ -234,6 +234,40 @@ export const useWordStore = create<WordState>((set, get) => ({
       set({ loadingUpdate: false });
     }
   },
+  updateWordSynonyms: async (wordId, word, language, oldExamples) => {
+    set({ loadingUpdate: true, error: null });
+
+    try {
+      const response = await fetch(
+        `${BACKURL}/api/ai/generate-code-synonyms/${wordId}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ word, language, oldExamples }),
+        }
+      );
+      const data = await response.json();
+
+      if (data.success) {
+        set((state) => ({
+          wordActive:
+            state.wordActive && state.wordActive._id === wordId
+              ? {
+                  ...state.wordActive,
+                  sinonyms: data.data.sinonyms, // Aquí asignamos los sinónimos actualizados
+                  updatedAt: data.data.updatedAt,
+                }
+              : state.wordActive,
+        }));
+      } else {
+        set({ error: "Error updating word synonyms" });
+      }
+    } catch (error) {
+      set({ error: "Error updating word synonyms" });
+    } finally {
+      set({ loadingUpdate: false });
+    }
+  },
 
   updateWordTypes: async (wordId, word, language, oldExamples) => {
     set({ loadingUpdate: true, error: null });
@@ -268,44 +302,6 @@ export const useWordStore = create<WordState>((set, get) => ({
     }
   },
 
-  updateWordSynonyms: async (wordId, word, language, oldExamples) => {
-    set({ loadingUpdate: true, error: null });
-    console.log("MEOL updateWordSynonyms");
-    try {
-      const response = await fetch(
-        `${BACKURL}/api/ai/generate-code-synonyms/${wordId}`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ word, language, oldExamples }),
-        }
-      );
-      console.log("MEOL updateWordSynonyms response");
-      const data = await response.json();
-      console.log("MEOL updateWordSynonyms data", data);
-      
-      if (data.success) {
-        console.log("IIIFIFIF updateWordSynonyms data", data);
-        set((state) => ({
-          wordActive:
-            state.wordActive && state.wordActive._id === wordId
-              ? {
-                  ...state.wordActive,
-                  synonyms: data.data.synonyms,
-                  updatedAt: data.data.updatedAt,
-                }
-              : state.wordActive,
-        }));
-      } else {
-        set({ error: "Error updating word synonyms" });
-      }
-    } catch (error) {
-      set({ error: "Error updating word synonyms" });
-    } finally {
-      set({ loadingUpdate: false });
-    }
-  },
-
   updateWordImage: async (wordId, word) => {
     set({ loadingUpdate: true, error: null });
     try {
@@ -324,7 +320,7 @@ export const useWordStore = create<WordState>((set, get) => ({
             state.wordActive && state.wordActive._id === wordId
               ? {
                   ...state.wordActive,
-                  imageUrl: data.data.imageUrl,
+                  img: data.data.imageUrl,
                   updatedAt: data.data.updatedAt,
                 }
               : state.wordActive,
