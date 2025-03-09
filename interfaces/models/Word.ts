@@ -12,8 +12,8 @@ export interface Word {
   level: string;
   codeSwitching: string[];
   sinonyms?: string[];
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
   __v?: number;
 }
 

@@ -16,9 +16,19 @@ import { Colors } from "@/constants/Colors";
 import { SectionContainerProps, SectionHeaderProps, StylesType } from "./types";
 import { useWordStore } from "@/store/useWordStore";
 import { formatDateV1 } from "@/utils/formatDates";
+import LoadingBar from "../LoadingBar";
 
 const WordCardRoot = () => {
-  const { wordActive: word, loadingUpdate, updateWordLevel } = useWordStore();
+  const {
+    wordActive: word,
+    loadingUpdate,
+    updateWordLevel,
+    updateWordExamples,
+    updateWordImage,
+    updateWordCodeSwitching,
+    updateWordSynonyms,
+    updateWordTypes,
+  } = useWordStore();
 
   const listenWord = (rate = 0.8, language = "en-US") => {
     Speech.speak(word?.word!, { language, rate });
@@ -40,11 +50,11 @@ const WordCardRoot = () => {
     <View style={styles.rowContainer}>
       <Text style={styles.titleBox}>{title}</Text>
       {onRefresh && (
-        <TouchableOpacity onPress={onRefresh}>
+        <TouchableOpacity onPress={onRefresh} disabled={loadingUpdate}>
           <Ionicons
             name="refresh-outline"
             size={24}
-            color={Colors.white.white300}
+            color={loadingUpdate ? Colors.gray.gray800 : Colors.white.white200}
           />
         </TouchableOpacity>
       )}
@@ -122,7 +132,14 @@ const WordCardRoot = () => {
           <SectionContainer hasBox>
             <SectionHeader
               title="Examples"
-              onRefresh={() => handleRefresh("examples")}
+              onRefresh={() =>
+                updateWordExamples(
+                  word._id!,
+                  word.word,
+                  word.language,
+                  word.examples
+                )
+              }
             />
             {word.examples.map((example, index) => (
               <Text key={index} style={styles.itemText} selectable>
@@ -136,7 +153,14 @@ const WordCardRoot = () => {
           <SectionContainer hasBox>
             <SectionHeader
               title="Code-Switching"
-              onRefresh={() => handleRefresh("code-switching")}
+              onRefresh={() =>
+                updateWordCodeSwitching(
+                  word._id!,
+                  word.word,
+                  word.language,
+                  word.codeSwitching
+                )
+              }
             />
             {word.codeSwitching.map((example, index) => (
               <Text key={index} style={styles.itemText} selectable>
@@ -150,7 +174,15 @@ const WordCardRoot = () => {
           <SectionContainer hasBox>
             <SectionHeader
               title="Synonyms"
-              onRefresh={() => handleRefresh("synonyms")}
+              onRefresh={() =>
+                updateWordSynonyms(
+                  word._id!,
+                  word.word,
+                  word.language,
+                  word.sinonyms || []
+                )
+              }
+         
             />
             {word.sinonyms.map((synonym, index) => (
               <Text key={index} style={styles.synonymList} selectable>
@@ -165,7 +197,7 @@ const WordCardRoot = () => {
           <SectionContainer hasBox>
             <SectionHeader
               title="Word Types"
-              onRefresh={() => handleRefresh("types")}
+              onRefresh={() => handleRefresh("Types")}
             />
             {word.type.map((type, index) => (
               <Text key={index} style={styles.synonymList} selectable>
@@ -194,6 +226,11 @@ const WordCardRoot = () => {
         </SectionContainer>
       </ScrollView>
 
+      {loadingUpdate && (
+        <View style={styles.loadingContainer}>
+          <LoadingBar />
+        </View>
+      )}
       <View style={styles.buttonsLevelContainer}>
         {["easy", "medium", "hard"].map((level) => (
           <TouchableOpacity
@@ -252,6 +289,10 @@ const styles = StyleSheet.create<StylesType>({
     justifyContent: "space-around",
     gap: 10,
     marginTop: 8,
+  },
+  loadingContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
   },
   datesContainer: {
     padding: 4,

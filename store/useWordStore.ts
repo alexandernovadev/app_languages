@@ -15,7 +15,7 @@ interface WordState {
   loading: boolean;
   loadingUpdate: boolean;
   error: string | null;
-  
+
   setSearch: (search: string) => void;
   setActiveWord: (word: Word) => void;
   setPage: (page: number) => void;
@@ -42,12 +42,14 @@ interface WordState {
   updateWordTypes: (
     wordId: string,
     word: string,
-    language: string
+    language: string,
+    oldExamples: string[]
   ) => Promise<void>;
   updateWordSynonyms: (
     wordId: string,
     word: string,
-    language: string
+    language: string,
+    oldExamples: string[]
   ) => Promise<void>;
   updateWordImage: (wordId: string, word: string) => Promise<void>;
 }
@@ -167,6 +169,7 @@ export const useWordStore = create<WordState>((set, get) => ({
   // Metodos AI
   updateWordExamples: async (wordId, word, language, oldExamples) => {
     set({ loadingUpdate: true, error: null });
+
     try {
       const response = await fetch(
         `${BACKURL}/api/ai/generate-word-examples/${wordId}`,
@@ -177,6 +180,7 @@ export const useWordStore = create<WordState>((set, get) => ({
         }
       );
       const data = await response.json();
+
       if (data.success) {
         set((state) => ({
           wordActive:
@@ -184,7 +188,7 @@ export const useWordStore = create<WordState>((set, get) => ({
               ? {
                   ...state.wordActive,
                   examples: data.data.examples,
-                  updatedAt: data.updatedAt,
+                  updatedAt: data.data.data.updatedAt,
                 }
               : state.wordActive,
         }));
@@ -192,7 +196,7 @@ export const useWordStore = create<WordState>((set, get) => ({
         set({ error: "Error updating word examples" });
       }
     } catch (error) {
-      set({ error: "Error updating word examples" });
+      set({ error: "Error updating word examples TC" });
     } finally {
       set({ loadingUpdate: false });
     }
@@ -216,8 +220,8 @@ export const useWordStore = create<WordState>((set, get) => ({
             state.wordActive && state.wordActive._id === wordId
               ? {
                   ...state.wordActive,
-                  codeSwitching: data.data.examples,
-                  updatedAt: data.updatedAt,
+                  codeSwitching: data.data.codeSwitching,
+                  updatedAt: data.data.updatedAt,
                 }
               : state.wordActive,
         }));
@@ -231,7 +235,7 @@ export const useWordStore = create<WordState>((set, get) => ({
     }
   },
 
-  updateWordTypes: async (wordId, word, language) => {
+  updateWordTypes: async (wordId, word, language, oldExamples) => {
     set({ loadingUpdate: true, error: null });
     try {
       const response = await fetch(
@@ -239,7 +243,7 @@ export const useWordStore = create<WordState>((set, get) => ({
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ word, language }),
+          body: JSON.stringify({ word, language, oldExamples }),
         }
       );
       const data = await response.json();
@@ -250,7 +254,7 @@ export const useWordStore = create<WordState>((set, get) => ({
               ? {
                   ...state.wordActive,
                   type: data.data.type,
-                  updatedAt: data.updatedAt,
+                  updatedAt: data.data.updatedAt,
                 }
               : state.wordActive,
         }));
@@ -264,26 +268,31 @@ export const useWordStore = create<WordState>((set, get) => ({
     }
   },
 
-  updateWordSynonyms: async (wordId, word, language) => {
+  updateWordSynonyms: async (wordId, word, language, oldExamples) => {
     set({ loadingUpdate: true, error: null });
+    console.log("MEOL updateWordSynonyms");
     try {
       const response = await fetch(
         `${BACKURL}/api/ai/generate-code-synonyms/${wordId}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ word, language }),
+          body: JSON.stringify({ word, language, oldExamples }),
         }
       );
+      console.log("MEOL updateWordSynonyms response");
       const data = await response.json();
+      console.log("MEOL updateWordSynonyms data", data);
+      
       if (data.success) {
+        console.log("IIIFIFIF updateWordSynonyms data", data);
         set((state) => ({
           wordActive:
             state.wordActive && state.wordActive._id === wordId
               ? {
                   ...state.wordActive,
                   synonyms: data.data.synonyms,
-                  updatedAt: data.updatedAt,
+                  updatedAt: data.data.updatedAt,
                 }
               : state.wordActive,
         }));
@@ -316,7 +325,7 @@ export const useWordStore = create<WordState>((set, get) => ({
               ? {
                   ...state.wordActive,
                   imageUrl: data.data.imageUrl,
-                  updatedAt: data.updatedAt,
+                  updatedAt: data.data.updatedAt,
                 }
               : state.wordActive,
         }));
