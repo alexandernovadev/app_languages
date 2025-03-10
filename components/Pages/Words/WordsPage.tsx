@@ -56,6 +56,7 @@ export function WordsPage() {
   };
 
   const handleCloseModal = () => {
+    setActiveWord(null)
     setModalVisible(false);
   };
 

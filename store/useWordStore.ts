@@ -17,7 +17,7 @@ interface WordState {
   error: string | null;
 
   setSearch: (search: string) => void;
-  setActiveWord: (word: Word) => void;
+  setActiveWord: (word: Word | null) => void;
   setPage: (page: number) => void;
 
   getWord: (word: string) => Promise<void>;
