@@ -325,7 +325,7 @@ export const useWordStore = create<WordState>((set, get) => ({
             state.wordActive && state.wordActive._id === wordId
               ? {
                   ...state.wordActive,
-                  img: data.data.imageUrl,
+                  img: data.data.img,
                   updatedAt: data.data.updatedAt,
                 }
               : state.wordActive,

@@ -34,9 +34,8 @@ const WordCardRoot = () => {
     Speech.speak(word?.word!, { language, rate });
   };
 
-  useEffect(() => {
-    console.log("Loas ", JSON.stringify(word, null, 3));
-  }, [word]);
+  // useEffect(() => {
+  // }, [word]);
 
   const SectionContainer = ({
     children,
@@ -64,10 +63,6 @@ const WordCardRoot = () => {
       )}
     </View>
   );
-
-  const handleRefresh = (type: string) => {
-    console.log(`Refresh ${type} coming soon`);
-  };
 
   if (!word) return <Text style={styles.itemText}>NO WORKS</Text>;
 
