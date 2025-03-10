@@ -192,7 +192,7 @@ export const useWordStore = create<WordState>((set, get) => ({
               ? {
                   ...state.wordActive,
                   examples: data.data.examples,
-                  updatedAt: data.data.data.updatedAt,
+                  updatedAt: data.data.updatedAt,
                 }
               : state.wordActive,
         }));
@@ -200,7 +200,7 @@ export const useWordStore = create<WordState>((set, get) => ({
         set({ error: "Error updating word examples" });
       }
     } catch (error) {
-      set({ error: "Error updating word examples TC" });
+      set({ error: "Error updating word examples TC" + error });
     } finally {
       set({ loadingUpdate: false });
     }
@@ -233,7 +233,7 @@ export const useWordStore = create<WordState>((set, get) => ({
         set({ error: "Error updating word code-switching examples" });
       }
     } catch (error) {
-      set({ error: "Error updating word code-switching examples" });
+      set({ error: "Error updating word code-switching examples" + error });
     } finally {
       set({ loadingUpdate: false });
     }
@@ -267,7 +267,7 @@ export const useWordStore = create<WordState>((set, get) => ({
         set({ error: "Error updating word synonyms" });
       }
     } catch (error) {
-      set({ error: "Error updating word synonyms" });
+      set({ error: "Error updating word synonyms" + error });
     } finally {
       set({ loadingUpdate: false });
     }
@@ -300,7 +300,7 @@ export const useWordStore = create<WordState>((set, get) => ({
         set({ error: "Error updating word types" });
       }
     } catch (error) {
-      set({ error: "Error updating word types" });
+      set({ error: "Error updating word types" + error });
     } finally {
       set({ loadingUpdate: false });
     }
@@ -334,7 +334,7 @@ export const useWordStore = create<WordState>((set, get) => ({
         set({ error: "Error updating word image" });
       }
     } catch (error) {
-      set({ error: "Error updating word image" });
+      set({ error: "Error updating word image" + error });
     } finally {
       set({ loadingUpdate: false });
     }
