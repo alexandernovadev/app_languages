@@ -204,7 +204,9 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     alignItems: "center",
   },
-  closeButtonText: { color: Colors.white.white200, fontWeight: "bold" },
+  closeButtonText: { color: Colors.white.white200, fontWeight: "bold" ,
+    height:30
+  },
   emptyContainer: {
     alignItems: "center",
     justifyContent: "center",
