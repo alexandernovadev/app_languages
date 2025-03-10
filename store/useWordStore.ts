@@ -51,7 +51,11 @@ interface WordState {
     language: string,
     oldExamples: string[]
   ) => Promise<void>;
-  updateWordImage: (wordId: string, word: string) => Promise<void>;
+  updateWordImage: (
+    wordId: string,
+    word: string,
+    imgOld: string
+  ) => Promise<void>;
 }
 
 export const useWordStore = create<WordState>((set, get) => ({
@@ -64,7 +68,7 @@ export const useWordStore = create<WordState>((set, get) => ({
     search: "",
   },
   loading: false,
-  loadingUpdate: false, // Inicialmente no está en carga
+  loadingUpdate: false,
   error: null,
 
   fetchRecentHardOrMediumWords: async () => {
@@ -254,7 +258,7 @@ export const useWordStore = create<WordState>((set, get) => ({
             state.wordActive && state.wordActive._id === wordId
               ? {
                   ...state.wordActive,
-                  sinonyms: data.data.sinonyms, // Aquí asignamos los sinónimos actualizados
+                  sinonyms: data.data.sinonyms,
                   updatedAt: data.data.updatedAt,
                 }
               : state.wordActive,
@@ -302,7 +306,7 @@ export const useWordStore = create<WordState>((set, get) => ({
     }
   },
 
-  updateWordImage: async (wordId, word) => {
+  updateWordImage: async (wordId, word, imgOld = "") => {
     set({ loadingUpdate: true, error: null });
     try {
       const response = await fetch(
@@ -310,10 +314,11 @@ export const useWordStore = create<WordState>((set, get) => ({
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ word }),
+          body: JSON.stringify({ word, imgOld }),
         }
       );
       const data = await response.json();
+
       if (data.success) {
         set((state) => ({
           wordActive:

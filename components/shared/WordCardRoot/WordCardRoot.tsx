@@ -121,7 +121,7 @@ const WordCardRoot = () => {
         <SectionContainer hasBox>
           <SectionHeader
             title="Image"
-            onRefresh={() => handleRefresh("images")}
+            onRefresh={() => updateWordImage(word._id!, word.word, word.img!)}
           />
           {word.img ? (
             <Image
