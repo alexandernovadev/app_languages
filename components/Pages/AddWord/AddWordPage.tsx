@@ -16,7 +16,13 @@ import WordCardRoot from "@/components/shared/WordCardRoot/WordCardRoot";
 
 export default function AddWordPage() {
   const [word, setWord] = useState("");
-  const { wordActive, loading, getWord, generateWord } = useWordStore();
+  const { wordActive, loading, getWord, generateWord, setActiveWord } =
+    useWordStore();
+
+  // Todo : FIx Temp
+  useEffect(() => {
+    setActiveWord(null);
+  }, []);
 
   useEffect(() => {
     if (word.trim()) {
