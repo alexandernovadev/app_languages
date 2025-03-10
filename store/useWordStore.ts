@@ -84,38 +84,6 @@ export const useWordStore = create<WordState>((set, get) => ({
       });
     }
   },
-
-  updateWordLevel: async (wordId, level) => {
-    set({ loadingUpdate: true, error: null });
-
-    try {
-      const response = await fetch(`${BACKURL}/api/words/${wordId}/level`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ level }),
-      });
-
-      const data = await response.json();
-      if (data.success) {
-        set((state) => ({
-          words: state.words.map((w) =>
-            w._id === wordId ? { ...w, level } : w
-          ),
-          wordActive:
-            state.wordActive && state.wordActive._id === wordId
-              ? { ...state.wordActive, level }
-              : state.wordActive,
-        }));
-      } else {
-        set({ error: "Error updating word level" });
-      }
-    } catch (error) {
-      set({ error: "Error updating word level" });
-    } finally {
-      set({ loadingUpdate: false });
-    }
-  },
-
   getWord: async (word) => {
     set({ loading: true, error: null });
     try {
@@ -169,7 +137,36 @@ export const useWordStore = create<WordState>((set, get) => ({
       set({ error: "Error fetching words", loading: false });
     }
   },
+  updateWordLevel: async (wordId, level) => {
+    set({ loadingUpdate: true, error: null });
 
+    try {
+      const response = await fetch(`${BACKURL}/api/words/${wordId}/level`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ level }),
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        set((state) => ({
+          words: state.words.map((w) =>
+            w._id === wordId ? { ...w, level } : w
+          ),
+          wordActive:
+            state.wordActive && state.wordActive._id === wordId
+              ? { ...state.wordActive, level }
+              : state.wordActive,
+        }));
+      } else {
+        set({ error: "Error updating word level" });
+      }
+    } catch (error) {
+      set({ error: "Error updating word level" });
+    } finally {
+      set({ loadingUpdate: false });
+    }
+  },
   // Metodos AI
   updateWordExamples: async (wordId, word, language, oldExamples) => {
     set({ loadingUpdate: true, error: null });
@@ -187,6 +184,15 @@ export const useWordStore = create<WordState>((set, get) => ({
 
       if (data.success) {
         set((state) => ({
+          words: state.words.map((w) =>
+            w._id === wordId
+              ? {
+                  ...w,
+                  examples: data.data.examples,
+                  updatedAt: data.data.updatedAt,
+                }
+              : w
+          ),
           wordActive:
             state.wordActive && state.wordActive._id === wordId
               ? {
@@ -220,6 +226,15 @@ export const useWordStore = create<WordState>((set, get) => ({
       const data = await response.json();
       if (data.success) {
         set((state) => ({
+          words: state.words.map((w) =>
+            w._id === wordId
+              ? {
+                  ...w,
+                  codeSwitching: data.data.codeSwitching,
+                  updatedAt: data.data.updatedAt,
+                }
+              : w
+          ),
           wordActive:
             state.wordActive && state.wordActive._id === wordId
               ? {
@@ -254,6 +269,15 @@ export const useWordStore = create<WordState>((set, get) => ({
 
       if (data.success) {
         set((state) => ({
+          words: state.words.map((w) =>
+            w._id === wordId
+              ? {
+                  ...w,
+                  sinonyms: data.data.sinonyms,
+                  updatedAt: data.data.updatedAt,
+                }
+              : w
+          ),
           wordActive:
             state.wordActive && state.wordActive._id === wordId
               ? {
@@ -287,6 +311,15 @@ export const useWordStore = create<WordState>((set, get) => ({
       const data = await response.json();
       if (data.success) {
         set((state) => ({
+          words: state.words.map((w) =>
+            w._id === wordId
+              ? {
+                  ...w,
+                  type: data.data.type,
+                  updatedAt: data.data.updatedAt,
+                }
+              : w
+          ),
           wordActive:
             state.wordActive && state.wordActive._id === wordId
               ? {
@@ -321,6 +354,15 @@ export const useWordStore = create<WordState>((set, get) => ({
 
       if (data.success) {
         set((state) => ({
+          words: state.words.map((w) =>
+            w._id === wordId
+              ? {
+                  ...w,
+                  img: data.data.img,
+                  updatedAt: data.data.updatedAt,
+                }
+              : w
+          ),
           wordActive:
             state.wordActive && state.wordActive._id === wordId
               ? {
