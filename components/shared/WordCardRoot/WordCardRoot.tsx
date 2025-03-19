@@ -356,9 +356,10 @@ const styles = StyleSheet.create<StylesType>({
     fontWeight: "bold",
   },
   pronunciation: {
-    fontSize: 20,
+    fontSize: 24,
     color: Colors.purple.purpleNova,
     marginTop: 10,
+    fontWeight:"bold"
   },
   levelText: {
     fontSize: 18,

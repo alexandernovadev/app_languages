@@ -113,7 +113,10 @@ export const FlashcardApp = () => {
         >
           <View style={styles.wordRow}>
             <Text style={styles.word}>{currentCard?.word}</Text>
-            <TouchableOpacity onPress={listenWord} style={styles.speakerIconButton}>
+            <TouchableOpacity
+              onPress={listenWord}
+              style={styles.speakerIconButton}
+            >
               <Ionicons
                 name="volume-high-outline"
                 size={32}
@@ -213,16 +216,20 @@ const styles = StyleSheet.create({
   },
   speakerIconButton: {
     marginLeft: 10,
-    padding:18
+    padding: 12,
+    borderRadius: 100,
+    borderWidth: 2,
+    borderColor: Colors.green.green500,
   },
   pronunciation: {
-    fontSize: 20,
+    fontSize: 26 ,
     color: Colors.purple.purpleNova,
     marginTop: 10,
+    fontWeight: 'bold',
   },
   image: {
     width: "100%",
-    height: 420,
+    height: 360,
     borderRadius: 16,
     marginTop: 10,
   },
