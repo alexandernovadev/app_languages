@@ -113,7 +113,7 @@ export const FlashcardApp = () => {
         >
           <View style={styles.wordRow}>
             <Text style={styles.word}>{currentCard?.word}</Text>
-            <TouchableOpacity onPress={listenWord} style={styles.speakerIcon}>
+            <TouchableOpacity onPress={listenWord} style={styles.speakerIconButton}>
               <Ionicons
                 name="volume-high-outline"
                 size={32}
@@ -211,8 +211,9 @@ const styles = StyleSheet.create({
     textTransform: "capitalize",
     color: Colors.green.green600,
   },
-  speakerIcon: {
+  speakerIconButton: {
     marginLeft: 10,
+    padding:18
   },
   pronunciation: {
     fontSize: 20,
