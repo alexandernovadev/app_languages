@@ -17,6 +17,7 @@ import { SectionContainerProps, SectionHeaderProps, StylesType } from "./types";
 import { useWordStore } from "@/store/useWordStore";
 import { formatDateV1 } from "@/utils/formatDates";
 import LoadingBar from "../LoadingBar";
+import { Loading } from "../Loading";
 
 const WordCardRoot = () => {
   const {
@@ -114,17 +115,41 @@ const WordCardRoot = () => {
         </SectionContainer>
 
         <SectionContainer hasBox>
-          <SectionHeader
-            title="Image"
-            onRefresh={() => updateWordImage(word._id!, word.word, word.img!)}
-          />
+          <TouchableOpacity
+            onPress={() => updateWordImage(word._id!, word.word, word.img!)}
+            style={[
+              styles.buttonRefreshImage,
+              word.img ? styles.buttonWithImage : null,
+            ]}
+          >
+            <Ionicons
+              name="refresh-outline"
+              size={24}
+              style={[
+                loadingUpdate
+                  ? styles.RefreshImageIconLoading
+                  : styles.RefreshImageIcon,
+              ]}
+              color={
+                loadingUpdate ? Colors.gray.gray600 : Colors.white.white500
+              }
+            />
+          </TouchableOpacity>
           {word.img ? (
             <Image
               source={{ uri: word.img }}
               style={styles.image}
-              resizeMode="contain"
+              resizeMode="stretch"
             />
-          ) : null}
+          ) : (
+            <Text
+              style={{
+                color: Colors.white.white400,
+              }}
+            >
+              No Image
+            </Text>
+          )}
         </SectionContainer>
 
         {word.examples && (
@@ -288,6 +313,7 @@ const styles = StyleSheet.create<StylesType>({
     borderWidth: 1,
     padding: 8,
     borderRadius: 8,
+    position: "relative",
   },
   buttonsLevelContainer: {
     flexDirection: "row",
@@ -355,6 +381,31 @@ const styles = StyleSheet.create<StylesType>({
   // Pronunciation icons
   speakerIcon: {
     marginLeft: 10,
+  },
+  buttonRefreshImage: {
+    zIndex: 999,
+    display: "flex",
+    width: "100%",
+    alignItems: "flex-end",
+  },
+  buttonWithImage: {
+    position: "absolute",
+    top: 23,
+  },
+  RefreshImageIcon: {
+    backgroundColor: Colors.green.green600,
+    borderWidth: 2,
+    borderColor: Colors.white.white500,
+    borderRadius: 100,
+    padding: 4,
+  },
+
+  RefreshImageIconLoading: {
+    borderRadius: 100,
+    padding: 4,
+    backgroundColor: Colors.green.green800,
+    borderWidth: 2,
+    borderColor: Colors.gray.gray600,
   },
   speakersIcons: {
     marginLeft: 10,
@@ -425,7 +476,8 @@ const styles = StyleSheet.create<StylesType>({
     width: "100%",
     borderRadius: 10,
     marginTop: 10,
-    aspectRatio: 16 / 9,
+    height: 360,
+    zIndex: 1,
   },
 
   // Button styles

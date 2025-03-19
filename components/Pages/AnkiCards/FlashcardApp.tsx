@@ -7,6 +7,7 @@ import {
   Animated,
   Easing,
   Image,
+  Vibration,
 } from "react-native";
 
 import * as Speech from "expo-speech";
@@ -28,6 +29,16 @@ export const FlashcardApp = () => {
   useEffect(() => {
     fetchRecentHardOrMediumWords();
   }, []);
+
+  useEffect(() => {
+    if (loading) {
+      const interval = setInterval(() => Vibration.vibrate(500), 1000);
+      return () => {
+        Vibration.cancel();
+        clearInterval(interval);
+      };
+    }
+  }, [loading]);
 
   const currentCard = words[currentCardIndex];
 
@@ -115,7 +126,7 @@ export const FlashcardApp = () => {
             <Image
               source={{ uri: currentCard?.img }}
               style={styles.image}
-              resizeMode="cover"
+              resizeMode="stretch"
             />
           ) : null}
         </Animated.View>
@@ -210,7 +221,7 @@ const styles = StyleSheet.create({
   },
   image: {
     width: "100%",
-    height: 240,
+    height: 420,
     borderRadius: 16,
     marginTop: 10,
   },
