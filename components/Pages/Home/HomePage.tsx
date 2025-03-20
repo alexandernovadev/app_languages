@@ -182,7 +182,7 @@ const styles = StyleSheet.create({
     width: "48%",
   },
   imageContainer: {
-    height: 80,
+    height: 120,
     backgroundColor: Colors.black.black400,
     justifyContent: "flex-start",
     alignItems: "flex-start",

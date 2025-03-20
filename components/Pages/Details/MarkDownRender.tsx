@@ -141,7 +141,7 @@ export const MarkDownRender = ({
         <Image
           source={{ uri: lecture.img }}
           style={styles.image}
-          resizeMode="cover"
+          resizeMode="stretch"
         />
       )}
 
@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
   },
   image: {
     width: "100%",
-    height: 200,
+    height: 420,
     borderRadius: 8,
     marginBottom: 16,
   },
