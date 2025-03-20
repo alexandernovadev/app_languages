@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -18,7 +18,6 @@ import { SectionContainerProps, SectionHeaderProps, StylesType } from "./types";
 import { useWordStore } from "@/store/useWordStore";
 import { formatDateV1 } from "@/utils/formatDates";
 import LoadingBar from "../LoadingBar";
-import { Loading } from "../Loading";
 import { triggerVibration } from "@/utils/vibrationHaptic";
 
 const WordCardRoot = () => {
@@ -33,7 +32,7 @@ const WordCardRoot = () => {
     updateWordTypes,
   } = useWordStore();
 
-  const scrollRef = React.useRef<ScrollView>(null);
+  const scrollRef = useRef<ScrollView>(null);
 
   const listenWord = (rate = 0.8, language = "en-US") => {
     Speech.speak(word?.word!, { language, rate });

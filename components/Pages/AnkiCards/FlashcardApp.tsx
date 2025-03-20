@@ -8,6 +8,8 @@ import {
   Easing,
   Image,
   Vibration,
+  ScrollView,
+  RefreshControl,
 } from "react-native";
 
 import * as Speech from "expo-speech";
@@ -23,8 +25,9 @@ export const FlashcardApp = () => {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
   const flipAnimation = useState(new Animated.Value(0))[0];
+  const [refreshing, setRefreshing] = useState(false);
 
-  const { words, loading, error, fetchRecentHardOrMediumWords, setActiveWord } =
+  const { words, loading, error, fetchRecentHardOrMediumWords, setActiveWord, updateincrementWordSeenCount } =
     useWordStore();
 
   useEffect(() => {
@@ -33,10 +36,7 @@ export const FlashcardApp = () => {
 
   useEffect(() => {
     if (loading) {
-      const interval = setInterval(
-        () => triggerVibration("pulse"),
-        1000
-      );
+      const interval = setInterval(() => triggerVibration("pulse"), 1000);
       return () => {
         Vibration.cancel();
         clearInterval(interval);
@@ -62,7 +62,9 @@ export const FlashcardApp = () => {
         useNativeDriver: true,
       }).start();
       if (currentCard) {
+        updateincrementWordSeenCount(currentCard._id!)
         setActiveWord(currentCard);
+
       }
     }
     setFlipped(!flipped);
@@ -101,15 +103,43 @@ export const FlashcardApp = () => {
     }
   };
 
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    triggerVibration("medium");
+    // Reinicia el índice de la tarjeta actual y recarga las palabras
+    setCurrentCardIndex(0);
+    setFlipped(false);
+    flipAnimation.setValue(0);
+
+    // Recarga las palabras
+    fetchRecentHardOrMediumWords().then(() => {
+      setRefreshing(false);
+    });
+  }, []);
+
   if (loading && words) return <Loading text={"Loading Cards"} />;
 
   if (error) return <Text style={styles.errorText}>{error}</Text>;
 
   return (
     <View style={styles.container}>
-      <Text style={styles.cardIndexText}>
-        Card {currentCardIndex + 1} of {words.length}
-      </Text>
+      <ScrollView
+        style={{ width: "100%" }} // Add this
+        contentContainerStyle={styles.headerContainer}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            // colors={[Colors.green.green500]}
+            // tintColor={Colors.green.green500}
+            // progressBackgroundColor={Colors.black.black800}
+          />
+        }
+      >
+        <Text style={styles.cardIndexText}>
+          Card {currentCardIndex + 1} of {words.length}
+        </Text>
+      </ScrollView>
       <View style={styles.cardContainer}>
         <Animated.View
           style={[
@@ -184,7 +214,7 @@ const styles = StyleSheet.create({
   },
   cardContainer: {
     width: "95%",
-    height: "82%",
+    height: "80%",
     position: "relative",
   },
   card: {
@@ -209,6 +239,13 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingBottom: 20,
+  },
+  headerContainer: {
+    paddingVertical: 8,
+    paddingTop: 30,
+    paddingHorizontal: 0,
+    width: "100%",
+    alignItems: "center",
   },
   wordRow: {
     flexDirection: "row",
@@ -246,7 +283,8 @@ const styles = StyleSheet.create({
   cardIndexText: {
     fontSize: 16,
     color: Colors.white.white300,
-    marginBottom: 4,
+    width: "100%",
+    textAlign: "center",
   },
   errorText: {
     fontSize: 18,
@@ -260,6 +298,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     width: "100%",
     paddingHorizontal: 20,
+    paddingVertical: 12,
     marginTop: 12,
   },
   arrowsButton: {

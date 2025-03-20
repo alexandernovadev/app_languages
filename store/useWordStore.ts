@@ -56,6 +56,7 @@ interface WordState {
     word: string,
     imgOld: string
   ) => Promise<void>;
+  updateincrementWordSeenCount: (wordId: string) => Promise<void>;
 }
 
 export const useWordStore = create<WordState>((set, get) => ({
@@ -135,6 +136,43 @@ export const useWordStore = create<WordState>((set, get) => ({
       }
     } catch (error) {
       set({ error: "Error fetching words", loading: false });
+    }
+  },
+  updateincrementWordSeenCount: async (wordId) => {
+    set({ loadingUpdate: true, error: null });
+    try {
+      const response = await fetch(
+        `${BACKURL}/api/words/${wordId}/increment-seen`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const data = await response.json();
+      if (data.success) {
+        // Update words list and active word with incremented seen count
+        set((state) => ({
+          words: state.words.map((word) =>
+            word._id === wordId ? { ...word, seen: word.seen + 1 } : word
+          ),
+          wordActive:
+            state.wordActive && state.wordActive._id === wordId
+              ? {
+                  ...state.wordActive,
+                  seen: state.wordActive.seen + 1,
+                }
+              : state.wordActive,
+        }));
+      } else {
+        set({ error: "Error incrementing word seen count" });
+      }
+    } catch (error) {
+      set({ error: "Error incrementing word seen count CA" });
+    } finally {
+      set({ loadingUpdate: false });
     }
   },
   updateWordLevel: async (wordId, level) => {
