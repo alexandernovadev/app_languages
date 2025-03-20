@@ -11,7 +11,7 @@ export default function ProfileScreen() {
 
   return (
     <MainLayoutView>
-      <Text style={styles.titleContainer}>V. 2025 8 marzo Nova, 2.21.0</Text>
+      <Text style={styles.titleContainer}>V. 2025 19 marzo Nova, 2.91.999</Text>
     </MainLayoutView>
   );
 }
@@ -21,6 +21,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
+    fontSize:25,
     color: Colors.silver.silver200,
   }
 });
