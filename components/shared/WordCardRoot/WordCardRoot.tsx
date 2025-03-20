@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Image,
+  Vibration,
 } from "react-native";
 
 import { Ionicons } from "@expo/vector-icons";
@@ -18,6 +19,7 @@ import { useWordStore } from "@/store/useWordStore";
 import { formatDateV1 } from "@/utils/formatDates";
 import LoadingBar from "../LoadingBar";
 import { Loading } from "../Loading";
+import { triggerVibration } from "@/utils/vibrationHaptic";
 
 const WordCardRoot = () => {
   const {
@@ -31,12 +33,25 @@ const WordCardRoot = () => {
     updateWordTypes,
   } = useWordStore();
 
+  const scrollRef = React.useRef<ScrollView>(null);
+
   const listenWord = (rate = 0.8, language = "en-US") => {
     Speech.speak(word?.word!, { language, rate });
   };
 
-  // useEffect(() => {
-  // }, [word]);
+  useEffect(() => {
+    scrollRef.current?.scrollTo({ y: 0, animated: true });
+  }, [word]);
+
+  useEffect(() => {
+    if (loadingUpdate) {
+      const interval = setInterval(() => triggerVibration("pulse"), 1000);
+      return () => {
+        Vibration.cancel();
+        clearInterval(interval);
+      };
+    }
+  }, [loadingUpdate]);
 
   const SectionContainer = ({
     children,
@@ -69,7 +84,7 @@ const WordCardRoot = () => {
 
   return (
     <View style={styles.card}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+      <ScrollView ref={scrollRef} contentContainerStyle={styles.scrollContent}>
         <View style={styles.rowContainer}>
           <Text style={styles.cardIndexText}>🇺🇸</Text>
           <Text
@@ -359,7 +374,7 @@ const styles = StyleSheet.create<StylesType>({
     fontSize: 24,
     color: Colors.purple.purpleNova,
     marginTop: 10,
-    fontWeight:"bold"
+    fontWeight: "bold",
   },
   levelText: {
     fontSize: 18,

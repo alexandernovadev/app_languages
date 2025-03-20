@@ -17,6 +17,7 @@ import { Colors } from "@/constants/Colors";
 import { Loading } from "@/components/shared/Loading";
 import WordCardRoot from "@/components/shared/WordCardRoot/WordCardRoot";
 import { useWordStore } from "@/store/useWordStore";
+import { triggerVibration } from "@/utils/vibrationHaptic";
 
 export const FlashcardApp = () => {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
@@ -32,7 +33,10 @@ export const FlashcardApp = () => {
 
   useEffect(() => {
     if (loading) {
-      const interval = setInterval(() => Vibration.vibrate(500), 1000);
+      const interval = setInterval(
+        () => triggerVibration("pulse"),
+        1000
+      );
       return () => {
         Vibration.cancel();
         clearInterval(interval);
@@ -62,6 +66,7 @@ export const FlashcardApp = () => {
       }
     }
     setFlipped(!flipped);
+    triggerVibration("doubleTap");
   };
 
   const frontInterpolate = flipAnimation.interpolate({
@@ -75,12 +80,14 @@ export const FlashcardApp = () => {
   });
 
   const handleNext = () => {
+    triggerVibration("light");
     setFlipped(false);
-    flipAnimation.setValue(0); // Reset to front
+    flipAnimation.setValue(0);
     setCurrentCardIndex((prevIndex) => (prevIndex + 1) % words.length);
   };
 
   const handlePrevious = () => {
+    triggerVibration("light");
     setFlipped(false);
     flipAnimation.setValue(0);
     setCurrentCardIndex((prevIndex) =>
@@ -222,10 +229,10 @@ const styles = StyleSheet.create({
     borderColor: Colors.green.green500,
   },
   pronunciation: {
-    fontSize: 26 ,
+    fontSize: 26,
     color: Colors.purple.purpleNova,
     marginTop: 10,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   image: {
     width: "100%",
