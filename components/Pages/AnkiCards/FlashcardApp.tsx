@@ -27,13 +27,8 @@ export const FlashcardApp = () => {
   const flipAnimation = useState(new Animated.Value(0))[0];
   const [refreshing, setRefreshing] = useState(false);
 
-  const {
-    words,
-    loading,
-    error,
-    fetchRecentHardOrMediumWords,
-    setActiveWord,
-  } = useWordStore();
+  const { words, loading, error, fetchRecentHardOrMediumWords, setActiveWord } =
+    useWordStore();
 
   useEffect(() => {
     fetchRecentHardOrMediumWords();
@@ -122,7 +117,21 @@ export const FlashcardApp = () => {
 
   if (loading && words) return <Loading text={"Loading Cards"} />;
 
-  if (error) return <Text style={styles.errorText}>{error}</Text>;
+  if (error)
+    return (
+      <ScrollView
+        style={{ width: "100%" }}
+        contentContainerStyle={styles.headerContainer}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>Oops! Something went wrong</Text>
+          <Text style={styles.errorHint}>Pull to refresh and try again</Text>
+        </View>
+      </ScrollView>
+    );
 
   return (
     <View style={styles.container}>
@@ -289,11 +298,6 @@ const styles = StyleSheet.create({
     width: "100%",
     textAlign: "center",
   },
-  errorText: {
-    fontSize: 18,
-    color: Colors.red.red500,
-    marginTop: 20,
-  },
   navigationContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -339,6 +343,36 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     marginLeft: 8, // Espacio entre el icono y el texto
+  },
+  errorContainer: {
+    backgroundColor: Colors.red.red600,
+    padding: 16,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: Colors.red.red200,
+    alignItems: "center",
+    justifyContent: "center",
+    marginVertical: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+
+  errorText: {
+    fontSize: 20,
+    color: Colors.white.white300,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 8,
+  },
+
+  errorHint: {
+    fontSize: 16,
+    color: Colors.white.white500,
+    textAlign: "center",
+    opacity: 0.8,
   },
 });
 

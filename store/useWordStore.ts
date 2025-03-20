@@ -76,13 +76,14 @@ export const useWordStore = create<WordState>((set, get) => ({
     set({ loading: true, error: null });
     try {
       const response = await fetch(`${BACKURL}/api/words/get-cards-anki`);
-      const { data } = await response.json();
-      set({ words: data, loading: false });
-    } catch (error) {
-      set({
-        error: "Failed to fetch recent hard or medium words",
-        loading: false,
-      });
+      const data = await response.json();
+      if (data.success) {
+        set({ words: data.data, loading: false });
+      } else {
+        set({ error: "Failed to fetch words", loading: false });
+      }
+    } catch {
+      set({ error: "Failed to fetch words", loading: false });
     }
   },
   getWord: async (word) => {
@@ -91,14 +92,17 @@ export const useWordStore = create<WordState>((set, get) => ({
       const response = await fetch(
         `${BACKURL}/api/words/word/${word.toLowerCase()}`
       );
-      const { data } = await response.json();
-      get().setActiveWord(data);
-      set({ loading: false });
-    } catch (error) {
+      const data = await response.json();
+      if (data.success) {
+        get().setActiveWord(data.data);
+        set({ loading: false });
+      } else {
+        set({ error: "Error fetching word", loading: false });
+      }
+    } catch {
       set({ error: "Error fetching word", loading: false });
     }
   },
-
   generateWord: async (word) => {
     if (!word.trim()) return;
     set({ loading: true, error: null });
@@ -108,9 +112,13 @@ export const useWordStore = create<WordState>((set, get) => ({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ prompt: word, language: "en" }),
       });
-      const { data } = await response.json();
-      set({ wordActive: data, loading: false });
-    } catch (error) {
+      const data = await response.json();
+      if (data.success) {
+        set({ wordActive: data.data, loading: false });
+      } else {
+        set({ error: "Error generating word", loading: false });
+      }
+    } catch {
       set({ error: "Error generating word", loading: false });
     }
   },
