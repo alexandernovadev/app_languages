@@ -33,7 +33,6 @@ export const FlashcardApp = () => {
     error,
     fetchRecentHardOrMediumWords,
     setActiveWord,
-    updateincrementWordSeenCount,
   } = useWordStore();
 
   useEffect(() => {
