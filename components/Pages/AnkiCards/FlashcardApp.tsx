@@ -27,8 +27,14 @@ export const FlashcardApp = () => {
   const flipAnimation = useState(new Animated.Value(0))[0];
   const [refreshing, setRefreshing] = useState(false);
 
-  const { words, loading, error, fetchRecentHardOrMediumWords, setActiveWord, updateincrementWordSeenCount } =
-    useWordStore();
+  const {
+    words,
+    loading,
+    error,
+    fetchRecentHardOrMediumWords,
+    setActiveWord,
+    updateincrementWordSeenCount,
+  } = useWordStore();
 
   useEffect(() => {
     fetchRecentHardOrMediumWords();
@@ -62,9 +68,7 @@ export const FlashcardApp = () => {
         useNativeDriver: true,
       }).start();
       if (currentCard) {
-        updateincrementWordSeenCount(currentCard._id!)
         setActiveWord(currentCard);
-
       }
     }
     setFlipped(!flipped);
