@@ -68,7 +68,13 @@ const WordCardRoot = () => {
     <View style={styles.rowContainer}>
       <Text style={styles.titleBox}>{title}</Text>
       {onRefresh && (
-        <TouchableOpacity onPress={onRefresh} disabled={loadingUpdate}>
+        <TouchableOpacity
+          style={{
+            padding: 10,
+          }}
+          onPress={onRefresh}
+          disabled={loadingUpdate}
+        >
           <Ionicons
             name="refresh-outline"
             size={24}
@@ -316,7 +322,7 @@ const styles = StyleSheet.create<StylesType>({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginVertical: 5,
+    marginBottom: 5,
   },
   sectionContainer: {
     marginVertical: 2,

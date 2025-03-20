@@ -1,9 +1,9 @@
 import { BACKURL } from "@/api/backurl";
 
-/** 
+/**
  * @Deprecated
- * 
-*/
+ *
+ */
 export const incrementSeenWord = async (ID: string) => {
   try {
     const response = await fetch(`${BACKURL}/api/words/${ID}/increment-seen`, {
@@ -19,7 +19,7 @@ export const incrementSeenWord = async (ID: string) => {
       );
     }
 
-    console.log("Word seen count incremented successfully");
+    console.info("Word seen count incremented successfully");
   } catch (error) {
     console.error("Error incrementing word seen count:", error);
   }
