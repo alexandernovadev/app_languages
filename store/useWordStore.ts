@@ -92,7 +92,8 @@ export const useWordStore = create<WordState>((set, get) => ({
         `${BACKURL}/api/words/word/${word.toLowerCase()}`
       );
       const { data } = await response.json();
-      set({ wordActive: data, loading: false });
+      get().setActiveWord(data);
+      set({ loading: false });
     } catch (error) {
       set({ error: "Error fetching word", loading: false });
     }
@@ -424,5 +425,10 @@ export const useWordStore = create<WordState>((set, get) => ({
     set((state) => ({ wordsList: { ...state.wordsList, search, page: 1 } })),
   setPage: (page) =>
     set((state) => ({ wordsList: { ...state.wordsList, page } })),
-  setActiveWord: (word) => set({ wordActive: word }),
+  setActiveWord: (word) => {
+    set({ wordActive: word });
+    if (word !== null && word._id) {
+      get().updateincrementWordSeenCount(word._id);
+    }
+  },
 }));

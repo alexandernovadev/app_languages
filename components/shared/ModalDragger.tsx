@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { SidePanelModalWord } from "../Pages/Details/SidePanelModalWord";
 import { Colors } from "@/constants/Colors";
+import { useWordStore } from "@/store/useWordStore";
 
 interface PropsModalDragger {
   wordSelected: string;
@@ -25,6 +26,7 @@ export const ModalDragger = ({
 }: PropsModalDragger) => {
   const slideAnim = useRef(new Animated.Value(height)).current;
 
+  const { setActiveWord } = useWordStore();
   useEffect(() => {
     if (isModalVisible) {
       Animated.timing(slideAnim, {
@@ -33,6 +35,10 @@ export const ModalDragger = ({
         useNativeDriver: true,
       }).start();
     }
+
+    return () => {
+      setActiveWord(null);
+    };
   }, [isModalVisible]);
 
   // PanResponder to handle the drag
