@@ -33,20 +33,21 @@ export const useLectureStore = create<LectureState>((set, get) => ({
       const response = await fetch(
         `${BACKURL}/api/lectures?page=${page}&limit=${limit}`
       );
-      const { data, total }: LectureResponse = await response.json();
+      const { data } = await response.json();
+
       const currentLectures = get().lectures;
 
       set({
-        lectures: page === 1 ? data : [...currentLectures, ...data],
-        page,
-        total,
+        lectures: page === 1 ? data.data : [...currentLectures, ...data.data],
+        page: data.pages,
+        total: data.total,
         loading: false,
       });
     } catch (error) {
       set({ error: "Failed to fetch lectures", loading: false });
     }
   },
-  getLectureById: (id:string) => {
+  getLectureById: (id: string) => {
     return get().lectures.find((lecture) => lecture._id === id);
   },
 }));
