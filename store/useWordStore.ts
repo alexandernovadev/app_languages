@@ -134,7 +134,6 @@ export const useWordStore = create<WordState>((set, get) => ({
       const query = search ? `&wordUser=${search.toLowerCase()}` : "";
       const response = await fetch(`${BACKURL}/api/words?page=${page}${query}`);
       const data = await response.json();
-      console.log(data);
 
       if (data.success) {
         set({
