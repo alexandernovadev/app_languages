@@ -192,62 +192,54 @@ export const MarkDownRender = ({
 
 const stylesMD = StyleSheet.create({
   heading1: {
-    fontSize: 32,
+    fontSize: 30,
     fontWeight: "bold",
-    color: Colors.blue.blue900,
-    marginVertical: 8,
+    color: Colors.green.green400,
   },
   heading2: {
     fontSize: 28,
     fontWeight: "bold",
     color: Colors.blue.blue800,
-    marginVertical: 8,
   },
   heading3: {
     fontSize: 24,
     fontWeight: "600",
     color: Colors.blue.blue700,
-    marginVertical: 8,
   },
   heading4: {
     fontSize: 20,
     fontWeight: "600",
     color: Colors.blue.blue600,
-    marginVertical: 6,
   },
   heading5: {
     fontSize: 18,
     fontWeight: "500",
     color: Colors.blue.blue500,
-    marginVertical: 6,
   },
   heading6: {
     fontSize: 16,
     fontWeight: "500",
     color: Colors.blue.blue400,
-    marginVertical: 6,
   },
   paragraph: {
     fontSize: 17,
     color: Colors.gray.gray200,
-    marginVertical: 4,
+    lineHeight: 32,
   },
   listItem: {
     fontSize: 16,
     color: Colors.gray.gray200,
-    marginVertical: 4,
+    lineHeight: 32,
   },
   listContainer: {
     paddingLeft: 16,
-    marginVertical: 4,
   },
   nestedListContainer: {
     paddingLeft: 24,
-    marginVertical: 4,
   },
   listItemContainer: {
     flexDirection: "row",
-    alignItems: "flex-start", 
+    alignItems: "flex-start",
     marginVertical: 2,
     flexWrap: "wrap",
   },
@@ -255,15 +247,18 @@ const stylesMD = StyleSheet.create({
     marginRight: 8,
     fontSize: 16,
     color: Colors.gray.gray200,
+    lineHeight: 32,
   },
   listText: {
     fontSize: 16,
     color: Colors.gray.gray200,
+    lineHeight: 32,
   },
   strongText: {
     fontSize: 17,
     fontWeight: "bold",
     color: Colors.blue.blue200,
+    lineHeight: 32,
   },
 });
 
@@ -276,7 +271,8 @@ const styles = StyleSheet.create({
   wordsContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
-    flex: 1 
+    flex: 1,
+    marginBottom: 24,
   },
   infoContainer: {
     flexDirection: "row",
