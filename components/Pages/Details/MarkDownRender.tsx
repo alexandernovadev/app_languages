@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import {
   Text,
   View,
@@ -9,10 +9,10 @@ import {
 } from "react-native";
 import Markdown from "react-native-markdown-display";
 import * as Speech from "expo-speech";
-import { Lecture } from "@/interfaces/models/Lectures";
 import { FontAwesome } from "@expo/vector-icons";
 import { Colors } from "@/constants/Colors";
 import { triggerVibration } from "@/utils/vibrationHaptic";
+import { Lecture } from "@/interfaces/models/Lectures";
 
 interface PropsMarkDownRender {
   lecture: Lecture | undefined;
@@ -27,82 +27,94 @@ export const MarkDownRender = ({
 }: PropsMarkDownRender) => {
   const [wordSelectedU, setWordSelectedU] = useState("");
 
-  const speakWord = (word: string) => {
+  const speakWord = useCallback((word: string) => {
     if (word) {
       Speech.speak(word, { language: "en-US", rate: 0.9 });
     }
-  };
+  }, []);
 
-  // Manejador común para la pulsación de palabras
-  const handleWordPress = (word: string, idWord: string) => {
-    setWordSelected(word);
-    setWordSelectedU(idWord);
-    speakWord(word);
-    triggerVibration();
-  };
+  const handleWordPress = useCallback(
+    (word: string, idWord: string) => {
+      setWordSelected(word);
+      speakWord(word);
+      triggerVibration();
+    },
+    [setWordSelected, speakWord]
+  );
 
-  // Función recursiva para extraer todo el texto de un nodo
-  const getTextFromNode = (node: any): string => {
+  const getTextFromNode = useCallback((node: any): string => {
     if (node.content) return node.content;
     if (node.children && node.children.length) {
       return node.children.map(getTextFromNode).join(" ");
     }
     return "";
-  };
+  }, []);
 
-  // Función auxiliar para renderizar las palabras de un nodo
-  const renderWords = (node: any, customStyle: any) => {
-    const content = getTextFromNode(node);
-    const wordsArray = content.split(/\s+/).filter((w) => w.length > 0);
-    return (
-      <View key={node.key} style={styles.wordsContainer}>
-        {wordsArray.map((word: string, index: number) => {
-          const idWord = `${word}-${index}`;
-          return (
-            <Pressable
-              key={idWord}
-              onPress={() => handleWordPress(word, idWord)}
-            >
-              <Text
-                style={[
-                  customStyle,
-                  wordSelectedU === idWord
-                    ? { color: Colors.green.green500 }
-                    : { color: customStyle.color },
-                ]}
+  const renderWords = useCallback(
+    (node: any, customStyle: any) => {
+      const content = getTextFromNode(node);
+      const wordsArray = content.split(/\s+/).filter((w) => w.length > 0);
+      return (
+        <View key={node.key} style={styles.wordsContainer}>
+          {wordsArray.map((word: string, index: number) => {
+            const idWord = `${word}-${index}`;
+            return (
+              <Pressable
+                key={idWord}
+                onPress={() => {
+                  handleWordPress(word, idWord);
+                  // THis line take 3 seg of delay to set the word selected
+                  //  setWordSelectedU(idWord);
+                }}
               >
-                {word}{" "}
-              </Text>
-            </Pressable>
-          );
-        })}
-      </View>
-    );
-  };
+                <Text
+                  style={[
+                    customStyle,
+                    wordSelectedU === idWord
+                      ? { color: Colors.green.green500 }
+                      : { color: customStyle.color },
+                  ]}
+                >
+                  {word}{" "}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </View>
+      );
+    },
+    [getTextFromNode, handleWordPress, wordSelectedU]
+  );
 
-  // Objeto que centraliza los estilos para cada tipo de texto
-  const textStyles = {
-    heading1: stylesMD.heading1,
-    heading2: stylesMD.heading2,
-    heading3: stylesMD.heading3,
-    heading4: stylesMD.heading4,
-    heading5: stylesMD.heading5,
-    heading6: stylesMD.heading6,
-    paragraph: stylesMD.paragraph,
-    list: stylesMD.listItem,
-  };
+  // Centraliza los estilos para cada tipo de texto
+  const textStyles = useMemo(
+    () => ({
+      heading1: stylesMD.heading1,
+      heading2: stylesMD.heading2,
+      heading3: stylesMD.heading3,
+      heading4: stylesMD.heading4,
+      heading5: stylesMD.heading5,
+      heading6: stylesMD.heading6,
+      paragraph: stylesMD.paragraph,
+      list: stylesMD.listItem,
+    }),
+    []
+  );
 
-  // Reglas para Markdown que asignan la función renderWords a cada tipo de nodo
-  const rules = {
-    heading1: (node: any) => renderWords(node, textStyles.heading1),
-    heading2: (node: any) => renderWords(node, textStyles.heading2),
-    heading3: (node: any) => renderWords(node, textStyles.heading3),
-    heading4: (node: any) => renderWords(node, textStyles.heading4),
-    heading5: (node: any) => renderWords(node, textStyles.heading5),
-    heading6: (node: any) => renderWords(node, textStyles.heading6),
-    paragraph: (node: any) => renderWords(node, textStyles.paragraph),
-    list_item: (node: any) => renderWords(node, textStyles.list),
-  };
+  // Define las reglas para Markdown usando renderWords
+  const rules = useMemo(
+    () => ({
+      heading1: (node: any) => renderWords(node, textStyles.heading1),
+      heading2: (node: any) => renderWords(node, textStyles.heading2),
+      heading3: (node: any) => renderWords(node, textStyles.heading3),
+      heading4: (node: any) => renderWords(node, textStyles.heading4),
+      heading5: (node: any) => renderWords(node, textStyles.heading5),
+      heading6: (node: any) => renderWords(node, textStyles.heading6),
+      paragraph: (node: any) => renderWords(node, textStyles.paragraph),
+      list_item: (node: any) => renderWords(node, textStyles.list),
+    }),
+    [renderWords, textStyles]
+  );
 
   return (
     <ScrollView style={styles.markdownContainer}>
