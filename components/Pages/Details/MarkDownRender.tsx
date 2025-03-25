@@ -1,4 +1,4 @@
-import { ReactNode, useCallback, useMemo } from "react";
+import { useState } from "react";
 import {
   Text,
   View,
@@ -7,10 +7,8 @@ import {
   StyleSheet,
   Image,
 } from "react-native";
-
-import Markdown, { ASTNode } from "react-native-markdown-display";
+import Markdown from "react-native-markdown-display";
 import * as Speech from "expo-speech";
-
 import { Lecture } from "@/interfaces/models/Lectures";
 import { FontAwesome } from "@expo/vector-icons";
 import { Colors } from "@/constants/Colors";
@@ -27,100 +25,85 @@ export const MarkDownRender = ({
   id,
   setWordSelected,
 }: PropsMarkDownRender) => {
-  const speakWord = useCallback((word: string) => {
+  const [wordSelectedU, setWordSelectedU] = useState("");
+
+  const speakWord = (word: string) => {
     if (word) {
-      Speech.speak(word, {
-        language: "en-US",
-        rate:.9
-      });
+      Speech.speak(word, { language: "en-US", rate: 0.9 });
     }
-  }, []);
+  };
 
-  const renderWords = useCallback(
-    (content: string, textStyles: any) => {
-      return (
-        <Text key={content} style={styles.espaciado}>
-          {content.split(/\s+/).map((word, index) => {
-            const wordClean = word.replace(
-              /^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/gu,
-              ""
-            );
+  // Manejador común para la pulsación de palabras
+  const handleWordPress = (word: string, idWord: string) => {
+    setWordSelected(word);
+    setWordSelectedU(idWord);
+    speakWord(word);
+    triggerVibration();
+  };
 
-            return (
-              <Pressable
-                key={`word_${index}`}
-                onPress={() => {
-                  setWordSelected(wordClean);
-                  speakWord(wordClean);
-                   triggerVibration("medium");
-                }}
-                onLongPress={() => speakWord(wordClean)}
+  // Función recursiva para extraer todo el texto de un nodo
+  const getTextFromNode = (node: any): string => {
+    if (node.content) return node.content;
+    if (node.children && node.children.length) {
+      return node.children.map(getTextFromNode).join(" ");
+    }
+    return "";
+  };
+
+  // Función auxiliar para renderizar las palabras de un nodo
+  const renderWords = (node: any, customStyle: any) => {
+    const content = getTextFromNode(node);
+    const wordsArray = content.split(/\s+/).filter((w) => w.length > 0);
+    return (
+      <View key={node.key} style={styles.wordsContainer}>
+        {wordsArray.map((word: string, index: number) => {
+          const idWord = `${word}-${index}`;
+          return (
+            <Pressable
+              key={idWord}
+              onPress={() => handleWordPress(word, idWord)}
+            >
+              <Text
+                style={[
+                  customStyle,
+                  wordSelectedU === idWord
+                    ? { color: Colors.green.green500 }
+                    : { color: customStyle.color },
+                ]}
               >
-                <Text style={textStyles}>{word} </Text>
-              </Pressable>
-            );
-          })}
-        </Text>
-      );
-    },
-    [speakWord]
-  );
+                {word}{" "}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </View>
+    );
+  };
 
-  const rules = useMemo(
-    () => ({
-      text: (node: any, children: any, parent: any, styles: any) => {
-        const content = node.content || "";
-        return renderWords(content, styles.text);
-      },
-      heading1: (node: any, children: any, parent: any, styles: any) => {
-        const content = node.children[0].children[0].content || "";
-        return renderWords(content, styles.heading1);
-      },
-      heading2: (node: any, children: any, parent: any, styles: any) => {
-        const content = node.children[0].children[0].content || "";
-        return renderWords(content, styles.heading2);
-      },
-      heading3: (node: any, children: any, parent: any, styles: any) => {
-        const content = node.children[0].children[0].content || "";
-        return renderWords(content, styles.heading2);
-      },
-      strong: (
-        node: ASTNode,
-        children: ReactNode[],
-        parentNodes: ASTNode[],
-        styles: any
-      ) => (
-        <Text key={node.key} style={styles.strong}>
-          {children}
-        </Text>
-      ),
-      list_item: (
-        node: ASTNode,
-        children: ReactNode[],
-        parentNodes: any[],
-        styles: any
-      ) => {
-        const isOrdered = parentNodes[0].type === "ordered_list";
-        const index = parentNodes[0].children.indexOf(node);
-        const bullet = isOrdered ? `${index + 1}.` : "•";
+  // Objeto que centraliza los estilos para cada tipo de texto
+  const textStyles = {
+    heading1: stylesMD.heading1,
+    heading2: stylesMD.heading2,
+    heading3: stylesMD.heading3,
+    heading4: stylesMD.heading4,
+    heading5: stylesMD.heading5,
+    heading6: stylesMD.heading6,
+    paragraph: stylesMD.paragraph,
+    list: stylesMD.listItem,
+  };
 
-        return (
-          <View key={node.key} style={styles.listItem}>
-            <Text style={styles.bullet}>{bullet}</Text>
-            <View style={[styles.listItemText]}>
-              {children.map((child, i) => (
-                <Text key={`${node.key}_${i}`}>{child}</Text>
-              ))}
-            </View>
-          </View>
-        );
-      },
-    }),
-    [renderWords]
-  );
+  // Reglas para Markdown que asignan la función renderWords a cada tipo de nodo
+  const rules = {
+    heading1: (node: any) => renderWords(node, textStyles.heading1),
+    heading2: (node: any) => renderWords(node, textStyles.heading2),
+    heading3: (node: any) => renderWords(node, textStyles.heading3),
+    heading4: (node: any) => renderWords(node, textStyles.heading4),
+    heading5: (node: any) => renderWords(node, textStyles.heading5),
+    heading6: (node: any) => renderWords(node, textStyles.heading6),
+    paragraph: (node: any) => renderWords(node, textStyles.paragraph),
+    list_item: (node: any) => renderWords(node, textStyles.list),
+  };
 
-
-  // Todo : Hacer el efecto parallaz en infoContainer
   return (
     <ScrollView style={styles.markdownContainer}>
       <View style={styles.infoContainer}>
@@ -130,7 +113,7 @@ export const MarkDownRender = ({
         </View>
         <View style={[styles.badgeContainer, styles.levelBadge]}>
           <Text style={styles.badgeText}>
-            <Text style={{ fontWeight: 900 }}>Level </Text>
+            <Text style={{ fontWeight: "900" }}>Level </Text>
             {lecture?.level}
           </Text>
         </View>
@@ -146,13 +129,61 @@ export const MarkDownRender = ({
           resizeMode="stretch"
         />
       )}
-
-      <Markdown style={styles} rules={rules}>
+      <Markdown style={stylesMD} rules={rules}>
         {lecture?.content || `# No lecture found with id ${id}`}
       </Markdown>
     </ScrollView>
   );
 };
+
+const stylesMD = StyleSheet.create({
+  heading1: {
+    fontSize: 32,
+    fontWeight: "bold",
+    color: Colors.blue.blue900,
+    marginVertical: 8,
+  },
+  heading2: {
+    fontSize: 28,
+    fontWeight: "bold",
+    color: Colors.blue.blue800,
+    marginVertical: 8,
+  },
+  heading3: {
+    fontSize: 24,
+    fontWeight: "600",
+    color: Colors.blue.blue700,
+    marginVertical: 8,
+  },
+  heading4: {
+    fontSize: 20,
+    fontWeight: "600",
+    color: Colors.blue.blue600,
+    marginVertical: 6,
+  },
+  heading5: {
+    fontSize: 18,
+    fontWeight: "500",
+    color: Colors.blue.blue500,
+    marginVertical: 6,
+  },
+  heading6: {
+    fontSize: 16,
+    fontWeight: "500",
+    color: Colors.blue.blue400,
+    marginVertical: 6,
+  },
+  paragraph: {
+    fontSize: 17,
+    color: Colors.gray.gray200,
+    marginVertical: 4,
+  },
+  listItem: {
+    fontSize: 16,
+    color: Colors.gray.gray200,
+    marginVertical: 4,
+  },
+});
 
 const styles = StyleSheet.create({
   markdownContainer: {
@@ -160,9 +191,9 @@ const styles = StyleSheet.create({
     width: "100%",
     marginBottom: 24,
   },
-  espaciado: {
-    marginBottom: 24,
-    marginTop: 24,
+  wordsContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
   },
   infoContainer: {
     flexDirection: "row",
@@ -192,50 +223,12 @@ const styles = StyleSheet.create({
   },
   languageBadge: {
     borderColor: Colors.gray.gray300,
-    borderWidth:1
+    borderWidth: 1,
   },
   image: {
     width: "100%",
     height: 420,
     borderRadius: 8,
     marginBottom: 16,
-  },
-  text: {
-    color: Colors.white.white300,
-    fontSize: 18,
-    lineHeight: 32,
-  },
-  heading1: {
-    fontSize: 28,
-    color: Colors.white.white400,
-    fontWeight: "bold",
-  },
-  heading2: {
-    fontSize: 24,
-    color: Colors.white.white500,
-    fontWeight: "bold",
-  },
-  heading3: {
-    fontSize: 22,
-    color: Colors.white.white500,
-    fontWeight: "semibold",
-  },
-  listItem: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    paddingHorizontal: 8,
-    marginVertical: 6,
-  },
-  bullet: {
-    color: Colors.white.white600,
-    fontSize: 42,
-    paddingRight: 8,
-    position: "relative",
-    bottom: 12,
-  },
-  listItemText: {
-    flex: 1,
-    color: Colors.white.white600,
-    fontSize: 18,
   },
 });
