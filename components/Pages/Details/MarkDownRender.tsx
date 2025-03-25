@@ -70,9 +70,9 @@ export const MarkDownRender = ({
                 <Text
                   style={[
                     customStyle,
-                    wordSelectedU === idWord
-                      ? { color: Colors.green.green500 }
-                      : { color: customStyle.color },
+                    // wordSelectedU === idWord
+                    //   ? { color: Colors.green.green500 }
+                    //   : { color: customStyle.color },
                   ]}
                 >
                   {word}{" "}
