@@ -63,30 +63,57 @@ export const MarkDownRender = ({
                 key={idWord}
                 onPress={() => {
                   handleWordPress(word, idWord);
-                  // THis line take 3 seg of delay to set the word selected
-                  //  setWordSelectedU(idWord);
                 }}
               >
-                <Text
-                  style={[
-                    customStyle,
-                    // wordSelectedU === idWord
-                    //   ? { color: Colors.green.green500 }
-                    //   : { color: customStyle.color },
-                  ]}
-                >
-                  {word}{" "}
-                </Text>
+                <Text style={[customStyle]}>{word} </Text>
               </Pressable>
             );
           })}
         </View>
       );
     },
-    [getTextFromNode, handleWordPress, wordSelectedU]
+    [getTextFromNode, handleWordPress]
   );
 
-  // Centraliza los estilos para cada tipo de texto
+  const renderNestedList = useCallback(
+    (node: any, customStyle: any) => {
+      let isOrdered = node.type === "ordered_list";
+      return (
+        <View key={node.key} style={stylesMD.listContainer}>
+          {node.children.map((child: any, index: number) => (
+            <View
+              key={`${child.key}-${index}`}
+              style={stylesMD.listItemContainer}
+            >
+              <Text style={stylesMD.bullet}>
+                {isOrdered ? `${index + 1}.` : "•"}
+              </Text>
+              <Pressable
+                onPress={() => {
+                  const content = getTextFromNode(child);
+                  handleWordPress(content, `${content}-${index}`);
+                }}
+              >
+                <Text style={stylesMD.listText}>
+                  {child.children.map((grandChild: any, grandIndex: number) =>
+                    grandChild.type === "strong" ? (
+                      <Text key={grandIndex} style={stylesMD.strongText}>
+                        {getTextFromNode(grandChild)}
+                      </Text>
+                    ) : (
+                      getTextFromNode(grandChild)
+                    )
+                  )}
+                </Text>
+              </Pressable>
+            </View>
+          ))}
+        </View>
+      );
+    },
+    [getTextFromNode, handleWordPress]
+  );
+
   const textStyles = useMemo(
     () => ({
       heading1: stylesMD.heading1,
@@ -101,7 +128,6 @@ export const MarkDownRender = ({
     []
   );
 
-  // Define las reglas para Markdown usando renderWords
   const rules = useMemo(
     () => ({
       heading1: (node: any) => renderWords(node, textStyles.heading1),
@@ -111,9 +137,9 @@ export const MarkDownRender = ({
       heading5: (node: any) => renderWords(node, textStyles.heading5),
       heading6: (node: any) => renderWords(node, textStyles.heading6),
       paragraph: (node: any) => renderWords(node, textStyles.paragraph),
-      list_item: (node: any) => renderWords(node, textStyles.list),
+      list_item: (node: any) => renderNestedList(node, textStyles.list),
     }),
-    [renderWords, textStyles]
+    [renderWords, renderNestedList, textStyles]
   );
 
   return (
@@ -194,6 +220,34 @@ const stylesMD = StyleSheet.create({
     fontSize: 16,
     color: Colors.gray.gray200,
     marginVertical: 4,
+  },
+  listContainer: {
+    paddingLeft: 16,
+    marginVertical: 4,
+  },
+  nestedListContainer: {
+    paddingLeft: 24,
+    marginVertical: 4,
+  },
+  listItemContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: 2,
+    flexWrap: "wrap",
+  },
+  bullet: {
+    marginRight: 8,
+    fontSize: 16,
+    color: Colors.gray.gray200,
+  },
+  listText: {
+    fontSize: 16,
+    color: Colors.gray.gray200,
+  },
+  strongText: {
+    fontSize: 17,
+    fontWeight: "bold",
+    color: Colors.blue.blue200,
   },
 });
 
