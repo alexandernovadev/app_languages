@@ -13,6 +13,7 @@ import { Loading } from "@/components/shared/Loading";
 import { Colors } from "@/constants/Colors";
 import { SidePanelModalWord } from "./SidePanelModalWord";
 import { triggerVibration } from "@/utils/vibrationHaptic";
+import { useWordStore } from "@/store/useWordStore";
 
 export const DetailPage = () => {
   const [lecture, setLecture] = useState<Lecture>();
@@ -21,14 +22,17 @@ export const DetailPage = () => {
   const [isModalVisible, setModalVisible] = useState(false);
 
   const { id } = useLocalSearchParams();
+  useWordStore()
 
   const getLectureById = useLectureStore((state) => state.getLectureById);
+  const setActiveWord = useWordStore((state) => state.setActiveWord);
 
   useEffect(() => {
     setIsLoading(true);
     const fetchedLecture = getLectureById(String(id));
     setLecture(fetchedLecture);
     setIsLoading(false);
+    setActiveWord(null)
   }, [id]);
 
   const speakWord = useCallback((word: string) => {
