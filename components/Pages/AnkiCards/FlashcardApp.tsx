@@ -139,6 +139,7 @@ export const FlashcardApp = () => {
       >
         <View style={styles.errorContainer}>
           <Text style={styles.errorText}>Oops! Something went wrong</Text>
+          <Text style={styles.errorText}>{error}</Text>
           <Text style={styles.errorHint}>Pull to refresh and try again</Text>
         </View>
       </ScrollView>
@@ -213,10 +214,7 @@ export const FlashcardApp = () => {
 
       <View style={styles.navigationContainer}>
         <TouchableOpacity
-          onPress={() => {
-            triggerVibration("light");
-            handlePrevious;
-          }}
+          onPress={handlePrevious}
           disabled={currentCardIndex === 0}
           style={styles.arrowsButton}
         >
