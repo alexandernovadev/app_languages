@@ -1,5 +1,11 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  Vibration,
+} from "react-native";
 
 import * as Speech from "expo-speech";
 import { useLocalSearchParams } from "expo-router";
@@ -22,7 +28,7 @@ export const DetailPage = () => {
   const [isModalVisible, setModalVisible] = useState(false);
 
   const { id } = useLocalSearchParams();
-  useWordStore()
+  useWordStore();
 
   const getLectureById = useLectureStore((state) => state.getLectureById);
   const setActiveWord = useWordStore((state) => state.setActiveWord);
@@ -32,8 +38,18 @@ export const DetailPage = () => {
     const fetchedLecture = getLectureById(String(id));
     setLecture(fetchedLecture);
     setIsLoading(false);
-    setActiveWord(null)
+    setActiveWord(null);
   }, [id]);
+
+  useEffect(() => {
+    if (isLoading) {
+      const interval = setInterval(() => triggerVibration("pulse"), 810);
+      return () => {
+        Vibration.cancel();
+        clearInterval(interval);
+      };
+    }
+  }, [isLoading]);
 
   const speakWord = useCallback((word: string) => {
     triggerVibration("medium");
