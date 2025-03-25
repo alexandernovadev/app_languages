@@ -45,7 +45,7 @@ export const MarkDownRender = ({
   const getTextFromNode = useCallback((node: any): string => {
     if (node.content) return node.content;
     if (node.children && node.children.length) {
-      return node.children.map(getTextFromNode).join(" ");
+      return node.children.map((child: any) => getTextFromNode(child)).join("");
     }
     return "";
   }, []);
