@@ -95,10 +95,9 @@ export const FlashcardApp = () => {
     );
   };
 
-  const listenWord = () => {
-    if (currentCard?.word) {
-      Speech.speak(currentCard?.word, { language: "en-US" });
-    }
+  const listenWord = (rate = 0.8, language = "en-US") => {
+    triggerVibration("medium");
+    Speech.speak(currentCard?.word, { language, rate });
   };
 
   const onRefresh = React.useCallback(() => {
@@ -162,19 +161,17 @@ export const FlashcardApp = () => {
         >
           <View style={styles.wordRow}>
             <Text style={styles.word}>{currentCard?.word}</Text>
-            <TouchableOpacity
-              onPress={() => {
-                triggerVibration("light");
-                listenWord;
-              }}
-              style={styles.speakerIconButton}
-            >
-              <Ionicons
-                name="volume-high-outline"
-                size={32}
-                color={Colors.green.green400}
-              />
-            </TouchableOpacity>
+            <View style={styles.rowContainer}>
+              <TouchableOpacity
+                onPress={() => listenWord()}
+                style={styles.speakerIcon}
+              >
+                <Text style={styles.speakersIcons}>🔊</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => listenWord(0.09)}>
+                <Text style={styles.speakersIcons}>🐢</Text>
+              </TouchableOpacity>
+            </View>
           </View>
           <Text style={styles.pronunciation}>{currentCard?.IPA}</Text>
           {currentCard?.img ? (
@@ -229,6 +226,23 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
+  },
+  rowContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 5,
+  },
+  speakerIcon: {
+    marginLeft: 10,
+  },
+  speakersIcons: {
+    marginLeft: 10,
+    fontSize: 20,
+    borderColor: Colors.white.white500,
+    borderWidth: 2,
+    borderRadius: 100,
+    padding: 9,
   },
   cardContainer: {
     width: "95%",
