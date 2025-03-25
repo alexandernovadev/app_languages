@@ -35,8 +35,9 @@ export const MarkDownRender = ({
 
   const handleWordPress = useCallback(
     (word: string, idWord: string) => {
-      setWordSelected(word);
-      speakWord(word);
+      const wordClean = word.replace(/^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/gu, "");
+      setWordSelected(wordClean);
+      speakWord(wordClean);
       triggerVibration();
     },
     [setWordSelected, speakWord]
@@ -58,6 +59,7 @@ export const MarkDownRender = ({
         <View key={node.key} style={styles.wordsContainer}>
           {wordsArray.map((word: string, index: number) => {
             const idWord = `${word}-${index}`;
+
             return (
               <Pressable
                 key={idWord}
@@ -127,7 +129,7 @@ export const MarkDownRender = ({
     },
     [getTextFromNode, handleWordPress]
   );
-  
+
   const textStyles = useMemo(
     () => ({
       heading1: stylesMD.heading1,
