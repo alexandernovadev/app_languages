@@ -1,14 +1,14 @@
 import { Vibration, Platform } from 'react-native';
 
 // Vibration Patterns
-const LIGHT_PATTERN = [8, 60];  // Short, light vibration
-const MEDIUM_PATTERN = [8, 120];  // Medium vibration
-const HEAVY_PATTERN = [8, 210];  // Strong, heavy vibration
-const DOUBLE_TAP_PATTERN = [8, 60, 110, 60];  // Quick double tap
-const SINE_WAVE_PATTERN = [8, 60, 60, 100, 60, 160, 60, 200];  // Simulates sine wave
-const HEARTBEAT_PATTERN = [8, 110, 60, 110];  // Heartbeat-like pattern
-const PULSE_PATTERN = [8, 60, 110, 60, 200, 60];  // Rhythmic pulse
-const RAPID_FIRE_PATTERN = [8, 40, 40, 40, 40, 40, 40, 40];  // Rapid short bursts
+const LIGHT_PATTERN = [4, 60];  // Short, light vibration
+const MEDIUM_PATTERN = [4, 120];  // Medium vibration
+const HEAVY_PATTERN = [4, 210];  // Strong, heavy vibration
+const DOUBLE_TAP_PATTERN = [4, 60, 110, 60];  // Quick double tap
+const SINE_WAVE_PATTERN = [4, 60, 60, 100, 60, 160, 60, 200];  // Simulates sine wave
+const HEARTBEAT_PATTERN = [4, 110, 60, 110];  // Heartbeat-like pattern
+const PULSE_PATTERN = [4, 60, 110, 60, 200, 60];  // Rhythmic pulse
+const RAPID_FIRE_PATTERN = [4, 40, 40, 40, 40, 40, 40, 40];  // Rapid short bursts
 
 // Interface for vibration levels
 interface VibrationPatterns {
