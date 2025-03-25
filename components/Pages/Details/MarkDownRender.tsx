@@ -88,24 +88,38 @@ export const MarkDownRender = ({
               <Text style={stylesMD.bullet}>
                 {isOrdered ? `${index + 1}.` : "•"}
               </Text>
-              <Pressable
-                onPress={() => {
-                  const content = getTextFromNode(child);
-                  handleWordPress(content, `${content}-${index}`);
-                }}
-              >
-                <Text style={stylesMD.listText}>
-                  {child.children.map((grandChild: any, grandIndex: number) =>
-                    grandChild.type === "strong" ? (
-                      <Text key={grandIndex} style={stylesMD.strongText}>
-                        {getTextFromNode(grandChild)}
-                      </Text>
-                    ) : (
-                      getTextFromNode(grandChild)
-                    )
-                  )}
-                </Text>
-              </Pressable>
+              <View style={styles.wordsContainer}>
+                {child.children.map((grandChild: any, grandIndex: number) => {
+                  const content = getTextFromNode(grandChild);
+                  const wordsArray = content
+                    .split(/\s+/)
+                    .filter((w) => w.length > 0);
+
+                  return wordsArray.map((word: string, wordIndex: number) => {
+                    const idWord = `${word}-${grandIndex}-${wordIndex}`;
+                    return (
+                      <Pressable
+                        key={idWord}
+                        onPress={() => {
+                          handleWordPress(word, idWord);
+                        }}
+                      >
+                        {grandChild.type === "strong" ? (
+                          <Text
+                            style={[stylesMD.strongText, { marginRight: 4 }]}
+                          >
+                            {word}{" "}
+                          </Text>
+                        ) : (
+                          <Text style={[stylesMD.listText, { marginRight: 4 }]}>
+                            {word}{" "}
+                          </Text>
+                        )}
+                      </Pressable>
+                    );
+                  });
+                })}
+              </View>
             </View>
           ))}
         </View>
@@ -113,7 +127,7 @@ export const MarkDownRender = ({
     },
     [getTextFromNode, handleWordPress]
   );
-
+  
   const textStyles = useMemo(
     () => ({
       heading1: stylesMD.heading1,
