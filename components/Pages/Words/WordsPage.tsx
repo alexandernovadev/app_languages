@@ -28,7 +28,7 @@ export function WordsPage() {
     loading,
   } = useWordStore();
 
-  const [modalVisible, setModalVisible] = useState(false);
+  const [modalWordActive, setModalWordActive] = useState(false);
   const searchTimeout = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -51,18 +51,18 @@ export function WordsPage() {
 
   const handleOpenModal = (word: Word) => {
     setActiveWord(word);
-    setModalVisible(true);
+    setModalWordActive(true);
   };
 
   const handleCloseModal = () => {
     setActiveWord(null);
-    setModalVisible(false);
+    setModalWordActive(false);
   };
 
   return (
     <MainLayoutView style={styles.container}>
       <View
-        style={[styles.inputContainer, modalVisible && { display: "none" }]}
+        style={[styles.inputContainer, modalWordActive && { display: "none" }]}
       >
         <TextInput
           style={styles.input}
@@ -124,12 +124,14 @@ export function WordsPage() {
           onPress={() => setPage(Math.min(page + 1, totalPages))}
           disabled={page === totalPages}
         >
-          <Text style={styles.button}>Siguiente{modalVisible ? "T" : "F"}</Text>
+          <Text style={styles.button}>
+            Siguiente
+          </Text>
         </TouchableOpacity>
       </View>
 
       <ModalDragger
-        isModalVisible={modalVisible}
+        isModalVisible={modalWordActive}
         setModalVisible={handleCloseModal}
       >
         <View style={styles.cardhijo}>
@@ -153,7 +155,7 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    paddingVertical: 10,
+    paddingVertical: 6,
     zIndex: 1,
   },
   input: {
