@@ -13,13 +13,15 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { useWordStore } from "@/store/useWordStore";
 import { Colors } from "@/constants/Colors";
 import WordCardRoot from "@/components/shared/WordCardRoot/WordCardRoot";
+import { triggerVibration } from "@/utils/vibrationHaptic";
 
 interface SidePanelProps {
   wordSelected: string | null;
 }
 
 export const SidePanelModalWord = ({ wordSelected }: SidePanelProps) => {
-  const { wordActive, loading, getWord, generateWord, setActiveWord } = useWordStore();
+  const { wordActive, loading, getWord, generateWord, setActiveWord } =
+    useWordStore();
 
   useEffect(() => {
     if (wordSelected) {
@@ -31,6 +33,7 @@ export const SidePanelModalWord = ({ wordSelected }: SidePanelProps) => {
   }, [wordSelected]);
 
   const listenWord = () => {
+    triggerVibration("medium");
     if (wordActive?.word) {
       Speech.speak(wordActive.word, { language: "en-US", rate: 0.9 });
     }

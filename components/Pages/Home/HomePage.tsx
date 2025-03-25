@@ -19,6 +19,7 @@ import { getTitle } from "@/utils/getTitleFromMD";
 import { MainLayoutView } from "@/components/Layouts/MainLayoutView";
 import { RootStackParamList } from "@/app/_layout";
 import { Colors } from "@/constants/Colors";
+import { triggerVibration } from "@/utils/vibrationHaptic";
 
 export const HomePage = () => {
   const navigation =
@@ -80,7 +81,10 @@ export const HomePage = () => {
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.card}
-            onPress={() => navigation.navigate("Details", { id: item._id })}
+            onPress={() => {
+              triggerVibration("light");
+              navigation.navigate("Details", { id: item._id });
+            }}
           >
             <ImageBackground
               source={{ uri: item.img }}
@@ -135,6 +139,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 16,
+    paddingHorizontal: 8,
   },
   searchContainer: {
     flex: 1,

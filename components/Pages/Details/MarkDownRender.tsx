@@ -14,6 +14,7 @@ import * as Speech from "expo-speech";
 import { Lecture } from "@/interfaces/models/Lectures";
 import { FontAwesome } from "@expo/vector-icons";
 import { Colors } from "@/constants/Colors";
+import { triggerVibration } from "@/utils/vibrationHaptic";
 
 interface PropsMarkDownRender {
   lecture: Lecture | undefined;
@@ -51,6 +52,7 @@ export const MarkDownRender = ({
                 onPress={() => {
                   setWordSelected(wordClean);
                   speakWord(wordClean);
+                   triggerVibration("medium");
                 }}
                 onLongPress={() => speakWord(wordClean)}
               >

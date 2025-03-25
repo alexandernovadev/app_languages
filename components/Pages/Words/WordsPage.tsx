@@ -8,6 +8,7 @@ import {
   StyleSheet,
   ActivityIndicator,
 } from "react-native";
+import { Ionicons } from '@expo/vector-icons';
 
 import WordCardRoot from "@/components/shared/WordCardRoot/WordCardRoot";
 import { MainLayoutView } from "@/components/Layouts/MainLayoutView";
@@ -19,7 +20,7 @@ import { Word } from "@/interfaces/models/Word";
 
 export function WordsPage() {
   const {
-    wordsList: { words, search, page, totalPages },
+    wordsList: { words, search, page, totalPages, total },
     fetchWords,
     setSearch,
     setPage,
@@ -49,6 +50,10 @@ export function WordsPage() {
     setSearch(text);
   };
 
+  const handleClearSearch = () => {
+    setSearch('');
+  };
+
   const handleOpenModal = (word: Word) => {
     setActiveWord(word);
     setModalWordActive(true);
@@ -63,24 +68,26 @@ export function WordsPage() {
     <View style={{ flex: 1 }}>
       <MainLayoutView style={styles.container}>
         <View
-          style={[
-            styles.inputContainer,
-            modalWordActive && { display: "none" },
-          ]}
+          style={[styles.inputContainer, modalWordActive && { display: "none" }]}
         >
           <TextInput
             style={styles.input}
-            placeholder="Buscar palabra..."
+            placeholder={`Search word of _ ${total} words`}
             placeholderTextColor={Colors.gray.gray300}
             value={search}
             onChangeText={handleSearchChange}
           />
+          {search.length > 0 && (
+            <TouchableOpacity onPress={handleClearSearch} style={styles.clearButton}>
+              <Ionicons name="close-circle" size={24} color={Colors.white.white300} />
+            </TouchableOpacity>
+          )}
         </View>
 
         {loading ? (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color={Colors.green.green600} />
-            <Text style={styles.loadingText}>Loading words...</Text>
+            <Text style={styles.loadingText}>Loading...</Text>
           </View>
         ) : (
           <FlatList
@@ -108,7 +115,7 @@ export function WordsPage() {
             }}
             ListEmptyComponent={
               <View style={styles.emptyContainer}>
-                <Text style={styles.emptyText}>❌ Not Found</Text>
+                <Text style={styles.emptyText}>Word not Found</Text>
                 <TouchableOpacity
                   style={[styles.buttonMake, loading && styles.buttonDisabled]}
                   onPress={() =>
@@ -122,7 +129,7 @@ export function WordsPage() {
                   {loading ? (
                     <ActivityIndicator color={Colors.white.white400} />
                   ) : (
-                    <Text style={styles.buttonMakeText}>Make</Text>
+                    <Text style={styles.buttonMakeText}>Generate</Text>
                   )}
                 </TouchableOpacity>
               </View>
@@ -176,6 +183,7 @@ const styles = StyleSheet.create({
     right: 0,
     paddingVertical: 6,
     zIndex: 1,
+    display: "flex",
   },
   input: {
     backgroundColor: Colors.gray.gray850,
@@ -239,6 +247,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginTop: 20,
+    display: "flex",
+    gap: 16,
   },
   emptyText: {
     color: Colors.gray.gray300,
@@ -253,8 +263,8 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     marginTop: 10,
-    color: Colors.white.white300,
-    fontSize: 16,
+    color: Colors.green.green800,
+    fontSize: 20,
   },
   buttonDisabled: {
     backgroundColor: Colors.gray.gray900,
@@ -268,5 +278,11 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderRadius: 8,
+  },
+  clearButton: {
+    marginLeft: 8,
+    position: "absolute",
+    right: 5,
+    top: 20,
   },
 });

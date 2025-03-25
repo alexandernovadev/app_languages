@@ -35,6 +35,7 @@ const WordCardRoot = () => {
   const scrollRef = useRef<ScrollView>(null);
 
   const listenWord = (rate = 0.8, language = "en-US") => {
+    triggerVibration("medium");
     Speech.speak(word?.word!, { language, rate });
   };
 
@@ -72,7 +73,10 @@ const WordCardRoot = () => {
           style={{
             padding: 10,
           }}
-          onPress={onRefresh}
+          onPress={() => {
+            triggerVibration("medium");
+            onRefresh;
+          }}
           disabled={loadingUpdate}
         >
           <Ionicons
@@ -136,7 +140,8 @@ const WordCardRoot = () => {
 
         <SectionContainer hasBox>
           <TouchableOpacity
-            onPress={() => updateWordImage(word._id!, word.word, word.img!)}
+            onPress={() => 
+              updateWordImage(word._id!, word.word, word.img!)}
             style={[
               styles.buttonRefreshImage,
               word.img ? styles.buttonWithImage : null,

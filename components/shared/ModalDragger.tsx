@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { Colors } from "@/constants/Colors";
 import { useWordStore } from "@/store/useWordStore";
+import { triggerVibration } from "@/utils/vibrationHaptic";
 
 interface PropsModalDragger {
   children?: React.ReactNode;
@@ -32,9 +33,12 @@ export const ModalDragger = ({
         duration: 200,
         useNativeDriver: true,
       }).start();
+      triggerVibration("rapidFire");
     }
 
-
+    return () => {
+      triggerVibration("rapidFire");
+    };
   }, [isModalVisible]);
 
   // PanResponder to handle the drag

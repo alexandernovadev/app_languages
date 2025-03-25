@@ -12,6 +12,7 @@ import { MarkDownRender } from "@/components/Pages/Details/MarkDownRender";
 import { Loading } from "@/components/shared/Loading";
 import { Colors } from "@/constants/Colors";
 import { SidePanelModalWord } from "./SidePanelModalWord";
+import { triggerVibration } from "@/utils/vibrationHaptic";
 
 export const DetailPage = () => {
   const [lecture, setLecture] = useState<Lecture>();
@@ -31,6 +32,7 @@ export const DetailPage = () => {
   }, [id]);
 
   const speakWord = useCallback((word: string) => {
+    triggerVibration("medium");
     if (word) {
       Speech.speak(word, {
         language: "en-US",
@@ -55,14 +57,19 @@ export const DetailPage = () => {
         <View style={styles.wordActionContainer}>
           <TouchableOpacity
             style={{ padding: 24 }}
-            onPress={() => speakWord(wordSelected)}
+            onPress={() => {
+              speakWord(wordSelected);
+            }}
           >
             <Ionicons name="volume-high-outline" size={24} color="white" />
           </TouchableOpacity>
           <Text style={styles.wordSelected}>{wordSelected}</Text>
           <TouchableOpacity
             style={{ padding: 24 }}
-            onPress={() => setModalVisible(true)}
+            onPress={() => {
+              triggerVibration("medium");
+              setModalVisible(true);
+            }}
           >
             <Ionicons name="book-outline" size={24} color="white" />
           </TouchableOpacity>

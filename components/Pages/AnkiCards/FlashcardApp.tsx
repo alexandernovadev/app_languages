@@ -163,7 +163,10 @@ export const FlashcardApp = () => {
           <View style={styles.wordRow}>
             <Text style={styles.word}>{currentCard?.word}</Text>
             <TouchableOpacity
-              onPress={listenWord}
+              onPress={() => {
+                triggerVibration("light");
+                listenWord;
+              }}
               style={styles.speakerIconButton}
             >
               <Ionicons
@@ -196,7 +199,10 @@ export const FlashcardApp = () => {
 
       <View style={styles.navigationContainer}>
         <TouchableOpacity
-          onPress={handlePrevious}
+          onPress={() => {
+            triggerVibration("light");
+            handlePrevious;
+          }}
           disabled={currentCardIndex === 0}
           style={styles.arrowsButton}
         >

@@ -11,6 +11,7 @@ interface WordState {
     totalPages: number;
     page: number;
     search: string;
+    total: number;
   };
   loading: boolean;
   loadingUpdate: boolean;
@@ -67,6 +68,7 @@ export const useWordStore = create<WordState>((set, get) => ({
     totalPages: 1,
     page: 1,
     search: "",
+    total: 0,
   },
   loading: false,
   loadingUpdate: false,
@@ -132,6 +134,7 @@ export const useWordStore = create<WordState>((set, get) => ({
       const query = search ? `&wordUser=${search.toLowerCase()}` : "";
       const response = await fetch(`${BACKURL}/api/words?page=${page}${query}`);
       const data = await response.json();
+      console.log(data);
 
       if (data.success) {
         set({
@@ -140,6 +143,7 @@ export const useWordStore = create<WordState>((set, get) => ({
             totalPages: data.data.pages,
             page,
             search,
+            total: data.data.total,
           },
           loading: false,
         });
@@ -436,7 +440,7 @@ export const useWordStore = create<WordState>((set, get) => ({
     set((state) => ({ wordsList: { ...state.wordsList, page } })),
   setActiveWord: (word) => {
     const { wordActive, updateincrementWordSeenCount } = get();
-    
+
     if (wordActive?._id !== word?._id) {
       set({ wordActive: word });
       if (word !== null && word._id) {
