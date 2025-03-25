@@ -10,6 +10,7 @@ import {
   Vibration,
   ScrollView,
   RefreshControl,
+  Pressable,
 } from "react-native";
 
 import * as Speech from "expo-speech";
@@ -100,6 +101,17 @@ export const FlashcardApp = () => {
     Speech.speak(currentCard?.word, { language, rate });
   };
 
+  const handleDoubleTap = (() => {
+    let lastTap = 0;
+    return () => {
+      const now = Date.now();
+      if (now - lastTap < 300) {
+        listenWord();
+      }
+      lastTap = now;
+    };
+  })();
+
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
     triggerVibration("medium");
@@ -175,11 +187,16 @@ export const FlashcardApp = () => {
           </View>
           <Text style={styles.pronunciation}>{currentCard?.IPA}</Text>
           {currentCard?.img ? (
-            <Image
-              source={{ uri: currentCard?.img }}
-              style={styles.image}
-              resizeMode="stretch"
-            />
+            <Pressable
+              onPress={() => handleDoubleTap()}
+              style={{ width: "100%" }}
+            >
+              <Image
+                source={{ uri: currentCard?.img }}
+                style={styles.image}
+                resizeMode="stretch"
+              />
+            </Pressable>
           ) : null}
         </Animated.View>
 
