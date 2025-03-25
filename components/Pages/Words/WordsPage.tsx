@@ -6,7 +6,6 @@ import {
   FlatList,
   TouchableOpacity,
   StyleSheet,
-  Modal,
   ActivityIndicator,
 } from "react-native";
 
@@ -25,6 +24,7 @@ export function WordsPage() {
     setSearch,
     setPage,
     setActiveWord,
+    generateWord,
     loading,
   } = useWordStore();
 
@@ -60,76 +60,94 @@ export function WordsPage() {
   };
 
   return (
-    <MainLayoutView style={styles.container}>
-      <View
-        style={[styles.inputContainer, modalWordActive && { display: "none" }]}
-      >
-        <TextInput
-          style={styles.input}
-          placeholder="Buscar palabra..."
-          placeholderTextColor={Colors.gray.gray300}
-          value={search}
-          onChangeText={handleSearchChange}
-        />
-      </View>
-
-      {loading ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={Colors.green.green600} />
-          <Text style={styles.loadingText}>Loading words...</Text>
+    <View style={{ flex: 1 }}>
+      <MainLayoutView style={styles.container}>
+        <View
+          style={[
+            styles.inputContainer,
+            modalWordActive && { display: "none" },
+          ]}
+        >
+          <TextInput
+            style={styles.input}
+            placeholder="Buscar palabra..."
+            placeholderTextColor={Colors.gray.gray300}
+            value={search}
+            onChangeText={handleSearchChange}
+          />
         </View>
-      ) : (
-        <FlatList
-          data={words}
-          keyExtractor={(item) => item.word}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              style={styles.row}
-              onPress={() => handleOpenModal(item)}
-            >
-              <View style={styles.headerRow}>
-                <Text style={styles.word}>{capitalize(item.word)}</Text>
-                <Text style={styles.ipa}>{item.IPA}</Text>
+
+        {loading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color={Colors.green.green600} />
+            <Text style={styles.loadingText}>Loading words...</Text>
+          </View>
+        ) : (
+          <FlatList
+            data={words}
+            keyExtractor={(item) => item.word}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                style={styles.row}
+                onPress={() => handleOpenModal(item)}
+              >
+                <View style={styles.headerRow}>
+                  <Text style={styles.word}>{capitalize(item.word)}</Text>
+                  <Text style={styles.ipa}>{item.IPA}</Text>
+                </View>
+                <Text style={styles.spanish}>
+                  {capitalize(item.spanish.word)}
+                </Text>
+                <Text style={styles.definition}>{item.definition}</Text>
+              </TouchableOpacity>
+            )}
+            contentContainerStyle={{
+              paddingBottom: 60,
+              paddingTop: 80,
+              zIndex: -1,
+            }}
+            ListEmptyComponent={
+              <View style={styles.emptyContainer}>
+                <Text style={styles.emptyText}>❌ Not Found</Text>
+                <TouchableOpacity
+                  style={[styles.buttonMake, loading && styles.buttonDisabled]}
+                  onPress={() =>
+                    generateWord(search).finally(() => {
+                      fetchWords();
+                      setModalWordActive(true);
+                    })
+                  }
+                  disabled={!!loading}
+                >
+                  {loading ? (
+                    <ActivityIndicator color={Colors.white.white400} />
+                  ) : (
+                    <Text style={styles.buttonMakeText}>Make</Text>
+                  )}
+                </TouchableOpacity>
               </View>
-              <Text style={styles.spanish}>
-                {capitalize(item.spanish.word)}
-              </Text>
-              <Text style={styles.definition}>{item.definition}</Text>
-            </TouchableOpacity>
-          )}
-          contentContainerStyle={{
-            paddingBottom: 60,
-            paddingTop: 80,
-            zIndex: -1,
-          }}
-          ListEmptyComponent={
-            <View style={styles.emptyContainer}>
-              <Text style={styles.emptyText}>❌ Not Found</Text>
-            </View>
-          }
-        />
-      )}
+            }
+          />
+        )}
 
-      <View style={styles.pagination}>
-        <TouchableOpacity
-          onPress={() => setPage(Math.max(page - 1, 1))}
-          disabled={page === 1}
-        >
-          <Text style={styles.button}>Anterior</Text>
-        </TouchableOpacity>
-        <Text style={styles.pageText}>
-          {page} / {totalPages}
-        </Text>
-        <TouchableOpacity
-          onPress={() => setPage(Math.min(page + 1, totalPages))}
-          disabled={page === totalPages}
-        >
-          <Text style={styles.button}>
-            Siguiente
+        <View style={styles.pagination}>
+          <TouchableOpacity
+            onPress={() => setPage(Math.max(page - 1, 1))}
+            disabled={page === 1}
+          >
+            <Text style={styles.button}>Anterior</Text>
+          </TouchableOpacity>
+          <Text style={styles.pageText}>
+            {page} / {totalPages}
           </Text>
-        </TouchableOpacity>
-      </View>
-
+          <TouchableOpacity
+            onPress={() => setPage(Math.min(page + 1, totalPages))}
+            disabled={page === totalPages}
+          >
+            <Text style={styles.button}>Siguiente</Text>
+          </TouchableOpacity>
+        </View>
+      </MainLayoutView>
       <ModalDragger
         isModalVisible={modalWordActive}
         setModalVisible={handleCloseModal}
@@ -138,13 +156,14 @@ export function WordsPage() {
           <WordCardRoot />
         </View>
       </ModalDragger>
-    </MainLayoutView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingHorizontal: 8,
   },
   cardhijo: {
     width: "100%",
@@ -236,5 +255,18 @@ const styles = StyleSheet.create({
     marginTop: 10,
     color: Colors.white.white300,
     fontSize: 16,
+  },
+  buttonDisabled: {
+    backgroundColor: Colors.gray.gray900,
+  },
+  buttonMakeText: {
+    color: Colors.white.white200,
+    fontWeight: "bold",
+  },
+  buttonMake: {
+    backgroundColor: Colors.green.green700,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
   },
 });
