@@ -39,7 +39,7 @@ export const useLectureStore = create<LectureState>((set, get) => ({
 
       set({
         lectures: page === 1 ? data.data : [...currentLectures, ...data.data],
-        page: data.pages,
+        page: data.page,
         total: data.total,
         loading: false,
       });

@@ -14,6 +14,7 @@ import WordCardRoot from "@/components/shared/WordCardRoot/WordCardRoot";
 import { MainLayoutView } from "@/components/Layouts/MainLayoutView";
 import { Colors } from "@/constants/Colors";
 import { useWordStore } from "@/store/useWordStore";
+import { capitalize } from "@/utils/capitalize";
 
 export function WordsPage() {
   const {
@@ -46,9 +47,6 @@ export function WordsPage() {
   const handleSearchChange = (text: string) => {
     setSearch(text);
   };
-
-  const capitalize = (word: string) =>
-    word.charAt(0).toUpperCase() + word.slice(1);
 
   const handleOpenModal = (word: any) => {
     setActiveWord(word);

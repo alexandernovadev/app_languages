@@ -7,12 +7,11 @@ import {
   View,
   StyleSheet,
 } from "react-native";
-import { SidePanelModalWord } from "../Pages/Details/SidePanelModalWord";
 import { Colors } from "@/constants/Colors";
 import { useWordStore } from "@/store/useWordStore";
 
 interface PropsModalDragger {
-  wordSelected: string;
+  children?: React.ReactNode;
   isModalVisible: boolean;
   setModalVisible: (value: boolean) => void;
 }
@@ -22,11 +21,10 @@ const { height } = Dimensions.get("window");
 export const ModalDragger = ({
   setModalVisible,
   isModalVisible,
-  wordSelected,
+  children,
 }: PropsModalDragger) => {
   const slideAnim = useRef(new Animated.Value(height)).current;
 
-  const { setActiveWord } = useWordStore();
   useEffect(() => {
     if (isModalVisible) {
       Animated.timing(slideAnim, {
@@ -37,7 +35,7 @@ export const ModalDragger = ({
     }
 
     return () => {
-      setActiveWord(null);
+      // setActiveWord(null);
     };
   }, [isModalVisible]);
 
@@ -91,10 +89,7 @@ export const ModalDragger = ({
         >
           <View style={styles.modalHandle} />
         </View>
-        <SidePanelModalWord
-          isVisible={isModalVisible}
-          wordSelected={wordSelected}
-        />
+        {children}
       </Animated.View>
     </View>
   );

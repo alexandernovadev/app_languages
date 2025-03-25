@@ -15,29 +15,26 @@ import { Colors } from "@/constants/Colors";
 import WordCardRoot from "@/components/shared/WordCardRoot/WordCardRoot";
 
 interface SidePanelProps {
-  isVisible: boolean;
   wordSelected: string | null;
 }
 
-export const SidePanelModalWord = ({
-  isVisible,
-  wordSelected,
-}: SidePanelProps) => {
-  const { wordActive, loading, getWord, generateWord } = useWordStore();
+export const SidePanelModalWord = ({ wordSelected }: SidePanelProps) => {
+  const { wordActive, loading, getWord, generateWord, setActiveWord } = useWordStore();
 
   useEffect(() => {
-    if (isVisible && wordSelected) {
+    if (wordSelected) {
       getWord(wordSelected);
     }
-  }, [isVisible, wordSelected]);
+    return () => {
+      setActiveWord(null);
+    };
+  }, [wordSelected]);
 
   const listenWord = () => {
     if (wordActive?.word) {
       Speech.speak(wordActive.word, { language: "en-US", rate: 0.9 });
     }
   };
-
-  if (!isVisible) return null;
 
   return (
     <ScrollView style={styles.container}>

@@ -55,19 +55,6 @@ export default function TabLayout() {
       />
 
       <Tabs.Screen
-        name="addword"
-        options={{
-          title: "Addword",
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon
-              name={focused ? "add-circle" : "add-circle-outline"}
-              color={color}
-            />
-          ),
-        }}
-      />
-
-      <Tabs.Screen
         name="lectures"
         options={{
           title: "Lectures",

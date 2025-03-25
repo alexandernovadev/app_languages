@@ -11,17 +11,18 @@ import { ModalDragger } from "@/components/shared/ModalDragger";
 import { MarkDownRender } from "@/components/Pages/Details/MarkDownRender";
 import { Loading } from "@/components/shared/Loading";
 import { Colors } from "@/constants/Colors";
+import { SidePanelModalWord } from "./SidePanelModalWord";
 
 export const DetailPage = () => {
   const [lecture, setLecture] = useState<Lecture>();
   const [isLoading, setIsLoading] = useState(true);
   const [wordSelected, setWordSelected] = useState("");
   const [isModalVisible, setModalVisible] = useState(false);
-  
+
   const { id } = useLocalSearchParams();
 
   const getLectureById = useLectureStore((state) => state.getLectureById);
-  
+
   useEffect(() => {
     setIsLoading(true);
     const fetchedLecture = getLectureById(String(id));
@@ -33,7 +34,7 @@ export const DetailPage = () => {
     if (word) {
       Speech.speak(word, {
         language: "en-US",
-        rate: .9
+        rate: 0.9,
       });
     }
   }, []);
@@ -70,10 +71,11 @@ export const DetailPage = () => {
 
       {isModalVisible && (
         <ModalDragger
-          wordSelected={wordSelected}
           isModalVisible={isModalVisible}
           setModalVisible={setModalVisible}
-        />
+        >
+          <SidePanelModalWord wordSelected={wordSelected} />
+        </ModalDragger>
       )}
     </View>
   );
@@ -99,7 +101,7 @@ const styles = StyleSheet.create({
   wordSelected: {
     textTransform: "capitalize",
     fontWeight: "bold",
-    color:Colors.white.white300,
+    color: Colors.white.white300,
     fontSize: 24,
   },
 });
