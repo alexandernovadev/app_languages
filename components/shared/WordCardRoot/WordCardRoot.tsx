@@ -75,7 +75,7 @@ const WordCardRoot = () => {
           }}
           onPress={() => {
             triggerVibration("medium");
-            onRefresh;
+            onRefresh();
           }}
           disabled={loadingUpdate}
         >
@@ -140,8 +140,7 @@ const WordCardRoot = () => {
 
         <SectionContainer hasBox>
           <TouchableOpacity
-            onPress={() => 
-              updateWordImage(word._id!, word.word, word.img!)}
+            onPress={() => updateWordImage(word._id!, word.word, word.img!)}
             style={[
               styles.buttonRefreshImage,
               word.img ? styles.buttonWithImage : null,
