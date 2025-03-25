@@ -247,7 +247,7 @@ const stylesMD = StyleSheet.create({
   },
   listItemContainer: {
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "flex-start", 
     marginVertical: 2,
     flexWrap: "wrap",
   },
@@ -276,6 +276,7 @@ const styles = StyleSheet.create({
   wordsContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
+    flex: 1 
   },
   infoContainer: {
     flexDirection: "row",
