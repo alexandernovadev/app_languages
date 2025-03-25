@@ -19,6 +19,7 @@ import { useWordStore } from "@/store/useWordStore";
 import { formatDateV1 } from "@/utils/formatDates";
 import LoadingBar from "../LoadingBar";
 import { triggerVibration } from "@/utils/vibrationHaptic";
+import { Word } from "@/interfaces/models/Word";
 
 const WordCardRoot = () => {
   const {
@@ -33,6 +34,7 @@ const WordCardRoot = () => {
   } = useWordStore();
 
   const scrollRef = useRef<ScrollView>(null);
+  const prevWordId = useRef<Word | null>(null);
 
   const listenWord = (rate = 0.8, language = "en-US") => {
     triggerVibration("medium");
@@ -40,7 +42,10 @@ const WordCardRoot = () => {
   };
 
   useEffect(() => {
-    scrollRef.current?.scrollTo({ y: 0, animated: true });
+    if (word?._id !== prevWordId.current?._id) {
+      scrollRef.current?.scrollTo({ y: 0, animated: true });
+      prevWordId.current = word;
+    }
   }, [word]);
 
   useEffect(() => {
