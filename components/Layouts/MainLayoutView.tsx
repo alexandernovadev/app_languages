@@ -18,7 +18,6 @@ export function MainLayoutView({
       style={[
         { backgroundColor },
         { flex: 1 },
-        { paddingLeft: 16, paddingRight: 16 },
         style,
       ]}
       edges={["top", "bottom"]}

@@ -34,9 +34,7 @@ export const ModalDragger = ({
       }).start();
     }
 
-    return () => {
-      // setActiveWord(null);
-    };
+
   }, [isModalVisible]);
 
   // PanResponder to handle the drag
@@ -70,6 +68,8 @@ export const ModalDragger = ({
     }).start(() => setModalVisible(false));
   }, [slideAnim]);
 
+  if (!isModalVisible) return null;
+
   return (
     <View style={styles.overlay}>
       <TouchableWithoutFeedback onPress={closeModal}>
@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: 0,
     right: 0,
-    height: "88%",
+    height: "92%",
     backgroundColor: Colors.black.black800,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
   },
   overlayBackground: {
     flex: 1,
-    backgroundColor: Colors.translucentBlack.black40,
+    backgroundColor: Colors.translucentBlack.black90,
   },
   modalHandle: {
     width: 60,

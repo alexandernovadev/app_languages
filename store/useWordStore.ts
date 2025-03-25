@@ -435,9 +435,13 @@ export const useWordStore = create<WordState>((set, get) => ({
   setPage: (page) =>
     set((state) => ({ wordsList: { ...state.wordsList, page } })),
   setActiveWord: (word) => {
-    set({ wordActive: word });
-    if (word !== null && word._id) {
-      get().updateincrementWordSeenCount(word._id);
+    const { wordActive, updateincrementWordSeenCount } = get();
+    
+    if (wordActive?._id !== word?._id) {
+      set({ wordActive: word });
+      if (word !== null && word._id) {
+        updateincrementWordSeenCount(word._id);
+      }
     }
   },
 }));

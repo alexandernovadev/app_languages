@@ -15,16 +15,17 @@ import { MainLayoutView } from "@/components/Layouts/MainLayoutView";
 import { Colors } from "@/constants/Colors";
 import { useWordStore } from "@/store/useWordStore";
 import { capitalize } from "@/utils/capitalize";
+import { ModalDragger } from "@/components/shared/ModalDragger";
+import { Word } from "@/interfaces/models/Word";
 
 export function WordsPage() {
   const {
     wordsList: { words, search, page, totalPages },
-    wordActive,
     fetchWords,
     setSearch,
     setPage,
     setActiveWord,
-    loading, 
+    loading,
   } = useWordStore();
 
   const [modalVisible, setModalVisible] = useState(false);
@@ -48,19 +49,21 @@ export function WordsPage() {
     setSearch(text);
   };
 
-  const handleOpenModal = (word: any) => {
+  const handleOpenModal = (word: Word) => {
     setActiveWord(word);
     setModalVisible(true);
   };
 
   const handleCloseModal = () => {
-    setActiveWord(null)
+    setActiveWord(null);
     setModalVisible(false);
   };
 
   return (
     <MainLayoutView style={styles.container}>
-      <View style={styles.inputContainer}>
+      <View
+        style={[styles.inputContainer, modalVisible && { display: "none" }]}
+      >
         <TextInput
           style={styles.input}
           placeholder="Buscar palabra..."
@@ -94,7 +97,11 @@ export function WordsPage() {
               <Text style={styles.definition}>{item.definition}</Text>
             </TouchableOpacity>
           )}
-          contentContainerStyle={{ paddingBottom: 60, paddingTop: 80 }}
+          contentContainerStyle={{
+            paddingBottom: 60,
+            paddingTop: 80,
+            zIndex: -1,
+          }}
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
               <Text style={styles.emptyText}>❌ Not Found</Text>
@@ -117,27 +124,26 @@ export function WordsPage() {
           onPress={() => setPage(Math.min(page + 1, totalPages))}
           disabled={page === totalPages}
         >
-          <Text style={styles.button}>Siguiente</Text>
+          <Text style={styles.button}>Siguiente{modalVisible ? "T" : "F"}</Text>
         </TouchableOpacity>
       </View>
 
-      <Modal visible={modalVisible} transparent animationType="slide">
+      <ModalDragger
+        isModalVisible={modalVisible}
+        setModalVisible={handleCloseModal}
+      >
         <View style={styles.cardhijo}>
-          <TouchableOpacity
-            style={styles.closeButton}
-            onPress={handleCloseModal}
-          >
-            <Text style={styles.closeButtonText}>Close</Text>
-          </TouchableOpacity>
-          {wordActive && <WordCardRoot />}
+          <WordCardRoot />
         </View>
-      </Modal>
+      </ModalDragger>
     </MainLayoutView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
+  container: {
+    flex: 1,
+  },
   cardhijo: {
     width: "100%",
     height: "91%",
@@ -148,7 +154,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     paddingVertical: 10,
-    zIndex: 10,
+    zIndex: 1,
   },
   input: {
     backgroundColor: Colors.gray.gray850,
@@ -203,8 +209,10 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     alignItems: "center",
   },
-  closeButtonText: { color: Colors.white.white200, fontWeight: "bold" ,
-    height:30
+  closeButtonText: {
+    color: Colors.white.white200,
+    fontWeight: "bold",
+    height: 30,
   },
   emptyContainer: {
     alignItems: "center",
@@ -220,6 +228,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
+    paddingHorizontal: 16,
   },
   loadingText: {
     marginTop: 10,
