@@ -1,40 +1,33 @@
 import { create } from "zustand";
-
-import { BACKURL } from "@/api/backurl";
 import { Word } from "@/interfaces/models/Word";
+import { wordService } from "@/services/wordService";
 
-interface WordState {
+interface State {
   words: Word[];
-  wordActive: Word | null;
-  wordsList: {
-    words: Word[];
-    totalPages: number;
-    page: number;
-    search: string;
-    total: number;
-  };
+  pages: number;
+  total: number;
+  selectedWord: Word | null;
   loading: boolean;
-  loadingUpdate: boolean;
   error: string | null;
 
-  setSearch: (search: string) => void;
-  setActiveWord: (word: Word | null) => void;
-  setPage: (page: number) => void;
-
+  fetchWords: (search: string, page: number) => Promise<void>;
+  fetchRecentHardOrMediumWords: () => Promise<void>;
   getWord: (word: string) => Promise<void>;
   generateWord: (word: string) => Promise<void>;
-  fetchRecentHardOrMediumWords: () => Promise<void>;
-  fetchWords: (search?: string, page?: number) => Promise<void>;
-  updateWordLevel: (wordId: string, level: string) => Promise<void>;
-
-  // Methods AI
-  updateWordExamples: (
+  updateLevel: (wordId: string, level: string) => Promise<void>;
+  updateExamples: (
     wordId: string,
     word: string,
     language: string,
     oldExamples: string[]
   ) => Promise<void>;
-  updateWordCodeSwitching: (
+  updateCodeSwitching: (
+    wordId: string,
+    word: string,
+    language: string,
+    oldExamples: string[]
+  ) => Promise<void>;
+  updateSynonyms: (
     wordId: string,
     word: string,
     language: string,
@@ -46,405 +39,142 @@ interface WordState {
     language: string,
     oldExamples: string[]
   ) => Promise<void>;
-  updateWordSynonyms: (
-    wordId: string,
-    word: string,
-    language: string,
-    oldExamples: string[]
-  ) => Promise<void>;
-  updateWordImage: (
-    wordId: string,
-    word: string,
-    imgOld: string
-  ) => Promise<void>;
-  updateincrementWordSeenCount: (wordId: string) => Promise<void>;
+  updateImage: (wordId: string, word: string, imgOld?: string) => Promise<void>;
 }
 
-export const useWordStore = create<WordState>((set, get) => ({
+export const useWordStore = create<State>((set) => ({
   words: [],
-  wordActive: null,
-  wordsList: {
-    words: [],
-    totalPages: 1,
-    page: 1,
-    search: "",
-    total: 0,
-  },
+  pages: 0,
+  total: 0,
+  selectedWord: null,
   loading: false,
-  loadingUpdate: false,
   error: null,
 
+  fetchWords: async (search, page) => {
+    try {
+      set({ loading: true, error: null });
+      const res = await wordService.fetchWords(search, page);
+      set({ words: res.data, pages: res.pages, total: res.total });
+    } catch (err: any) {
+      set({ error: err.message });
+    } finally {
+      set({ loading: false });
+    }
+  },
+
   fetchRecentHardOrMediumWords: async () => {
-    set({ loading: true, error: null });
     try {
-      const response = await fetch(`${BACKURL}/api/words/get-cards-anki`);
-      const data = await response.json();
-      if (data.success) {
-        set({ words: data.data, loading: false });
-      } else {
-        set({ error: "Failed to fetch words", loading: false });
-      }
-    } catch {
-      set({ error: "Failed to fetch words", loading: false });
+      set({ loading: true, error: null });
+      const words = await wordService.fetchRecentHardOrMediumWords();
+      set({ words });
+    } catch (err: any) {
+      set({ error: err.message });
+    } finally {
+      set({ loading: false });
     }
   },
+
   getWord: async (word) => {
-    set({ loading: true, error: null });
     try {
-      const response = await fetch(
-        `${BACKURL}/api/words/word/${word.toLowerCase()}`
-      );
-      const data = await response.json();
-      if (data.success) {
-        get().setActiveWord(data.data);
-        set({ loading: false });
-      } else {
-        set({ error: "Error fetching word", loading: false });
-      }
-    } catch {
-      set({ error: "Error fetching word", loading: false });
+      set({ loading: true, error: null });
+      const res = await wordService.getWord(word);
+      set({ selectedWord: res });
+    } catch (err: any) {
+      set({ error: err.message });
+    } finally {
+      set({ loading: false });
     }
   },
+
   generateWord: async (word) => {
-    if (!word.trim()) return;
-    set({ loading: true, error: null });
     try {
-      const response = await fetch(`${BACKURL}/api/ai/generate-wordJson`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt: word, language: "en" }),
-      });
-      const data = await response.json();
-      if (data.success) {
-        set({ wordActive: data.data, loading: false });
-      } else {
-        set({ error: "Error generating word", loading: false });
-      }
-    } catch {
-      set({ error: "Error generating word", loading: false });
+      set({ loading: true, error: null });
+      const newWord = await wordService.generateWord(word);
+      set({ selectedWord: newWord });
+    } catch (err: any) {
+      set({ error: err.message });
+    } finally {
+      set({ loading: false });
     }
   },
 
-  fetchWords: async (
-    search = get().wordsList.search,
-    page = get().wordsList.page
-  ) => {
-    set({ loading: true, error: null });
+  updateLevel: async (wordId, level) => {
     try {
-      const query = search ? `&wordUser=${search.toLowerCase()}` : "";
-      const response = await fetch(`${BACKURL}/api/words?page=${page}${query}`);
-      const data = await response.json();
-
-      if (data.success) {
-        set({
-          wordsList: {
-            words: data.data.data,
-            totalPages: data.data.pages,
-            page,
-            search,
-            total: data.data.total,
-          },
-          loading: false,
-        });
-      }
-    } catch (error) {
-      set({ error: "Error fetching words", loading: false });
+      const updated = await wordService.updateWordLevel(wordId, level);
+      set((state) => ({
+        selectedWord:
+          state.selectedWord?._id === updated._id
+            ? updated
+            : state.selectedWord,
+        words: state.words.map((w) => (w._id === updated._id ? updated : w)),
+      }));
+    } catch (err: any) {
+      set({ error: err.message });
     }
   },
-  updateincrementWordSeenCount: async (wordId) => {
-    set({ loadingUpdate: true, error: null });
+
+  updateExamples: async (wordId, word, language, oldExamples) => {
     try {
-      const response = await fetch(
-        `${BACKURL}/api/words/${wordId}/increment-seen`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
+      const updated = await wordService.updateExamples(
+        wordId,
+        word,
+        language,
+        oldExamples
       );
-
-      const data = await response.json();
-      if (data.success) {
-        // Update words list and active word with incremented seen count
-        set((state) => ({
-          words: state.words.map((word) =>
-            word._id === wordId ? { ...word, seen: word.seen + 1 } : word
-          ),
-          wordActive:
-            state.wordActive && state.wordActive._id === wordId
-              ? {
-                  ...state.wordActive,
-                  seen: state.wordActive.seen + 1,
-                }
-              : state.wordActive,
-        }));
-      } else {
-        set({ error: "Error incrementing word seen count" });
-      }
-    } catch (error) {
-      set({ error: "Error incrementing word seen count CA" });
-    } finally {
-      set({ loadingUpdate: false });
+      set({ selectedWord: updated });
+    } catch (err: any) {
+      set({ error: err.message });
     }
   },
-  updateWordLevel: async (wordId, level) => {
-    set({ loadingUpdate: true, error: null });
 
+  updateCodeSwitching: async (wordId, word, language, oldExamples) => {
     try {
-      const response = await fetch(`${BACKURL}/api/words/${wordId}/level`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ level }),
-      });
-
-      const data = await response.json();
-      if (data.success) {
-        set((state) => ({
-          words: state.words.map((w) =>
-            w._id === wordId ? { ...w, level } : w
-          ),
-          wordActive:
-            state.wordActive && state.wordActive._id === wordId
-              ? { ...state.wordActive, level }
-              : state.wordActive,
-        }));
-      } else {
-        set({ error: "Error updating word level" });
-      }
-    } catch (error) {
-      set({ error: "Error updating word level" });
-    } finally {
-      set({ loadingUpdate: false });
-    }
-  },
-  // Metodos AI
-  updateWordExamples: async (wordId, word, language, oldExamples) => {
-    set({ loadingUpdate: true, error: null });
-
-    try {
-      const response = await fetch(
-        `${BACKURL}/api/ai/generate-word-examples/${wordId}`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ word, language, oldExamples }),
-        }
+      const updated = await wordService.updateCodeSwitching(
+        wordId,
+        word,
+        language,
+        oldExamples
       );
-      const data = await response.json();
-
-      if (data.success) {
-        set((state) => ({
-          words: state.words.map((w) =>
-            w._id === wordId
-              ? {
-                  ...w,
-                  examples: data.data.examples,
-                  updatedAt: data.data.updatedAt,
-                }
-              : w
-          ),
-          wordActive:
-            state.wordActive && state.wordActive._id === wordId
-              ? {
-                  ...state.wordActive,
-                  examples: data.data.examples,
-                  updatedAt: data.data.updatedAt,
-                }
-              : state.wordActive,
-        }));
-      } else {
-        set({ error: "Error updating word examples" });
-      }
-    } catch (error) {
-      set({ error: "Error updating word examples TC" + error });
-    } finally {
-      set({ loadingUpdate: false });
+      set({ selectedWord: updated });
+    } catch (err: any) {
+      set({ error: err.message });
     }
   },
 
-  updateWordCodeSwitching: async (wordId, word, language, oldExamples) => {
-    set({ loadingUpdate: true, error: null });
+  updateSynonyms: async (wordId, word, language, oldExamples) => {
     try {
-      const response = await fetch(
-        `${BACKURL}/api/ai/generate-code-switching/${wordId}`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ word, language, oldExamples }),
-        }
+      const updated = await wordService.updateSynonyms(
+        wordId,
+        word,
+        language,
+        oldExamples
       );
-      const data = await response.json();
-      if (data.success) {
-        set((state) => ({
-          words: state.words.map((w) =>
-            w._id === wordId
-              ? {
-                  ...w,
-                  codeSwitching: data.data.codeSwitching,
-                  updatedAt: data.data.updatedAt,
-                }
-              : w
-          ),
-          wordActive:
-            state.wordActive && state.wordActive._id === wordId
-              ? {
-                  ...state.wordActive,
-                  codeSwitching: data.data.codeSwitching,
-                  updatedAt: data.data.updatedAt,
-                }
-              : state.wordActive,
-        }));
-      } else {
-        set({ error: "Error updating word code-switching examples" });
-      }
-    } catch (error) {
-      set({ error: "Error updating word code-switching examples" + error });
-    } finally {
-      set({ loadingUpdate: false });
-    }
-  },
-  updateWordSynonyms: async (wordId, word, language, oldExamples) => {
-    set({ loadingUpdate: true, error: null });
-
-    try {
-      const response = await fetch(
-        `${BACKURL}/api/ai/generate-code-synonyms/${wordId}`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ word, language, oldExamples }),
-        }
-      );
-      const data = await response.json();
-
-      if (data.success) {
-        set((state) => ({
-          words: state.words.map((w) =>
-            w._id === wordId
-              ? {
-                  ...w,
-                  sinonyms: data.data.sinonyms,
-                  updatedAt: data.data.updatedAt,
-                }
-              : w
-          ),
-          wordActive:
-            state.wordActive && state.wordActive._id === wordId
-              ? {
-                  ...state.wordActive,
-                  sinonyms: data.data.sinonyms,
-                  updatedAt: data.data.updatedAt,
-                }
-              : state.wordActive,
-        }));
-      } else {
-        set({ error: "Error updating word synonyms" });
-      }
-    } catch (error) {
-      set({ error: "Error updating word synonyms" + error });
-    } finally {
-      set({ loadingUpdate: false });
+      set({ selectedWord: updated });
+    } catch (err: any) {
+      set({ error: err.message });
     }
   },
 
   updateWordTypes: async (wordId, word, language, oldExamples) => {
-    set({ loadingUpdate: true, error: null });
     try {
-      const response = await fetch(
-        `${BACKURL}/api/ai/generate-word-wordtypes/${wordId}`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ word, language, oldExamples }),
-        }
+      const updated = await wordService.updateWordTypes(
+        wordId,
+        word,
+        language,
+        oldExamples
       );
-      const data = await response.json();
-      if (data.success) {
-        set((state) => ({
-          words: state.words.map((w) =>
-            w._id === wordId
-              ? {
-                  ...w,
-                  type: data.data.type,
-                  updatedAt: data.data.updatedAt,
-                }
-              : w
-          ),
-          wordActive:
-            state.wordActive && state.wordActive._id === wordId
-              ? {
-                  ...state.wordActive,
-                  type: data.data.type,
-                  updatedAt: data.data.updatedAt,
-                }
-              : state.wordActive,
-        }));
-      } else {
-        set({ error: "Error updating word types" });
-      }
-    } catch (error) {
-      set({ error: "Error updating word types" + error });
-    } finally {
-      set({ loadingUpdate: false });
+      set({ selectedWord: updated });
+    } catch (err: any) {
+      set({ error: err.message });
     }
   },
 
-  updateWordImage: async (wordId, word, imgOld = "") => {
-    set({ loadingUpdate: true, error: null });
+  updateImage: async (wordId, word, imgOld = "") => {
     try {
-      const response = await fetch(
-        `${BACKURL}/api/ai/generate-image/${wordId}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ word, imgOld }),
-        }
-      );
-      const data = await response.json();
-
-      if (data.success) {
-        set((state) => ({
-          words: state.words.map((w) =>
-            w._id === wordId
-              ? {
-                  ...w,
-                  img: data.data.img,
-                  updatedAt: data.data.updatedAt,
-                }
-              : w
-          ),
-          wordActive:
-            state.wordActive && state.wordActive._id === wordId
-              ? {
-                  ...state.wordActive,
-                  img: data.data.img,
-                  updatedAt: data.data.updatedAt,
-                }
-              : state.wordActive,
-        }));
-      } else {
-        set({ error: "Error updating word image" });
-      }
-    } catch (error) {
-      set({ error: "Error updating word image" + error });
-    } finally {
-      set({ loadingUpdate: false });
-    }
-  },
-
-  setSearch: (search) =>
-    set((state) => ({ wordsList: { ...state.wordsList, search, page: 1 } })),
-  setPage: (page) =>
-    set((state) => ({ wordsList: { ...state.wordsList, page } })),
-  setActiveWord: (word) => {
-    const { wordActive, updateincrementWordSeenCount } = get();
-
-    if (wordActive?._id !== word?._id) {
-      set({ wordActive: word });
-      if (word !== null && word._id) {
-        updateincrementWordSeenCount(word._id);
-      }
+      const updated = await wordService.updateImage(wordId, word, imgOld);
+      set({ selectedWord: updated });
+    } catch (err: any) {
+      set({ error: err.message });
     }
   },
 }));

@@ -1,6 +1,6 @@
 import { create } from "zustand";
-import { BACKURL } from "@/api/backurl";
 import { Lecture } from "@/interfaces/models/Lectures";
+import { lectureService } from "@/services/lectureService";
 
 export interface LectureResponse {
   data: Lecture[];
@@ -28,13 +28,8 @@ export const useLectureStore = create<LectureState>((set, get) => ({
 
   fetchLectures: async (page = 1, limit = 10) => {
     set({ loading: true, error: null });
-
     try {
-      const response = await fetch(
-        `${BACKURL}/api/lectures?page=${page}&limit=${limit}`
-      );
-      const { data } = await response.json();
-
+      const data = await lectureService.fetchLectures(page, limit);
       const currentLectures = get().lectures;
 
       set({
@@ -43,10 +38,14 @@ export const useLectureStore = create<LectureState>((set, get) => ({
         total: data.total,
         loading: false,
       });
-    } catch (error) {
-      set({ error: "Failed to fetch lectures", loading: false });
+    } catch (error: any) {
+      set({
+        error: error.message || "Failed to fetch lectures",
+        loading: false,
+      });
     }
   },
+
   getLectureById: (id: string) => {
     return get().lectures.find((lecture) => lecture._id === id);
   },
