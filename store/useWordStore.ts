@@ -78,10 +78,9 @@ export const useWordStore = create<WordState>((set, get) => ({
   fetchRecentHardOrMediumWords: async () => {
     set({ loading: true, error: null });
     try {
-      const response = await fetch(`${BACKURL}/api/words/get-cards-anki`);
-      const data = await response.json();
-      if (data.success) {
-        set({ words: data.data, loading: false });
+      const data = await wordService.fetchRecentHardOrMediumWords();
+      if (data) {
+        set({ words: data, loading: false });
       } else {
         set({ error: "Failed to fetch words", loading: false });
       }
