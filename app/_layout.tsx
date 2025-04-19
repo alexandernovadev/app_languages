@@ -1,15 +1,16 @@
-import { DarkTheme, ThemeProvider } from "@react-navigation/native";
 import { useFonts } from "expo-font";
-import { Stack } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { StatusBar } from "expo-status-bar";
 import { Platform } from "react-native";
 import "react-native-reanimated";
 import * as NavigationBar from "expo-navigation-bar";
+import { Storage } from "expo-storage";
+import { ThemeProvider, DarkTheme } from "@react-navigation/native";
 import { DARKMODE } from "@/constants/themeMain";
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
+// Evita que se oculte el splash automáticamente
 SplashScreen.preventAutoHideAsync();
 
 export type RootStackParamList = {
@@ -23,26 +24,47 @@ export default function RootLayout() {
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
 
+  const [appReady, setAppReady] = useState(false);
+  const router = useRouter();
+
   useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
+    const prepare = async () => {
+      if (loaded) {
+        try {
+          // console.log(await Storage.getAllKeys());
+
+          const token = await Storage.getItem({ key: "token" });
+          if (token) {
+            router.replace("/(tabs)");
+          } else {
+            router.replace("/Login");
+          }
+        } catch (e) {
+          // console.error("Error leyendo token", e);
+        } finally {
+          setAppReady(true);
+          SplashScreen.hideAsync();
+        }
+      }
+    };
+
+    prepare();
 
     if (Platform.OS === "android") {
       NavigationBar.setVisibilityAsync("hidden");
     }
   }, [loaded]);
 
-  if (!loaded) return null;
+  if (!appReady) return null;
 
   return (
     <ThemeProvider value={DarkTheme}>
       <StatusBar hidden style={DARKMODE} />
-
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="Details" options={{ headerShown: false }} />
-        <Stack.Screen name="NoTabsScreen" options={{ headerShown: false }} />
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Login" />
+        <Stack.Screen name="NoTabsScreen" />
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="Details" />
       </Stack>
     </ThemeProvider>
   );

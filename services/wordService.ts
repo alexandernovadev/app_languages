@@ -1,5 +1,6 @@
 import { BACKURL } from "@/api/backurl";
 import { Word } from "@/interfaces/models/Word";
+import { getAuthHeaders } from "./utils/headers";
 
 const handleResponse = async (res: Response) => {
   const data = await res.json();
@@ -9,19 +10,23 @@ const handleResponse = async (res: Response) => {
 
 export const wordService = {
   fetchRecentHardOrMediumWords: async (): Promise<Word[]> => {
-    const res = await fetch(`${BACKURL}/api/words/get-cards-anki`);
+    const res = await fetch(`${BACKURL}/api/words/get-cards-anki`, {
+      headers: await getAuthHeaders(),
+    });
     return await handleResponse(res);
   },
 
   getWord: async (word: string): Promise<Word> => {
-    const res = await fetch(`${BACKURL}/api/words/word/${word.toLowerCase()}`);
+    const res = await fetch(`${BACKURL}/api/words/word/${word.toLowerCase()}`, {
+      headers: await getAuthHeaders(),
+    });
     return await handleResponse(res);
   },
 
   generateWord: async (word: string): Promise<Word> => {
     const res = await fetch(`${BACKURL}/api/ai/generate-wordJson`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: await getAuthHeaders(),
       body: JSON.stringify({ prompt: word, language: "en" }),
     });
     return await handleResponse(res);
@@ -36,14 +41,16 @@ export const wordService = {
     total: number;
   }> => {
     const query = search ? `&wordUser=${search.toLowerCase()}` : "";
-    const res = await fetch(`${BACKURL}/api/words?page=${page}${query}`);
+    const res = await fetch(`${BACKURL}/api/words?page=${page}${query}`, {
+      headers: await getAuthHeaders(),
+    });
     return await handleResponse(res);
   },
 
   incrementSeenCount: async (wordId: string): Promise<Word> => {
     const res = await fetch(`${BACKURL}/api/words/${wordId}/increment-seen`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: await getAuthHeaders(),
     });
     return await handleResponse(res);
   },
@@ -51,7 +58,7 @@ export const wordService = {
   updateWordLevel: async (wordId: string, level: string): Promise<Word> => {
     const res = await fetch(`${BACKURL}/api/words/${wordId}/level`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: await getAuthHeaders(),
       body: JSON.stringify({ level }),
     });
     return await handleResponse(res);
@@ -67,7 +74,7 @@ export const wordService = {
       `${BACKURL}/api/ai/generate-word-examples/${wordId}`,
       {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: await getAuthHeaders(),
         body: JSON.stringify({ word, language, oldExamples }),
       }
     );
@@ -84,7 +91,7 @@ export const wordService = {
       `${BACKURL}/api/ai/generate-code-switching/${wordId}`,
       {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: await getAuthHeaders(),
         body: JSON.stringify({ word, language, oldExamples }),
       }
     );
@@ -101,7 +108,7 @@ export const wordService = {
       `${BACKURL}/api/ai/generate-code-synonyms/${wordId}`,
       {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: await getAuthHeaders(),
         body: JSON.stringify({ word, language, oldExamples }),
       }
     );
@@ -118,7 +125,7 @@ export const wordService = {
       `${BACKURL}/api/ai/generate-word-wordtypes/${wordId}`,
       {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: await getAuthHeaders(),
         body: JSON.stringify({ word, language, oldExamples }),
       }
     );
@@ -132,7 +139,7 @@ export const wordService = {
   ): Promise<Word> => {
     const res = await fetch(`${BACKURL}/api/ai/generate-image/${wordId}`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: await getAuthHeaders(),
       body: JSON.stringify({ word, imgOld }),
     });
     return await handleResponse(res);

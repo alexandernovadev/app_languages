@@ -30,6 +30,7 @@ export const useLectureStore = create<LectureState>((set, get) => ({
     set({ loading: true, error: null });
     try {
       const data = await lectureService.fetchLectures(page, limit);
+
       const currentLectures = get().lectures;
 
       set({
