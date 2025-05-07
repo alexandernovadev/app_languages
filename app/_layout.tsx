@@ -15,6 +15,7 @@ SplashScreen.preventAutoHideAsync();
 
 export type RootStackParamList = {
   Home: undefined;
+  Login: undefined;
   Details: { id: string };
   NoTabsScreen: undefined;
 };
@@ -31,9 +32,10 @@ export default function RootLayout() {
     const prepare = async () => {
       if (loaded) {
         try {
-          // console.log(await Storage.getAllKeys());
-
           const token = await Storage.getItem({ key: "token" });
+
+          // Todo If token is invalid, remove it,
+
           if (token) {
             router.replace("/(tabs)");
           } else {
@@ -41,6 +43,7 @@ export default function RootLayout() {
           }
         } catch (e) {
           // console.error("Error leyendo token", e);
+          router.replace("/Login");
         } finally {
           setAppReady(true);
           SplashScreen.hideAsync();

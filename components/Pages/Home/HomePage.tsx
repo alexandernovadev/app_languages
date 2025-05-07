@@ -52,7 +52,7 @@ export const HomePage = () => {
             style={styles.searchIcon}
           />
           <TextInput
-            placeholder="hola marte"
+            placeholder="hola venus y marte"
             placeholderTextColor={Colors.white.white500}
             style={styles.searchInput}
           />
