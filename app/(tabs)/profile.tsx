@@ -43,21 +43,16 @@ export default function ProfileScreen() {
 
   const handleLogout = async () => {
     await clearStorage();
-    // navigation.reset({
-    //   routes: [{ name: "Login" }],
-    // });
+    navigation.reset({
+      routes: [{ name: "Login" }],
+    });
   };
 
   const clearStorage = async () => {
     const keys = await Storage.getAllKeys();
     await Promise.all(keys.map((key) => {
-
       return Storage.removeItem({ key });
     }));
-
-    console.log("Storage cleared");
-    const keysnew = await Storage.getAllKeys();
-    console.log("Keys after clear:", keysnew);
   };
 
   return (
