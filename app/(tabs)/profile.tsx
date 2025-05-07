@@ -32,12 +32,6 @@ export default function ProfileScreen() {
         setBackVersion(data);
       });
 
-    
-    const a = async () => {
-      const keys = await Storage.getAllKeys();
-      console.log("Keys in storage:", keys);
-    }
-    a();
     return () => {};
   }, []);
 
